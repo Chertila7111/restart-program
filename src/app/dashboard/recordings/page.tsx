@@ -40,16 +40,13 @@ export default function RecordingsPage() {
                   </div>
                 </div>
                 {isAvailable ? (
-                  <button
-                    style={{
-                      background: 'var(--primary)', color: 'white', border: 'none',
-                      borderRadius: '0.625rem', padding: '0.5rem 1rem',
-                      fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', flexShrink: 0,
-                    }}
-                    onClick={() => alert('Ссылка на запись придёт на почту. Пока — функция в разработке.')}
-                  >
-                    Смотреть
-                  </button>
+                  <span style={{
+                    background: 'var(--primary)', color: 'white',
+                    borderRadius: '0.625rem', padding: '0.5rem 1rem',
+                    fontSize: '0.8rem', fontWeight: 600, flexShrink: 0,
+                  }}>
+                    Скоро
+                  </span>
                 ) : (
                   <span style={{ fontSize: '0.78rem', color: 'var(--text-light)', flexShrink: 0, textAlign: 'right' }}>
                     После<br />встречи
