@@ -17,7 +17,7 @@ export default async function ProgramPage() {
       include: { taskCompletions: true },
     })
     taskCompletions = user?.taskCompletions ?? []
-  } catch { /* DB unavailable */ }
+  } catch (err) { console.error('[program] DB error:', err) }
 
   const completedIds = new Set(taskCompletions.map(t => t.taskId))
   const totalCompleted = PROGRAM_TASKS.filter(t => completedIds.has(t.id)).length

@@ -83,7 +83,7 @@ export default async function PlanPage() {
       include: { orders: { orderBy: { createdAt: 'desc' } } },
     })
     orders = user?.orders ?? []
-  } catch { /* DB unavailable */ }
+  } catch (err) { console.error('[plan] DB error:', err) }
 
   const { tier, order } = getUserTier(orders)
   const info = tier !== 'none' ? TIER_INFO[tier] : null

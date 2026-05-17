@@ -38,7 +38,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       where: { email: session.user.email },
       include: { orders: true },
     })
-  } catch { /* DB unavailable */ }
+  } catch (err) { console.error('[layout] DB error:', err) }
 
   if (!user) redirect('/auth/login')
 

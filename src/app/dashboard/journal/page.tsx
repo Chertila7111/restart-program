@@ -68,7 +68,7 @@ export default async function JournalPage() {
       todayDaily = entries.find(e => e.date === today && e.type === 'daily') ?? null
       todayQuick = entries.find(e => e.date === today && e.type === 'quick') ?? null
     }
-  } catch { /* DB unavailable — render with empty state */ }
+  } catch (err) { console.error('[journal] DB error:', err) }
 
   const last7 = entries.filter(e => e.type === 'daily').slice(0, 7).reverse()
   const avgMood = last7.length ? Math.round(last7.reduce((s, e) => s + e.mood, 0) / last7.length * 10) / 10 : null

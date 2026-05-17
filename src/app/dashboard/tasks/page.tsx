@@ -21,7 +21,7 @@ export default async function TasksPage() {
       notes: c.notes ?? null,
       createdAt: c.createdAt instanceof Date ? c.createdAt.toISOString() : String(c.createdAt ?? ''),
     }))
-  } catch { /* DB unavailable — show empty list */ }
+  } catch (err) { console.error('[tasks] DB error:', err) }
 
   return (
     <div style={{ maxWidth: '44rem' }}>
