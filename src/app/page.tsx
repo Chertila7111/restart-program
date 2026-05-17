@@ -212,42 +212,61 @@ export default function Home() {
 
         {/* Botanical fern — top right */}
         <svg
-          viewBox="0 0 320 520"
+          viewBox="0 0 420 700"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          style={{ position: 'absolute', top: '-1rem', right: '-3rem', width: '300px', height: '488px', opacity: 0.11, pointerEvents: 'none' }}
+          style={{ position: 'absolute', top: '-2rem', right: '-4rem', width: '480px', height: '800px', opacity: 0.12, pointerEvents: 'none' }}
         >
-          <path d="M260 0 C280 120 240 280 110 500" stroke="#4E7B5E" strokeWidth="2.5" strokeLinecap="round"/>
-          <path d="M256 58 C272 44 295 38 302 22 C285 32 264 40 256 58Z" fill="#4E7B5E"/>
-          <path d="M252 54 C232 42 204 38 193 22 C212 31 240 38 252 54Z" fill="#4E7B5E"/>
-          <path d="M250 123 C270 105 298 97 308 78 C287 90 264 100 250 123Z" fill="#4E7B5E"/>
-          <path d="M244 119 C220 103 190 97 177 78 C200 88 232 99 244 119Z" fill="#4E7B5E"/>
-          <path d="M238 188 C261 167 292 158 303 137 C280 150 254 162 238 188Z" fill="#4E7B5E"/>
-          <path d="M232 184 C204 165 172 157 158 136 C183 148 218 160 232 184Z" fill="#4E7B5E"/>
-          <path d="M222 254 C248 231 282 220 294 197 C268 211 240 224 222 254Z" fill="#4E7B5E"/>
-          <path d="M216 250 C185 229 149 220 134 197 C162 209 200 222 216 250Z" fill="#4E7B5E"/>
-          <path d="M203 318 C231 293 267 281 280 256 C252 271 221 285 203 318Z" fill="#4E7B5E"/>
-          <path d="M197 314 C163 291 124 280 108 255 C138 269 179 283 197 314Z" fill="#4E7B5E"/>
-          <path d="M181 383 C211 356 249 343 263 316 C233 332 199 348 181 383Z" fill="#4E7B5E"/>
-          <path d="M175 379 C138 354 97 342 80 315 C112 330 155 346 175 379Z" fill="#4E7B5E"/>
+          <path d="M280 8 C305 160 265 390 130 680" stroke="#4E7B5E" strokeWidth="3" strokeLinecap="round"/>
+          {/* Pair 1 */}
+          <path d="M285 70 C313 38 356 18 370 15 C356 28 313 56 285 70Z" fill="#4E7B5E"/>
+          <path d="M285 70 C257 38 214 18 200 15 C214 28 257 56 285 70Z" fill="#4E7B5E"/>
+          {/* Pair 2 */}
+          <path d="M285 150 C317 117 362 96 380 93 C362 108 314 130 285 150Z" fill="#4E7B5E"/>
+          <path d="M285 150 C253 117 208 96 190 93 C208 108 256 130 285 150Z" fill="#4E7B5E"/>
+          {/* Pair 3 */}
+          <path d="M279 230 C310 195 356 176 372 173 C356 188 308 212 279 230Z" fill="#4E7B5E"/>
+          <path d="M279 230 C248 195 202 176 186 173 C202 188 250 212 279 230Z" fill="#4E7B5E"/>
+          {/* Pair 4 */}
+          <path d="M268 310 C298 274 344 255 358 254 C344 267 296 292 268 310Z" fill="#4E7B5E"/>
+          <path d="M268 310 C238 274 192 255 178 254 C192 267 240 292 268 310Z" fill="#4E7B5E"/>
+          {/* Pair 5 */}
+          <path d="M253 390 C282 354 326 335 340 335 C326 347 280 372 253 390Z" fill="#4E7B5E"/>
+          <path d="M253 390 C224 354 180 335 166 335 C180 347 226 372 253 390Z" fill="#4E7B5E"/>
+          {/* Pair 6 */}
+          <path d="M233 470 C261 435 303 416 316 417 C303 430 260 452 233 470Z" fill="#4E7B5E"/>
+          <path d="M233 470 C205 435 163 416 150 417 C163 430 206 452 233 470Z" fill="#4E7B5E"/>
+          {/* Pair 7 */}
+          <path d="M210 550 C236 516 276 497 288 498 C276 512 235 533 210 550Z" fill="#4E7B5E"/>
+          <path d="M210 550 C184 516 144 497 132 498 C144 512 185 533 210 550Z" fill="#4E7B5E"/>
+          {/* Pair 8 */}
+          <path d="M182 630 C206 596 242 579 254 580 C242 594 204 614 182 630Z" fill="#4E7B5E"/>
+          <path d="M182 630 C158 596 122 579 110 580 C122 594 160 614 182 630Z" fill="#4E7B5E"/>
         </svg>
 
         {/* Botanical fern — bottom left, mirrored */}
         <svg
-          viewBox="0 0 320 520"
+          viewBox="0 0 300 500"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          style={{ position: 'absolute', bottom: '2rem', left: '-2rem', width: '200px', height: '325px', opacity: 0.07, pointerEvents: 'none', transform: 'scaleX(-1) rotate(-10deg)' }}
+          style={{ position: 'absolute', bottom: '2rem', left: '-3rem', width: '280px', height: '467px', opacity: 0.08, pointerEvents: 'none', transform: 'scaleX(-1) rotate(-15deg)' }}
         >
-          <path d="M260 0 C280 120 240 280 110 500" stroke="#4E7B5E" strokeWidth="2.5" strokeLinecap="round"/>
-          <path d="M250 123 C270 105 298 97 308 78 C287 90 264 100 250 123Z" fill="#4E7B5E"/>
-          <path d="M244 119 C220 103 190 97 177 78 C200 88 232 99 244 119Z" fill="#4E7B5E"/>
-          <path d="M238 188 C261 167 292 158 303 137 C280 150 254 162 238 188Z" fill="#4E7B5E"/>
-          <path d="M232 184 C204 165 172 157 158 136 C183 148 218 160 232 184Z" fill="#4E7B5E"/>
-          <path d="M222 254 C248 231 282 220 294 197 C268 211 240 224 222 254Z" fill="#4E7B5E"/>
-          <path d="M216 250 C185 229 149 220 134 197 C162 209 200 222 216 250Z" fill="#4E7B5E"/>
-          <path d="M203 318 C231 293 267 281 280 256 C252 271 221 285 203 318Z" fill="#4E7B5E"/>
-          <path d="M197 314 C163 291 124 280 108 255 C138 269 179 283 197 314Z" fill="#4E7B5E"/>
+          <path d="M220 10 C240 120 200 300 90 480" stroke="#4E7B5E" strokeWidth="2.5" strokeLinecap="round"/>
+          {/* Pair A */}
+          <path d="M225 60 C248 34 288 18 300 20 C288 32 247 50 225 60Z" fill="#4E7B5E"/>
+          <path d="M225 60 C202 34 162 18 150 20 C162 32 202 50 225 60Z" fill="#4E7B5E"/>
+          {/* Pair B */}
+          <path d="M225 130 C249 103 290 88 305 88 C290 100 248 118 225 130Z" fill="#4E7B5E"/>
+          <path d="M225 130 C201 103 160 88 145 88 C160 100 201 118 225 130Z" fill="#4E7B5E"/>
+          {/* Pair C */}
+          <path d="M218 200 C242 172 282 158 296 158 C282 170 241 190 218 200Z" fill="#4E7B5E"/>
+          <path d="M218 200 C194 172 154 158 140 158 C154 170 194 190 218 200Z" fill="#4E7B5E"/>
+          {/* Pair D */}
+          <path d="M206 270 C230 242 268 228 280 228 C268 240 229 260 206 270Z" fill="#4E7B5E"/>
+          <path d="M206 270 C182 242 144 228 132 228 C144 240 183 260 206 270Z" fill="#4E7B5E"/>
+          {/* Pair E */}
+          <path d="M188 340 C212 312 248 299 260 300 C248 312 211 330 188 340Z" fill="#4E7B5E"/>
+          <path d="M188 340 C164 312 128 299 116 300 C128 312 165 330 188 340Z" fill="#4E7B5E"/>
         </svg>
 
         <div className="container mx-auto px-6" style={{ position: 'relative', zIndex: 1, width: '100%' }}>
@@ -308,60 +327,60 @@ export default function Home() {
               <div style={{
                 background: 'white',
                 borderRadius: '2rem',
-                padding: '2rem',
+                padding: '2.5rem',
                 boxShadow: '0 16px 56px rgba(28,28,26,0.12), 0 4px 16px rgba(28,28,26,0.06)',
                 width: '100%',
-                maxWidth: '310px',
+                maxWidth: '390px',
                 border: '1.5px solid var(--border)',
               }}>
                 {/* Card header */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem', paddingBottom: '1.25rem', borderBottom: '1px solid var(--border)' }}>
-                  <LogoSvg size={40} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem', marginBottom: '1.75rem', paddingBottom: '1.5rem', borderBottom: '1px solid var(--border)' }}>
+                  <LogoSvg size={52} />
                   <div>
-                    <div style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text)', letterSpacing: '-0.01em' }}>Снова с собой</div>
-                    <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>Программа восстановления</div>
+                    <div style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--text)', letterSpacing: '-0.01em' }}>Снова с собой</div>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>Программа восстановления</div>
                   </div>
                 </div>
 
                 {/* Specs */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginBottom: '1.75rem' }}>
                   {[
                     { icon: '📅', text: '4 недели · 1 встреча в неделю' },
                     { icon: '👥', text: '8–12 человек в группе' },
                     { icon: '💬', text: 'Психолог + чат + задания' },
                     { icon: '📓', text: 'Дневник состояния + личный план' },
                   ].map(({ icon, text }) => (
-                    <div key={text} style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                      <span style={{ fontSize: '1rem', lineHeight: 1, width: '1.25rem', textAlign: 'center', flexShrink: 0 }}>{icon}</span>
+                    <div key={text} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.975rem', color: 'var(--text-muted)' }}>
+                      <span style={{ fontSize: '1.1rem', lineHeight: 1, width: '1.4rem', textAlign: 'center', flexShrink: 0 }}>{icon}</span>
                       {text}
                     </div>
                   ))}
                 </div>
 
                 {/* Route */}
-                <div style={{ background: 'var(--bg-sage)', borderRadius: '1rem', padding: '1.25rem', marginBottom: '1.25rem' }}>
-                  <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.875rem' }}>
+                <div style={{ background: 'var(--bg-sage)', borderRadius: '1rem', padding: '1.5rem', marginBottom: '1.5rem' }}>
+                  <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '1rem' }}>
                     Маршрут
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                     {[
                       { n: '1', t: 'Стабилизация', active: true },
                       { n: '2', t: 'Границы и отпускание', active: false },
                       { n: '3', t: 'Самооценка и режим', active: false },
                       { n: '4', t: 'Новый план', active: false },
                     ].map(({ n, t, active }) => (
-                      <div key={t} style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+                      <div key={t} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                         <div style={{
-                          width: '1.625rem', height: '1.625rem', borderRadius: '50%',
+                          width: '1.875rem', height: '1.875rem', borderRadius: '50%',
                           background: active ? 'var(--primary)' : 'var(--primary-light)',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: '0.65rem', fontWeight: 800,
+                          fontSize: '0.75rem', fontWeight: 800,
                           color: active ? 'white' : 'var(--primary)',
                           flexShrink: 0,
                         }}>
                           {n}
                         </div>
-                        <span style={{ fontSize: '0.83rem', color: active ? 'var(--text)' : 'var(--text-muted)', fontWeight: active ? 600 : 400 }}>
+                        <span style={{ fontSize: '0.95rem', color: active ? 'var(--text)' : 'var(--text-muted)', fontWeight: active ? 600 : 400 }}>
                           {t}
                         </span>
                       </div>
@@ -372,17 +391,17 @@ export default function Home() {
                 {/* Price CTA */}
                 <Link href="/checkout" style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '1rem 1.25rem',
+                  padding: '1.25rem 1.5rem',
                   background: 'var(--primary)',
                   borderRadius: '0.875rem',
                   color: 'white',
                   textDecoration: 'none',
                 }}>
                   <div>
-                    <div style={{ fontSize: '0.7rem', opacity: 0.8, marginBottom: '0.15rem' }}>Вводная встреча</div>
-                    <div style={{ fontWeight: 800, fontSize: '1.1rem' }}>1 490 ₽</div>
+                    <div style={{ fontSize: '0.85rem', opacity: 0.85, marginBottom: '0.2rem' }}>Вводная встреча</div>
+                    <div style={{ fontWeight: 800, fontSize: '1.35rem' }}>1 490 ₽</div>
                   </div>
-                  <div style={{ fontSize: '0.75rem', background: 'rgba(255,255,255,0.18)', padding: '0.35rem 0.875rem', borderRadius: '9999px', fontWeight: 600 }}>
+                  <div style={{ fontSize: '0.9rem', background: 'rgba(255,255,255,0.18)', padding: '0.45rem 1rem', borderRadius: '9999px', fontWeight: 600 }}>
                     Начать →
                   </div>
                 </Link>
