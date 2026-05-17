@@ -291,7 +291,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Quick links */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.875rem', marginBottom: tier === 'personal' ? '0' : '1.25rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.875rem', marginBottom: '1.25rem' }}>
         {[
           { href: '/dashboard/tasks', icon: CheckSquare, label: 'Задания', sub: `${completedTasks.length} выполнено` },
           { href: '/dashboard/journal', icon: PenLine, label: 'Дневник', sub: hasJournalToday ? 'Заполнен сегодня ✓' : 'Не заполнен сегодня' },
