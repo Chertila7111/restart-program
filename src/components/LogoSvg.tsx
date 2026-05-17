@@ -1,18 +1,13 @@
 export function LogoSvg({ size = 48, className = '' }: { size?: number; className?: string }) {
+  // eslint-disable-next-line @next/next/no-img-element
   return (
-    <div
-      role="img"
-      aria-label="Снова с собой"
+    <img
+      src="/logo-icon.png"
+      alt="Снова с собой"
+      width={size}
+      height={size}
+      style={{ width: size, height: size, display: 'block' }}
       className={className}
-      style={{
-        width: size,
-        height: size,
-        backgroundImage: 'url(/logo-icon.png)',
-        backgroundSize: 'contain',
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center',
-        flexShrink: 0,
-      }}
     />
   )
 }
