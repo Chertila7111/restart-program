@@ -210,6 +210,46 @@ export default function Home() {
           pointerEvents: 'none',
         }} />
 
+        {/* Botanical fern — top right */}
+        <svg
+          viewBox="0 0 320 520"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ position: 'absolute', top: '-1rem', right: '-3rem', width: '300px', height: '488px', opacity: 0.11, pointerEvents: 'none' }}
+        >
+          <path d="M260 0 C280 120 240 280 110 500" stroke="#4E7B5E" strokeWidth="2.5" strokeLinecap="round"/>
+          <path d="M256 58 C272 44 295 38 302 22 C285 32 264 40 256 58Z" fill="#4E7B5E"/>
+          <path d="M252 54 C232 42 204 38 193 22 C212 31 240 38 252 54Z" fill="#4E7B5E"/>
+          <path d="M250 123 C270 105 298 97 308 78 C287 90 264 100 250 123Z" fill="#4E7B5E"/>
+          <path d="M244 119 C220 103 190 97 177 78 C200 88 232 99 244 119Z" fill="#4E7B5E"/>
+          <path d="M238 188 C261 167 292 158 303 137 C280 150 254 162 238 188Z" fill="#4E7B5E"/>
+          <path d="M232 184 C204 165 172 157 158 136 C183 148 218 160 232 184Z" fill="#4E7B5E"/>
+          <path d="M222 254 C248 231 282 220 294 197 C268 211 240 224 222 254Z" fill="#4E7B5E"/>
+          <path d="M216 250 C185 229 149 220 134 197 C162 209 200 222 216 250Z" fill="#4E7B5E"/>
+          <path d="M203 318 C231 293 267 281 280 256 C252 271 221 285 203 318Z" fill="#4E7B5E"/>
+          <path d="M197 314 C163 291 124 280 108 255 C138 269 179 283 197 314Z" fill="#4E7B5E"/>
+          <path d="M181 383 C211 356 249 343 263 316 C233 332 199 348 181 383Z" fill="#4E7B5E"/>
+          <path d="M175 379 C138 354 97 342 80 315 C112 330 155 346 175 379Z" fill="#4E7B5E"/>
+        </svg>
+
+        {/* Botanical fern — bottom left, mirrored */}
+        <svg
+          viewBox="0 0 320 520"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ position: 'absolute', bottom: '2rem', left: '-2rem', width: '200px', height: '325px', opacity: 0.07, pointerEvents: 'none', transform: 'scaleX(-1) rotate(-10deg)' }}
+        >
+          <path d="M260 0 C280 120 240 280 110 500" stroke="#4E7B5E" strokeWidth="2.5" strokeLinecap="round"/>
+          <path d="M250 123 C270 105 298 97 308 78 C287 90 264 100 250 123Z" fill="#4E7B5E"/>
+          <path d="M244 119 C220 103 190 97 177 78 C200 88 232 99 244 119Z" fill="#4E7B5E"/>
+          <path d="M238 188 C261 167 292 158 303 137 C280 150 254 162 238 188Z" fill="#4E7B5E"/>
+          <path d="M232 184 C204 165 172 157 158 136 C183 148 218 160 232 184Z" fill="#4E7B5E"/>
+          <path d="M222 254 C248 231 282 220 294 197 C268 211 240 224 222 254Z" fill="#4E7B5E"/>
+          <path d="M216 250 C185 229 149 220 134 197 C162 209 200 222 216 250Z" fill="#4E7B5E"/>
+          <path d="M203 318 C231 293 267 281 280 256 C252 271 221 285 203 318Z" fill="#4E7B5E"/>
+          <path d="M197 314 C163 291 124 280 108 255 C138 269 179 283 197 314Z" fill="#4E7B5E"/>
+        </svg>
+
         <div className="container mx-auto px-6" style={{ position: 'relative', zIndex: 1, width: '100%' }}>
           <div className="grid-hero" style={{
             display: 'grid',
@@ -853,6 +893,72 @@ export default function Home() {
                 </Link>
               </div>
             ))}
+          </div>
+
+          {/* Individual packages teaser */}
+          <div style={{
+            maxWidth: '62rem', margin: '2.5rem auto 0',
+            background: 'var(--bg-soft)', borderRadius: '1.5rem',
+            border: '1.5px solid var(--border)', padding: '2rem 2.5rem',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '2rem', flexWrap: 'wrap' }}>
+              <div style={{ flex: 1, minWidth: '200px' }}>
+                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.5rem' }}>
+                  Индивидуальный формат
+                </div>
+                <h3 style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--text)', marginBottom: '0.5rem' }}>
+                  Хотите работать только один на один?
+                </h3>
+                <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', lineHeight: 1.7, margin: '0 0 1rem' }}>
+                  Индивидуальные пакеты с психологом — от 4 до 8 встреч по 45 минут. Без группы, в своём темпе.
+                </p>
+                <Link href="/pricing" style={{ fontSize: '0.875rem', color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>
+                  Смотреть индивидуальные пакеты →
+                </Link>
+              </div>
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'stretch' }}>
+                {[
+                  { name: 'Personal Start', price: '19 990 ₽', sessions: '4 встречи', highlight: false },
+                  { name: 'Personal Balance', price: '29 990 ₽', sessions: '6 встреч', highlight: true },
+                  { name: 'Personal Deep', price: '39 990 ₽', sessions: '8 встреч', highlight: false },
+                ].map(pkg => (
+                  <div key={pkg.name} style={{
+                    padding: '0.875rem 1.125rem',
+                    background: pkg.highlight ? 'var(--primary-light)' : 'white',
+                    border: pkg.highlight ? '1.5px solid var(--primary)' : '1.5px solid var(--border)',
+                    borderRadius: '1rem',
+                    textAlign: 'center',
+                    minWidth: '110px',
+                  }}>
+                    <div style={{ fontSize: '0.7rem', color: pkg.highlight ? 'var(--primary)' : 'var(--text-light)', marginBottom: '0.2rem' }}>
+                      {pkg.sessions}
+                    </div>
+                    <div style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text)', marginBottom: '0.2rem' }}>{pkg.name}</div>
+                    <div style={{ fontSize: '0.85rem', color: pkg.highlight ? 'var(--primary)' : 'var(--text)', fontWeight: 700 }}>{pkg.price}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Career track mention */}
+          <div style={{
+            maxWidth: '62rem', margin: '1rem auto 0',
+            background: 'var(--secondary-light)', borderRadius: '1rem',
+            padding: '1.25rem 2rem',
+            display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap',
+          }}>
+            <div style={{ flex: 1, minWidth: '200px' }}>
+              <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Career трек
+              </span>
+              <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', margin: '0.2rem 0 0', lineHeight: 1.6 }}>
+                Когда станет легче — помогаем с резюме, поиском работы и подготовкой к собеседованиям. Скидка 50% для участников программы.
+              </p>
+            </div>
+            <Link href="/pricing" style={{ fontSize: '0.875rem', color: 'var(--secondary)', fontWeight: 600, textDecoration: 'none', whiteSpace: 'nowrap', flexShrink: 0 }}>
+              Узнать подробнее →
+            </Link>
           </div>
 
           <p style={{ textAlign: 'center', marginTop: '2rem' }}>
