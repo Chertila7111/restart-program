@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { CheckCircle, Star } from 'lucide-react'
 import { OrganizationSchema, ServiceSchema, FaqSchema } from '@/components/JsonLd'
 import { FaqAccordion } from '@/components/FaqAccordion'
-import Image from 'next/image'
+import { LogoSvg } from '@/components/LogoSvg'
 
 export const metadata: Metadata = {
   title: 'Снова с собой — пережить расставание и снова почувствовать опору',
@@ -88,12 +88,12 @@ const careerCards = [
 
 const pricingPlans = [
   {
-    id: 'start',
-    name: 'Restart Base',
+    id: 'base',
+    name: 'Base',
     price: '14 990',
-    desc: 'Если нужна группа и понятная структура',
+    desc: 'Группа и структура. Для тех, кто хочет пройти программу вместе с другими.',
     features: [
-      '4 групповые встречи в Zoom',
+      '4 групповые встречи по 90 минут',
       'Чат с куратором в рабочее время',
       'Задания после каждой встречи',
       'Дневник восстановления',
@@ -104,32 +104,31 @@ const pricingPlans = [
   },
   {
     id: 'plus',
-    name: 'Restart Plus',
+    name: 'Plus',
     price: '19 990',
-    desc: 'Если хочется понять, что конкретно происходит',
+    desc: 'Base + личная диагностика и индивидуальный план восстановления.',
     features: [
       'Всё из Base',
       'Личная диагностика 30 минут',
       'Индивидуальный план восстановления',
-      'Персональные рекомендации',
-      'Скидка 50% на карьерный трек',
+      'Персональные рекомендации психолога',
     ],
     highlight: true,
     cta: 'Выбрать Plus',
   },
   {
-    id: 'personal',
-    name: 'Restart Personal',
+    id: 'plus-pro',
+    name: 'Plus Pro',
     price: '24 990',
-    desc: 'Если важно разобрать ситуацию глубже',
+    desc: 'Plus + 1 индивидуальная встреча с психологом и разбор дневника.',
     features: [
       'Всё из Plus',
-      '1 индивидуальная сессия с психологом',
-      'Расширенный план восстановления',
-      'Скидка 50% на карьерный трек',
+      '1 индивидуальная встреча с психологом (45 мин)',
+      'Разбор личной ситуации',
+      'Корректировка индивидуального плана',
     ],
     highlight: false,
-    cta: 'Выбрать Personal',
+    cta: 'Выбрать Plus Pro',
   },
 ]
 
@@ -277,7 +276,7 @@ export default function Home() {
               }}>
                 {/* Card header */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem', paddingBottom: '1.25rem', borderBottom: '1px solid var(--border)' }}>
-                  <Image src="/logo-icon.png" alt="Снова с собой" width={40} height={40} style={{ objectFit: 'contain', height: '2.5rem', width: 'auto', flexShrink: 0 }} />
+                  <LogoSvg size={40} />
                   <div>
                     <div style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text)', letterSpacing: '-0.01em' }}>Снова с собой</div>
                     <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>Программа восстановления</div>
@@ -577,7 +576,7 @@ export default function Home() {
                 {/* Sidebar */}
                 <div className="cabinet-sidebar" style={{ background: 'var(--bg-soft)', padding: '1.75rem 1.5rem', borderRight: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '1.75rem', paddingBottom: '1.25rem', borderBottom: '1px solid var(--border)' }}>
-                    <Image src="/logo-icon.png" alt="" width={32} height={32} style={{ objectFit: 'contain', height: '2rem', width: 'auto' }} />
+                    <LogoSvg size={32} />
                     <div>
                       <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text)' }}>Снова с собой</div>
                       <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Неделя 2 из 4</div>
@@ -922,7 +921,7 @@ export default function Home() {
       <section className="section" style={{ background: 'var(--bg-sage)' }}>
         <div className="container mx-auto px-6" style={{ textAlign: 'center', maxWidth: '44rem' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
-            <Image src="/logo-icon.png" alt="" width={96} height={96} style={{ objectFit: 'contain', height: '80px', width: 'auto' }} />
+            <LogoSvg size={80} />
           </div>
           <h2 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', fontWeight: 800, marginBottom: '1rem', color: 'var(--text)' }}>
             Не оставайтесь один на один с этим

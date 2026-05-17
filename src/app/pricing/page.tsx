@@ -4,17 +4,17 @@ import { CheckCircle, Clock, Users } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Тарифы и цены программы «Снова с собой»',
-  description: 'Тарифы программы «Снова с собой»: от вводной встречи за 1 490 ₽ до карьерного сопровождения. Выберите подходящий формат восстановления после расставания.',
+  description: 'Тарифы программы «Снова с собой»: от вводной встречи за 1 490 ₽ до индивидуальной работы с психологом. Выберите подходящий формат восстановления после расставания.',
 }
 
-const programPlans = [
+const groupPlans = [
   {
     id: 'base',
-    name: 'Базовый',
+    name: 'Base',
     price: 14990,
     badge: null as string | null,
     highlight: false,
-    desc: 'Групповая программа с психологом, заданиями и чатом куратора в рабочее время.',
+    desc: 'Группа и структура. Программа с психологом, заданиями и чатом куратора.',
     features: [
       '4 групповые встречи по 90 минут',
       'Группа 8–12 человек',
@@ -24,37 +24,96 @@ const programPlans = [
       'Записи всех встреч',
       'Материалы программы',
     ],
-    cta: 'Выбрать Базовый',
+    cta: 'Выбрать Base',
   },
   {
     id: 'plus',
-    name: 'Плюс',
+    name: 'Plus',
     price: 19990,
     badge: 'Чаще всего выбирают' as string | null,
     highlight: true,
-    desc: 'Всё из Базового — плюс личная диагностика и индивидуальный план восстановления.',
+    desc: 'Base + личная диагностика 30 минут + индивидуальный план восстановления.',
     features: [
-      'Всё из Базового',
+      'Всё из Base',
       'Личная диагностика (30 мин) перед началом',
       'Индивидуальный план восстановления',
       'Персональные рекомендации психолога',
       'Приоритетные вопросы в чате',
     ],
-    cta: 'Выбрать Плюс',
+    cta: 'Выбрать Plus',
   },
   {
-    id: 'personal',
-    name: 'Персональный',
+    id: 'plus-pro',
+    name: 'Plus Pro',
     price: 24990,
     badge: null as string | null,
     highlight: false,
-    desc: 'Всё из Плюс — плюс две индивидуальные встречи с психологом один на один.',
+    desc: 'Plus + 1 индивидуальная встреча с психологом 45 минут + разбор дневника.',
     features: [
-      'Всё из Плюс',
-      '2 индивидуальные встречи с психологом (45 мин)',
-      'Корректировка личного плана после встреч',
+      'Всё из Plus',
+      '1 индивидуальная встреча с психологом (45 мин)',
+      'Разбор личной ситуации',
+      'Корректировка индивидуального плана',
+      'Рекомендации после встречи',
     ],
-    cta: 'Выбрать Персональный',
+    cta: 'Выбрать Plus Pro',
+  },
+]
+
+const individualPlans = [
+  {
+    id: 'personal-start',
+    name: 'Personal Start',
+    price: 19990,
+    sessions: 4,
+    badge: null as string | null,
+    highlight: false,
+    desc: 'Для спокойного старта и первичного плана восстановления.',
+    features: [
+      '4 встречи по 45 минут',
+      'Диагностика состояния',
+      'Личный план',
+      'Задания после встреч',
+      'Дневник состояния',
+    ],
+    cta: 'Выбрать Start',
+  },
+  {
+    id: 'personal-balance',
+    name: 'Personal Balance',
+    price: 29990,
+    sessions: 6,
+    badge: 'Чаще всего выбирают' as string | null,
+    highlight: true,
+    desc: 'Для тех, кто хочет пройти восстановление глубже и без группы.',
+    features: [
+      '6 встреч по 45 минут',
+      'Работа с тревогой и откатами',
+      'Работа с самооценкой и границами',
+      'Личный план',
+      'Задания и дневник',
+      'Итоговые рекомендации',
+    ],
+    cta: 'Выбрать Balance',
+  },
+  {
+    id: 'personal-deep',
+    name: 'Personal Deep',
+    price: 39990,
+    sessions: 8,
+    badge: null as string | null,
+    highlight: false,
+    desc: 'Для более глубокой личной работы и сопровождения.',
+    features: [
+      '8 встреч по 45 минут',
+      'Расширенная диагностика',
+      'Работа с эмоциональной зависимостью',
+      'Корректировка плана',
+      'Задания и дневник',
+      'Итоговая встреча',
+      'Рекомендации на следующий месяц',
+    ],
+    cta: 'Выбрать Deep',
   },
 ]
 
@@ -174,10 +233,10 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* ── Шаг 02: Выберите программу ── */}
+      {/* ── Шаг 02: Групповые тарифы ── */}
       <section className="section" style={{ background: 'var(--bg-soft)' }}>
         <div className="container mx-auto px-6" style={{ maxWidth: '64rem' }}>
-          <ChapterLabel num="шаг 02" title="Выберите формат программы" />
+          <ChapterLabel num="шаг 02" title="Групповой формат" />
 
           <div style={{
             display: 'grid',
@@ -185,7 +244,7 @@ export default function PricingPage() {
             gap: '1.25rem',
             alignItems: 'stretch',
           }}>
-            {programPlans.map((plan) => (
+            {groupPlans.map((plan) => (
               <div
                 key={plan.id}
                 style={{
@@ -210,15 +269,13 @@ export default function PricingPage() {
                   </div>
                 )}
 
-                {/* Header */}
                 <div style={{ marginBottom: '1.25rem' }}>
                   <h3 style={{ fontWeight: 800, fontSize: '1.15rem', color: '#1C2B23', marginBottom: '0.2rem' }}>
                     {plan.name}
                   </h3>
-                  <p style={{ fontSize: '0.78rem', color: 'var(--text-light)' }}>4 недели</p>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-light)' }}>4 недели · группа</p>
                 </div>
 
-                {/* Price */}
                 <div style={{ marginBottom: '1rem' }}>
                   <span style={{
                     fontSize: '2.4rem', fontWeight: 900, lineHeight: 1,
@@ -230,12 +287,10 @@ export default function PricingPage() {
                   <span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 400 }}>₽</span>
                 </div>
 
-                {/* Desc */}
                 <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', lineHeight: 1.65, marginBottom: '1.5rem' }}>
                   {plan.desc}
                 </p>
 
-                {/* Features */}
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
                   {plan.features.map((f) => (
                     <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', fontSize: '0.875rem', color: '#1C2B23' }}>
@@ -245,7 +300,6 @@ export default function PricingPage() {
                   ))}
                 </ul>
 
-                {/* Button — pinned to bottom */}
                 <div style={{ marginTop: 'auto', paddingTop: '1.75rem' }}>
                   <Link
                     href={`/checkout?product=${plan.id}`}
@@ -265,10 +319,110 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* ── Шаг 03: Карьерный трек ── */}
+      {/* ── Шаг 03: Индивидуальный формат ── */}
       <section className="section" style={{ background: 'var(--bg)' }}>
         <div className="container mx-auto px-6" style={{ maxWidth: '64rem' }}>
-          <ChapterLabel num="шаг 03" title="Карьерный трек — когда будете готовы" />
+          <ChapterLabel num="шаг 03" title="Индивидуальный формат" />
+
+          <div style={{
+            background: 'white',
+            borderRadius: '1.5rem',
+            border: '1.5px solid var(--border)',
+            padding: 'clamp(1.5rem, 4vw, 2.5rem)',
+            marginBottom: '2rem',
+          }}>
+            <h3 style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--text)', marginBottom: '0.75rem' }}>
+              Хотите работать только один на один?
+            </h3>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.75, margin: 0, maxWidth: '52rem' }}>
+              Индивидуальный формат для тех, кому сейчас важнее личная работа один на один.
+              Если хочется глубже разобрать личную ситуацию, можно выбрать индивидуальный пакет с психологом.
+              Все встречи проходят онлайн. После каждой встречи вы получаете упражнения и рекомендации,
+              а в личном кабинете можете вести дневник состояния и отслеживать динамику.
+            </p>
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
+            gap: '1.25rem',
+            alignItems: 'stretch',
+          }}>
+            {individualPlans.map((plan) => (
+              <div
+                key={plan.id}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  background: plan.highlight ? 'var(--bg-sage)' : 'white',
+                  border: plan.highlight ? '2px solid var(--primary)' : '1.5px solid var(--border)',
+                  borderRadius: '1.5rem',
+                  padding: '2rem',
+                  position: 'relative',
+                  boxShadow: plan.highlight ? '0 8px 32px rgba(78,123,94,0.12)' : undefined,
+                }}
+              >
+                {plan.badge && (
+                  <div style={{
+                    position: 'absolute', top: '-0.875rem', left: '50%', transform: 'translateX(-50%)',
+                    padding: '0.375rem 1.25rem', borderRadius: '9999px',
+                    fontSize: '0.75rem', fontWeight: 700, color: 'white',
+                    background: 'var(--primary)', whiteSpace: 'nowrap',
+                  }}>
+                    {plan.badge}
+                  </div>
+                )}
+
+                <div style={{ marginBottom: '1.25rem' }}>
+                  <h3 style={{ fontWeight: 800, fontSize: '1.15rem', color: '#1C2B23', marginBottom: '0.2rem' }}>
+                    {plan.name}
+                  </h3>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-light)' }}>{plan.sessions} встречи · один на один</p>
+                </div>
+
+                <div style={{ marginBottom: '1rem' }}>
+                  <span style={{
+                    fontSize: '2.4rem', fontWeight: 900, lineHeight: 1,
+                    color: plan.highlight ? 'var(--primary)' : '#1C2B23',
+                  }}>
+                    {plan.price.toLocaleString('ru-RU')}
+                  </span>
+                  {' '}
+                  <span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 400 }}>₽</span>
+                </div>
+
+                <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', lineHeight: 1.65, marginBottom: '1.5rem' }}>
+                  {plan.desc}
+                </p>
+
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+                  {plan.features.map((f) => (
+                    <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', fontSize: '0.875rem', color: '#1C2B23' }}>
+                      <CheckCircle size={16} style={{ color: 'var(--primary)', flexShrink: 0, marginTop: '0.15rem' }} />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+
+                <div style={{ marginTop: 'auto', paddingTop: '1.75rem' }}>
+                  <Link
+                    href={`/checkout?product=${plan.id}`}
+                    className={plan.highlight ? 'btn-primary' : 'btn-secondary'}
+                    style={{ display: 'block', textAlign: 'center' }}
+                  >
+                    {plan.cta}
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Шаг 04: Карьерный трек ── */}
+      <section className="section" style={{ background: 'var(--bg-soft)' }}>
+        <div className="container mx-auto px-6" style={{ maxWidth: '64rem' }}>
+          <ChapterLabel num="шаг 04" title="Карьерный трек — когда будете готовы" />
 
           <div style={{ background: 'white', borderRadius: '1.5rem', border: '1.5px solid var(--border)', overflow: 'hidden' }}>
             {/* Top banner */}
@@ -330,10 +484,10 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* ── Шаг 04: FAQ ── */}
-      <section className="section" style={{ background: 'var(--bg-soft)' }}>
+      {/* ── Шаг 05: FAQ ── */}
+      <section className="section" style={{ background: 'var(--bg)' }}>
         <div className="container mx-auto px-6" style={{ maxWidth: '64rem' }}>
-          <ChapterLabel num="04" title="Вопросы об оплате" />
+          <ChapterLabel num="05" title="Вопросы об оплате" />
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1rem' }}>
             {[
