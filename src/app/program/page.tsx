@@ -4,8 +4,8 @@ import { CheckCircle } from 'lucide-react'
 import Image from 'next/image'
 
 export const metadata: Metadata = {
-  title: 'О программе Restart — как это работает',
-  description: 'Подробное описание программы Restart: 4 групповые встречи, чат с куратором, задания и дневник. Психолог, группа поддержки и карьерный трек.',
+  title: 'О программе «Снова с собой» — как это работает',
+  description: 'Подробное описание программы «Снова с собой»: 4 групповые встречи, чат с психологом, задания и дневник. Психолог, группа поддержки и карьерный трек.',
 }
 
 const programWeeks = [
@@ -92,7 +92,7 @@ export default function ProgramPage() {
               О программе
             </div>
             <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 800, color: 'var(--text)', marginBottom: '1.25rem', lineHeight: 1.2, letterSpacing: '-0.02em' }}>
-              Restart — не просто группа.<br />
+              «Снова с собой» — не просто группа.<br />
               <span style={{ color: 'var(--primary)' }}>Это маршрут с понятной структурой.</span>
             </h1>
             <p style={{ fontSize: '1.05rem', color: 'var(--text-muted)', lineHeight: 1.8, marginBottom: '2rem' }}>

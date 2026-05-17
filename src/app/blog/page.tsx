@@ -5,7 +5,7 @@ import { Clock, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 
 export const metadata: Metadata = {
-  title: 'Блог о расставаниях и восстановлении — Restart',
+  title: 'Блог о расставаниях и восстановлении — Снова с собой',
   description: 'Статьи психологов о том, как пережить расставание, вернуть уверенность в себе и начать новую жизнь после разрыва.',
 }
 

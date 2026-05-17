@@ -3,15 +3,15 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 export const metadata: Metadata = {
-  title: 'Истории участников — Restart',
-  description: 'Истории людей, прошедших программу Restart. Честные, спокойные, без чудес — о том, как постепенно возвращается опора после расставания.',
+  title: 'Истории участников — Снова с собой',
+  description: 'Истории людей, прошедших программу «Снова с собой». Честные, спокойные, без чудес — о том, как постепенно возвращается опора после расставания.',
 }
 
 const reviews = [
   {
     name: 'Аня',
     context: 'после 3 лет отношений',
-    product: 'Restart Plus',
+    product: 'Плюс',
     scoreBefore: 2,
     scoreAfter: 7,
     before: 'Два месяца не могла нормально работать и спать.',
@@ -23,7 +23,7 @@ const reviews = [
   {
     name: 'Михаил',
     context: 'после внезапного разрыва',
-    product: 'Restart Base',
+    product: 'Базовый',
     scoreBefore: 3,
     scoreAfter: 7,
     before: 'Сначала вообще не понимал, зачем мне группа. Казалось, что это "не моё".',
@@ -35,7 +35,7 @@ const reviews = [
   {
     name: 'Ольга',
     context: '8 месяцев — "само не проходило"',
-    product: 'Restart Base',
+    product: 'Базовый',
     scoreBefore: 3,
     scoreAfter: 8,
     before: 'Думала, что само пройдёт. Прошло 8 месяцев — не проходило.',
@@ -47,7 +47,7 @@ const reviews = [
   {
     name: 'Виктория',
     context: 'после длительных отношений',
-    product: 'Restart Plus',
+    product: 'Плюс',
     scoreBefore: 2,
     scoreAfter: 7,
     before: 'Боялась, что в группе будет неловко и странно.',
@@ -59,7 +59,7 @@ const reviews = [
   {
     name: 'Екатерина',
     context: 'расставание + потеря работы',
-    product: 'Restart Plus + Career',
+    product: 'Плюс + Карьера',
     scoreBefore: 1,
     scoreAfter: 8,
     before: 'После расставания просто перестала функционировать — пропустила сроки, потеряла работу.',
@@ -71,7 +71,7 @@ const reviews = [
   {
     name: 'Иван',
     context: 'после развода',
-    product: 'Career Restart',
+    product: 'Карьерный трек',
     scoreBefore: 3,
     scoreAfter: 7,
     before: 'После развода выпал из рабочего ритма на несколько месяцев.',

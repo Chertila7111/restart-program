@@ -6,7 +6,7 @@ import { FaqAccordion } from '@/components/FaqAccordion'
 import Image from 'next/image'
 
 export const metadata: Metadata = {
-  title: 'Restart — пережить расставание и снова почувствовать опору',
+  title: 'Снова с собой — пережить расставание и снова почувствовать опору',
   description:
     'Бережная 4-недельная онлайн-программа с психологом и небольшой группой. Эмоции, режим, самооценка, работа и новые цели — постепенно, без давления.',
 }
@@ -571,7 +571,7 @@ export default function Home() {
                     <div key={i} style={{ width: '0.6rem', height: '0.6rem', borderRadius: '50%', background: c }} />
                   ))}
                 </div>
-                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Личный кабинет · Restart</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Личный кабинет · Снова с собой</span>
               </div>
               <div className="grid-cabinet" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,2fr)', background: 'white' }}>
                 {/* Sidebar */}
@@ -733,7 +733,7 @@ export default function Home() {
                   <div style={{ width: '2.25rem', height: '2.25rem', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.875rem', fontWeight: 700, color: 'white', flexShrink: 0 }}>М</div>
                   <div>
                     <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text)' }}>Михаил</div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Restart Base · после внезапного разрыва</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Базовый тариф · после внезапного разрыва</div>
                   </div>
                 </div>
               </div>
