@@ -9,7 +9,7 @@ import {
   HelpCircle, Lock, LogOut, Users, Settings, Shield,
   ArrowLeft, Sparkles,
 } from 'lucide-react'
-import { LighthouseIcon } from '@/components/LighthouseIcon'
+import Image from 'next/image'
 
 export type Tier = 'none' | 'intro' | 'base' | 'plus' | 'personal'
 
@@ -108,9 +108,7 @@ export function DashboardShell({ user, tier, role = 'user', children }: Props) {
         {/* Brand + back to site */}
         <div style={{ padding: '1rem 1rem 0.75rem', borderBottom: '1px solid var(--border)' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', marginBottom: '0.625rem' }}>
-            <div style={{ width: '1.875rem', height: '1.875rem', borderRadius: '0.5rem', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <LighthouseIcon size={16} color="white" />
-            </div>
+            <Image src="/logo.png" alt="Снова с собой" width={28} height={28} style={{ objectFit: 'contain', flexShrink: 0 }} />
             <span style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--text)', letterSpacing: '-0.02em' }}>Снова с собой</span>
           </Link>
           <Link

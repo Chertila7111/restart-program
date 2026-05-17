@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
 import { Menu, X, LayoutDashboard } from 'lucide-react'
-import { LighthouseIcon } from './LighthouseIcon'
 import { useSession } from 'next-auth/react'
 
 const nav = [
@@ -33,15 +33,8 @@ export default function Header() {
         justifyContent: 'space-between', height: '4rem',
       }}>
         {/* Logo */}
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none' }}>
-          <div style={{
-            width: '2.25rem', height: '2.25rem', borderRadius: '0.6rem',
-            background: 'var(--primary)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 2px 8px rgba(78,123,94,0.3)',
-          }}>
-            <LighthouseIcon size={22} color="white" />
-          </div>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
+          <Image src="/logo.png" alt="Снова с собой" width={36} height={36} style={{ objectFit: 'contain' }} />
           <span style={{
             fontWeight: 800, fontSize: '1.05rem',
             color: 'var(--text)', letterSpacing: '-0.02em',

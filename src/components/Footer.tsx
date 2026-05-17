@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { LighthouseIcon } from './LighthouseIcon'
+import Image from 'next/image'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
@@ -12,13 +12,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', marginBottom: '1rem' }}>
-              <div style={{
-                width: '2.25rem', height: '2.25rem', borderRadius: '0.6rem',
-                background: 'var(--primary)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <LighthouseIcon size={22} color="white" />
-              </div>
+              <Image src="/logo.png" alt="Снова с собой" width={36} height={36} style={{ objectFit: 'contain' }} />
               <span style={{ fontWeight: 800, color: 'white', fontSize: '1.05rem' }}>Снова с собой</span>
             </Link>
             <p style={{ fontSize: '0.875rem', lineHeight: 1.7, color: '#8A9E88', maxWidth: '18rem' }}>
