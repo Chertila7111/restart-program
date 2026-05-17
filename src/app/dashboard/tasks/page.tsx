@@ -11,14 +11,15 @@ export default async function TasksPage() {
 
   let completions: { taskId: string; notes: string | null; createdAt: string }[] = []
   try {
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const user = await (prisma as any).user.findUnique({
+      where: { email: session.user.email! },
       include: { taskCompletions: { orderBy: { createdAt: 'desc' } } },
     })
-    completions = (user?.taskCompletions ?? []).map(c => ({
+    completions = ((user?.taskCompletions ?? []) as any[]).map(c => ({
       taskId: c.taskId,
-      notes: c.notes,
-      createdAt: c.createdAt.toISOString(),
+      notes: c.notes ?? null,
+      createdAt: c.createdAt instanceof Date ? c.createdAt.toISOString() : String(c.createdAt ?? ''),
     }))
   } catch { /* DB unavailable — show empty list */ }
 

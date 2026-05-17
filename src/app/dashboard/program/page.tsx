@@ -11,8 +11,9 @@ export default async function ProgramPage() {
 
   let taskCompletions: { taskId: string }[] = []
   try {
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const user = await (prisma as any).user.findUnique({
+      where: { email: session.user.email! },
       include: { taskCompletions: true },
     })
     taskCompletions = user?.taskCompletions ?? []

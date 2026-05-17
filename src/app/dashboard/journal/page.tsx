@@ -39,13 +39,14 @@ export default async function JournalPage() {
   const today = new Date().toISOString().split('T')[0]
   let entries: Entry[] = []
   let todayDaily: Entry | null = null
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let todayQuick: Entry | null = null
 
   try {
-    const user = await prisma.user.findUnique({ where: { email: session.user.email } })
+    const user = await prisma.user.findUnique({ where: { email: session.user.email! } })
     if (user) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const raw: any[] = await (prisma.journalEntry as any).findMany({
+      const raw: any[] = await (prisma as any).journalEntry.findMany({
         where: { userId: user.id },
         orderBy: { createdAt: 'desc' },
         take: 30,
@@ -53,19 +54,21 @@ export default async function JournalPage() {
       entries = raw.map(e => ({
         id: e.id,
         date: e.date,
-        type: e.type,
-        mood: e.mood,
-        anxiety: e.anxiety,
-        energy: e.energy,
-        triggers: e.triggers,
-        note: e.note,
-        situation: e.situation,
-        createdAt: e.createdAt.toISOString(),
+        type: e.type ?? 'daily',
+        mood: e.mood ?? 5,
+        anxiety: e.anxiety ?? 5,
+        energy: e.energy ?? 5,
+        triggers: e.triggers ?? null,
+        note: e.note ?? null,
+        situation: e.situation ?? null,
+        createdAt: e.createdAt instanceof Date
+          ? e.createdAt.toISOString()
+          : String(e.createdAt ?? new Date().toISOString()),
       }))
-      todayDaily = (entries as Entry[]).find(e => e.date === today && e.type === 'daily') ?? null
-      todayQuick = (entries as Entry[]).find(e => e.date === today && e.type === 'quick') ?? null
+      todayDaily = entries.find(e => e.date === today && e.type === 'daily') ?? null
+      todayQuick = entries.find(e => e.date === today && e.type === 'quick') ?? null
     }
-  } catch { /* DB unavailable */ }
+  } catch { /* DB unavailable — render with empty state */ }
 
   const last7 = entries.filter(e => e.type === 'daily').slice(0, 7).reverse()
   const avgMood = last7.length ? Math.round(last7.reduce((s, e) => s + e.mood, 0) / last7.length * 10) / 10 : null

@@ -77,8 +77,9 @@ export default async function PlanPage() {
 
   let orders: { id: string; product: string; status: string; productName: string; amount: number; createdAt: Date }[] = []
   try {
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const user = await (prisma as any).user.findUnique({
+      where: { email: session.user.email! },
       include: { orders: { orderBy: { createdAt: 'desc' } } },
     })
     orders = user?.orders ?? []
