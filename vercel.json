@@ -1,6 +1,11 @@
 {
   "framework": "nextjs",
   "buildCommand": "npx prisma generate && next build",
+  "build": {
+    "env": {
+      "DATABASE_URL": "file:/tmp/restart.db"
+    }
+  },
   "devCommand": "next dev",
   "installCommand": "npm install",
   "regions": ["fra1"],
