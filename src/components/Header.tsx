@@ -33,14 +33,8 @@ export default function Header() {
         justifyContent: 'space-between', height: '4rem',
       }}>
         {/* Logo */}
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
-          <Image src="/logo.png" alt="Снова с собой" width={36} height={36} style={{ objectFit: 'contain' }} />
-          <span style={{
-            fontWeight: 800, fontSize: '1.05rem',
-            color: 'var(--text)', letterSpacing: '-0.02em',
-          }}>
-            Снова с собой
-          </span>
+        <Link href="/" style={{ textDecoration: 'none' }}>
+          <Image src="/logo.png" alt="Снова с собой" width={110} height={110} style={{ objectFit: 'contain', display: 'block', height: '52px', width: 'auto' }} />
         </Link>
 
         {/* Desktop nav */}

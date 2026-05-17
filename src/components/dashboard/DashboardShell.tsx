@@ -107,9 +107,8 @@ export function DashboardShell({ user, tier, role = 'user', children }: Props) {
       <aside className="dashboard-sidebar">
         {/* Brand + back to site */}
         <div style={{ padding: '1rem 1rem 0.75rem', borderBottom: '1px solid var(--border)' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', marginBottom: '0.625rem' }}>
-            <Image src="/logo.png" alt="Снова с собой" width={28} height={28} style={{ objectFit: 'contain', flexShrink: 0 }} />
-            <span style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--text)', letterSpacing: '-0.02em' }}>Снова с собой</span>
+          <Link href="/" style={{ display: 'block', textDecoration: 'none', marginBottom: '0.625rem' }}>
+            <Image src="/logo.png" alt="Снова с собой" width={130} height={130} style={{ objectFit: 'contain', display: 'block', height: '56px', width: 'auto' }} />
           </Link>
           <Link
             href="/"
