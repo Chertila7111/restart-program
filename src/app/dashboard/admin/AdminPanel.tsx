@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Copy, UserCheck } from 'lucide-react'
+import { Copy, Database, RefreshCw } from 'lucide-react'
 
 type User = {
   id: string
@@ -35,9 +35,11 @@ function makeInviteLink(email: string, name: string, password: string) {
 export function AdminPanel({ users }: { users: User[] }) {
   const [search, setSearch] = useState('')
   const [roleFilter, setRoleFilter] = useState('all')
-  const [inviteForm, setInviteForm] = useState({ email: '', name: '', password: 'Restart2026', role: 'user' })
+  const [inviteForm, setInviteForm] = useState({ email: '', name: '', password: 'Snova2026', role: 'user' })
   const [inviteLink, setInviteLink] = useState('')
   const [roleUpdating, setRoleUpdating] = useState<string | null>(null)
+  const [dbStatus, setDbStatus] = useState<{ ok: boolean; userCount?: number; error?: string } | null>(null)
+  const [dbLoading, setDbLoading] = useState(false)
 
   const filtered = users.filter(u => {
     const q = search.toLowerCase()
@@ -70,8 +72,59 @@ export function AdminPanel({ users }: { users: User[] }) {
     }
   }
 
+  async function initDb() {
+    setDbLoading(true)
+    setDbStatus(null)
+    try {
+      const res = await fetch('/api/admin/init-db', { method: 'POST' })
+      const data = await res.json()
+      if (res.ok) setDbStatus({ ok: true, userCount: data.userCount })
+      else setDbStatus({ ok: false, error: data.error })
+    } catch (e: any) {
+      setDbStatus({ ok: false, error: e.message })
+    } finally {
+      setDbLoading(false)
+    }
+  }
+
   return (
     <div>
+      {/* DB init */}
+      <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem', background: '#0D1117', border: 'none' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+              <Database size={15} style={{ color: '#4ADE80' }} />
+              <span style={{ fontWeight: 700, fontSize: '0.9rem', color: 'white' }}>База данных</span>
+            </div>
+            <p style={{ fontSize: '0.78rem', color: 'rgba(168,184,160,0.7)', margin: 0, lineHeight: 1.5 }}>
+              Инициализирует все таблицы и создаёт аккаунт психолога (doctor@snova-s-soboy.ru).
+              Безопасно вызывать повторно — использует IF NOT EXISTS.
+            </p>
+          </div>
+          <button
+            onClick={initDb}
+            disabled={dbLoading}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0,
+              background: '#4ADE80', color: '#0D1117', border: 'none', borderRadius: '0.625rem',
+              padding: '0.625rem 1.25rem', fontWeight: 700, fontSize: '0.875rem', cursor: 'pointer',
+            }}
+          >
+            <RefreshCw size={14} style={{ animation: dbLoading ? 'spin 1s linear infinite' : 'none' }} />
+            {dbLoading ? 'Инициализация…' : 'Инициализировать БД'}
+          </button>
+        </div>
+        {dbStatus && (
+          <div style={{ marginTop: '0.875rem', padding: '0.75rem', borderRadius: '0.5rem', background: dbStatus.ok ? '#052e16' : '#450a0a' }}>
+            {dbStatus.ok
+              ? <span style={{ fontSize: '0.8rem', color: '#4ADE80' }}>✓ Готово. Пользователей в БД: {dbStatus.userCount}</span>
+              : <span style={{ fontSize: '0.8rem', color: '#FC8181' }}>✗ Ошибка: {dbStatus.error}</span>
+            }
+          </div>
+        )}
+      </div>
+
       {/* Invite generator */}
       <div className="card" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
         <h2 style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text)', marginBottom: '1.25rem' }}>

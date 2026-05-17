@@ -10,30 +10,30 @@ const inter = Inter({ subsets: ['latin', 'cyrillic'], variable: '--font-inter' }
 
 export const metadata: Metadata = {
   title: {
-    default: 'Restart — восстановление после расставания',
-    template: '%s | Restart',
+    default: 'Снова с собой — восстановление после расставания',
+    template: '%s | Снова с собой',
   },
   description:
-    'Программа восстановления и нового старта после расставания. Психолог, группа поддержки, задания и карьерный трек.',
+    'Программа восстановления после расставания «Снова с собой». Психолог, группа поддержки, задания и карьерный трек.',
   keywords: [
     'как пережить расставание',
     'после расставания',
     'группа поддержки',
     'психолог онлайн',
     'восстановление после разрыва',
-    'restart программа',
+    'снова с собой программа',
   ],
-  authors: [{ name: 'Restart' }],
-  creator: 'Restart',
+  authors: [{ name: 'Снова с собой' }],
+  creator: 'Снова с собой',
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://restart-program.ru'),
   openGraph: {
     type: 'website',
     locale: 'ru_RU',
     url: 'https://restart-program.ru',
-    siteName: 'Restart',
-    title: 'Restart — восстановление после расставания',
+    siteName: 'Снова с собой',
+    title: 'Снова с собой — восстановление после расставания',
     description:
-      'Программа восстановления и нового старта после расставания. Психолог, группа поддержки и практический план.',
+      'Программа восстановления после расставания. Психолог, группа поддержки и практический план.',
   },
   robots: {
     index: true,

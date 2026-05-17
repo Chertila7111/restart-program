@@ -24,7 +24,7 @@ export default function HelpPage() {
         <div className="card" style={{ padding: '1.25rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <span style={{ fontSize: '1.5rem', flexShrink: 0 }}>💬</span>
           <div>
-            <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text)', marginBottom: '0.2rem' }}>Чат с куратором</div>
+            <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text)', marginBottom: '0.2rem' }}>Написать психологу</div>
             <Link href="/dashboard/chats" style={{ fontSize: '0.825rem', color: 'var(--primary)', textDecoration: 'none', fontWeight: 500 }}>
               Открыть чат →
             </Link>

@@ -3,14 +3,14 @@ import Link from 'next/link'
 import { CheckCircle, Clock, Users } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Тарифы и цены программы Restart',
-  description: 'Тарифы программы Restart: от вводной встречи за 1 490 ₽ до карьерного сопровождения. Выберите подходящий формат восстановления после расставания.',
+  title: 'Тарифы и цены программы «Снова с собой»',
+  description: 'Тарифы программы «Снова с собой»: от вводной встречи за 1 490 ₽ до карьерного сопровождения. Выберите подходящий формат восстановления после расставания.',
 }
 
 const programPlans = [
   {
     id: 'base',
-    name: 'Restart Base',
+    name: 'Базовый',
     price: 14990,
     badge: null as string | null,
     highlight: false,
@@ -24,37 +24,37 @@ const programPlans = [
       'Записи всех встреч',
       'Материалы программы',
     ],
-    cta: 'Выбрать Base',
+    cta: 'Выбрать Базовый',
   },
   {
     id: 'plus',
-    name: 'Restart Plus',
+    name: 'Плюс',
     price: 19990,
     badge: 'Чаще всего выбирают' as string | null,
     highlight: true,
-    desc: 'Всё из Base — плюс личная диагностика и индивидуальный план восстановления.',
+    desc: 'Всё из Базового — плюс личная диагностика и индивидуальный план восстановления.',
     features: [
-      'Всё из Restart Base',
+      'Всё из Базового',
       'Личная диагностика (30 мин) перед началом',
       'Индивидуальный план восстановления',
       'Персональные рекомендации психолога',
       'Приоритетные вопросы в чате',
     ],
-    cta: 'Выбрать Plus',
+    cta: 'Выбрать Плюс',
   },
   {
     id: 'personal',
-    name: 'Restart Personal',
+    name: 'Персональный',
     price: 24990,
     badge: null as string | null,
     highlight: false,
-    desc: 'Всё из Plus — плюс две индивидуальные встречи с психологом один на один.',
+    desc: 'Всё из Плюс — плюс две индивидуальные встречи с психологом один на один.',
     features: [
-      'Всё из Restart Plus',
+      'Всё из Плюс',
       '2 индивидуальные встречи с психологом (45 мин)',
       'Корректировка личного плана после встреч',
     ],
-    cta: 'Выбрать Personal',
+    cta: 'Выбрать Персональный',
   },
 ]
 
@@ -298,7 +298,7 @@ export default function PricingPage() {
                 </div>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
                   <span style={{ textDecoration: 'line-through' }}>29 990 ₽</span>
-                  {' '}— скидка 50% для участников Restart
+                  {' '}— скидка 50% для участников программы
                 </p>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.7, marginBottom: '1.5rem' }}>
                   Помогаем с резюме, вакансиями, откликами и подготовкой к собеседованиям. Мы не обещаем работу — результат зависит от рынка и вашей активности.

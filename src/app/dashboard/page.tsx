@@ -66,7 +66,7 @@ export default async function DashboardPage() {
         <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text)', marginBottom: '0.25rem' }}>
           Добро пожаловать, {firstName}
         </h1>
-        <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Кабинет психолога / куратора</p>
+        <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Кабинет психолога</p>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
           {[
@@ -86,9 +86,9 @@ export default async function DashboardPage() {
         </div>
 
         <div className="card" style={{ padding: '1.25rem', background: 'var(--bg-sage)', border: '1px solid var(--primary-light)' }}>
-          <div style={{ fontWeight: 600, fontSize: '0.875rem', color: 'var(--primary-dark)', marginBottom: '0.25rem' }}>Функционал куратора</div>
+          <div style={{ fontWeight: 600, fontSize: '0.875rem', color: 'var(--primary-dark)', marginBottom: '0.25rem' }}>Кабинет психолога</div>
           <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.6 }}>
-            Вы видите записи дневника участников, которые поделились с куратором. Отвечайте в чате от своего аккаунта. Заполните профиль — участники увидят его в разделе «Психолог».
+            Вы видите записи дневника участников, которые поделились с вами. Отвечайте в чате от своего аккаунта. Заполните профиль — участники увидят его в разделе «Психолог».
           </p>
         </div>
       </div>
@@ -216,7 +216,7 @@ export default async function DashboardPage() {
         <div style={{ background: 'var(--bg-dark)', borderRadius: '1.25rem', padding: '1.5rem' }}>
           <h3 style={{ color: 'white', fontWeight: 700, fontSize: '1rem', marginBottom: '0.5rem' }}>Хотите полную программу?</h3>
           <p style={{ color: 'rgba(168,184,160,0.85)', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '1.25rem' }}>
-            Стоимость вводной встречи засчитывается при покупке. 4 встречи, дневник, задания и чат с куратором.
+            Стоимость вводной встречи засчитывается при покупке. 4 встречи, дневник, задания и поддержка психолога.
           </p>
           <Link href="/pricing" className="btn-ghost-dark" style={{ fontSize: '0.875rem', padding: '0.625rem 1.25rem' }}>
             Выбрать тариф →
@@ -291,11 +291,11 @@ export default async function DashboardPage() {
       </div>
 
       {/* Quick links */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.875rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.875rem', marginBottom: tier === 'personal' ? '0' : '1.25rem' }}>
         {[
           { href: '/dashboard/tasks', icon: CheckSquare, label: 'Задания', sub: `${completedTasks.length} выполнено` },
           { href: '/dashboard/journal', icon: PenLine, label: 'Дневник', sub: hasJournalToday ? 'Заполнен сегодня ✓' : 'Не заполнен сегодня' },
-          { href: '/dashboard/chats', icon: Sparkles, label: 'Чат с куратором', sub: 'Рабочее время' },
+          { href: '/dashboard/chats', icon: Sparkles, label: 'Сообщения', sub: 'Рабочее время' },
           { href: '/dashboard/program', icon: BookOpen, label: 'Программа', sub: `Неделя ${currentWeek} из 4` },
         ].map((item) => {
           const Icon = item.icon
@@ -312,6 +312,82 @@ export default async function DashboardPage() {
           )
         })}
       </div>
+
+      {/* Upsell: Base → Plus */}
+      {tier === 'base' && (
+        <Link href="/checkout?product=plus" style={{ textDecoration: 'none', display: 'block' }}>
+          <div style={{
+            borderRadius: '1rem', padding: '1.25rem 1.5rem',
+            background: 'linear-gradient(135deg, #FFF7F0, #FEF3C7)',
+            border: '1.5px solid #F59E0B33',
+            display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap',
+          }}>
+            <div style={{ flex: 1, minWidth: '12rem' }}>
+              <div style={{ fontWeight: 700, fontSize: '0.875rem', color: '#92400E', marginBottom: '0.2rem' }}>
+                ✨ Хотите личную диагностику?
+              </div>
+              <div style={{ fontSize: '0.78rem', color: '#78350F', lineHeight: 1.5 }}>
+                Тариф <strong>Плюс</strong> — добавьте 30-минутную диагностику + индивидуальный план от психолога.
+              </div>
+            </div>
+            <div style={{ textAlign: 'right', flexShrink: 0 }}>
+              <div style={{ fontSize: '1rem', fontWeight: 800, color: '#92400E' }}>19 990 ₽</div>
+              <div style={{ fontSize: '0.72rem', color: '#78350F', display: 'flex', alignItems: 'center', gap: '0.25rem', justifyContent: 'flex-end' }}>
+                Узнать больше <ArrowRight size={11} />
+              </div>
+            </div>
+          </div>
+        </Link>
+      )}
+
+      {/* Upsell: Plus → Personal */}
+      {tier === 'plus' && (
+        <Link href="/checkout?product=personal" style={{ textDecoration: 'none', display: 'block' }}>
+          <div style={{
+            borderRadius: '1rem', padding: '1.25rem 1.5rem',
+            background: 'linear-gradient(135deg, var(--primary-light), #FFE4E1)',
+            border: '1.5px solid var(--primary-light)',
+            display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap',
+          }}>
+            <div style={{ flex: 1, minWidth: '12rem' }}>
+              <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--primary-dark)', marginBottom: '0.2rem' }}>
+                💎 Хотите встречи с психологом?
+              </div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                Тариф <strong>Персональный</strong> — 2 индивидуальные встречи по 45 минут включены.
+              </div>
+            </div>
+            <div style={{ textAlign: 'right', flexShrink: 0 }}>
+              <div style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--primary)' }}>24 990 ₽</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.25rem', justifyContent: 'flex-end' }}>
+                Улучшить тариф <ArrowRight size={11} />
+              </div>
+            </div>
+          </div>
+        </Link>
+      )}
+
+      {/* Personal: quick book session */}
+      {tier === 'personal' && (
+        <Link href="/dashboard/psychologist" style={{ textDecoration: 'none', display: 'block' }}>
+          <div style={{
+            borderRadius: '1rem', padding: '1rem 1.25rem',
+            background: 'var(--bg-sage)', border: '1px solid var(--primary-light)',
+            display: 'flex', alignItems: 'center', gap: '0.875rem',
+          }}>
+            <div style={{ width: '2.25rem', height: '2.25rem', borderRadius: '0.625rem', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Sparkles size={14} color="white" />
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 700, fontSize: '0.825rem', color: 'var(--text)', marginBottom: '0.15rem' }}>
+                Записаться на встречу с психологом
+              </div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>2 встречи включены в ваш тариф</div>
+            </div>
+            <ArrowRight size={15} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+          </div>
+        </Link>
+      )}
     </div>
   )
 }

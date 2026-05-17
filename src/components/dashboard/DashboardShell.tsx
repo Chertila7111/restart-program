@@ -7,6 +7,7 @@ import {
   LayoutDashboard, BookOpen, PenLine, CheckSquare,
   Calendar, MessageCircle, Video, User, CreditCard,
   HelpCircle, Lock, LogOut, Users, Settings, Shield,
+  ArrowLeft, Sparkles,
 } from 'lucide-react'
 import { LighthouseIcon } from '@/components/LighthouseIcon'
 
@@ -54,6 +55,13 @@ const TIER_LABEL: Record<Tier, string> = {
   personal: 'Персональный',
 }
 
+const UPSELL: Record<string, { text: string; sub: string; href: string }> = {
+  none:  { text: '🌱 Начать программу',           sub: 'Вводная встреча — 1 490 ₽', href: '/checkout?product=intro' },
+  intro: { text: '⬆️ Полная программа',            sub: 'Групповые встречи от 14 990 ₽', href: '/pricing' },
+  base:  { text: '✨ Плюс: личная диагностика',    sub: 'Индивидуальный план — 19 990 ₽', href: '/checkout?product=plus' },
+  plus:  { text: '💎 Персональный: 2 встречи',     sub: '1-на-1 с психологом — 24 990 ₽', href: '/checkout?product=personal' },
+}
+
 type Props = {
   user: { name: string | null; email: string }
   tier: Tier
@@ -91,17 +99,31 @@ export function DashboardShell({ user, tier, role = 'user', children }: Props) {
   const roleLabel = isAdmin ? 'Администратор' : isPsychologist ? 'Психолог' : TIER_LABEL[tier]
   const avatarBg = isAdmin ? '#1C2B23' : isPsychologist ? '#3D6249' : 'var(--primary)'
 
+  const upsell = !isPsychologist && !isAdmin ? UPSELL[tier] : null
+
   return (
     <div className="dashboard-layout">
       {/* ── Desktop sidebar ── */}
       <aside className="dashboard-sidebar">
-        {/* Brand */}
-        <div style={{ padding: '1.25rem 1rem 1rem', borderBottom: '1px solid var(--border)' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
+        {/* Brand + back to site */}
+        <div style={{ padding: '1rem 1rem 0.75rem', borderBottom: '1px solid var(--border)' }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', marginBottom: '0.625rem' }}>
             <div style={{ width: '1.875rem', height: '1.875rem', borderRadius: '0.5rem', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <LighthouseIcon size={16} color="white" />
             </div>
-            <span style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--text)', letterSpacing: '-0.02em' }}>Restart</span>
+            <span style={{ fontWeight: 800, fontSize: '0.9rem', color: 'var(--text)', letterSpacing: '-0.02em' }}>Снова с собой</span>
+          </Link>
+          <Link
+            href="/"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.3rem',
+              fontSize: '0.72rem', color: 'var(--text-light)', textDecoration: 'none',
+              padding: '0.2rem 0.5rem', borderRadius: '0.4rem',
+              background: 'var(--bg-soft)', transition: 'color 0.15s',
+            }}
+          >
+            <ArrowLeft size={10} />
+            На сайт
           </Link>
         </div>
 
@@ -146,8 +168,32 @@ export function DashboardShell({ user, tier, role = 'user', children }: Props) {
           })}
         </nav>
 
+        {/* Upsell banner */}
+        {upsell && (
+          <div style={{ padding: '0.75rem', borderTop: '1px solid var(--border)' }}>
+            <Link
+              href={upsell.href}
+              style={{
+                display: 'block', textDecoration: 'none',
+                background: 'linear-gradient(135deg, var(--primary-light), #FFF7F0)',
+                borderRadius: '0.75rem',
+                padding: '0.75rem 0.875rem',
+                border: '1px solid var(--primary-light)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', marginBottom: '0.25rem' }}>
+                <Sparkles size={11} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary-dark)' }}>
+                  {upsell.text}
+                </span>
+              </div>
+              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>{upsell.sub}</div>
+            </Link>
+          </div>
+        )}
+
         {/* Sign out */}
-        <div style={{ padding: '0.75rem', borderTop: '1px solid var(--border)' }}>
+        <div style={{ padding: '0.75rem', borderTop: upsell ? 'none' : '1px solid var(--border)' }}>
           <button onClick={() => signOut({ callbackUrl: '/' })} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', padding: '0.5rem 0.625rem', borderRadius: '0.625rem', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-light)', fontSize: '0.8rem', textAlign: 'left' }}>
             <LogOut size={14} /> Выйти
           </button>

@@ -2,8 +2,9 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, LayoutDashboard } from 'lucide-react'
 import { LighthouseIcon } from './LighthouseIcon'
+import { useSession } from 'next-auth/react'
 
 const nav = [
   { href: '/program', label: 'Программа' },
@@ -16,6 +17,8 @@ const nav = [
 
 export default function Header() {
   const [open, setOpen] = useState(false)
+  const { data: session } = useSession()
+  const isLoggedIn = !!session?.user
 
   return (
     <header style={{
@@ -40,10 +43,10 @@ export default function Header() {
             <LighthouseIcon size={22} color="white" />
           </div>
           <span style={{
-            fontWeight: 800, fontSize: '1.1rem',
+            fontWeight: 800, fontSize: '1.05rem',
             color: 'var(--text)', letterSpacing: '-0.02em',
           }}>
-            Restart
+            Снова с собой
           </span>
         </Link>
 
@@ -66,19 +69,38 @@ export default function Header() {
         </nav>
 
         {/* CTA */}
-        <div className="hidden md:flex items-center gap-4">
-          <Link
-            href="/auth/login"
-            style={{
-              fontSize: '0.875rem', fontWeight: 500,
-              color: 'var(--text-muted)', textDecoration: 'none',
-            }}
-          >
-            Войти
-          </Link>
-          <Link href="/quiz" className="btn-primary" style={{ padding: '0.5rem 1.25rem', fontSize: '0.875rem' }}>
-            Пройти тест
-          </Link>
+        <div className="hidden md:flex items-center gap-3">
+          {isLoggedIn ? (
+            <Link
+              href="/dashboard"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                fontSize: '0.875rem', fontWeight: 600,
+                color: 'var(--primary-dark)', textDecoration: 'none',
+                background: 'var(--primary-light)',
+                padding: '0.45rem 1rem', borderRadius: '0.625rem',
+                transition: 'opacity 0.2s',
+              }}
+            >
+              <LayoutDashboard size={14} />
+              Мой кабинет
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/auth/login"
+                style={{
+                  fontSize: '0.875rem', fontWeight: 500,
+                  color: 'var(--text-muted)', textDecoration: 'none',
+                }}
+              >
+                Войти
+              </Link>
+              <Link href="/quiz" className="btn-primary" style={{ padding: '0.5rem 1.25rem', fontSize: '0.875rem' }}>
+                Пройти тест
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile burger */}
@@ -119,16 +141,29 @@ export default function Header() {
               </Link>
             ))}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', paddingTop: '1.25rem' }}>
-              <Link
-                href="/auth/login"
-                style={{ textAlign: 'center', fontSize: '0.9rem', color: 'var(--text-muted)', textDecoration: 'none' }}
-                onClick={() => setOpen(false)}
-              >
-                Войти
-              </Link>
-              <Link href="/quiz" className="btn-primary" style={{ textAlign: 'center', fontSize: '0.9rem' }} onClick={() => setOpen(false)}>
-                Пройти тест
-              </Link>
+              {isLoggedIn ? (
+                <Link
+                  href="/dashboard"
+                  className="btn-primary"
+                  style={{ textAlign: 'center', fontSize: '0.9rem' }}
+                  onClick={() => setOpen(false)}
+                >
+                  Мой кабинет →
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/auth/login"
+                    style={{ textAlign: 'center', fontSize: '0.9rem', color: 'var(--text-muted)', textDecoration: 'none' }}
+                    onClick={() => setOpen(false)}
+                  >
+                    Войти
+                  </Link>
+                  <Link href="/quiz" className="btn-primary" style={{ textAlign: 'center', fontSize: '0.9rem' }} onClick={() => setOpen(false)}>
+                    Пройти тест
+                  </Link>
+                </>
+              )}
             </div>
           </nav>
         </div>

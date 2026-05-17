@@ -19,7 +19,7 @@ export default function Footer() {
               }}>
                 <LighthouseIcon size={22} color="white" />
               </div>
-              <span style={{ fontWeight: 800, color: 'white', fontSize: '1.1rem' }}>Restart</span>
+              <span style={{ fontWeight: 800, color: 'white', fontSize: '1.05rem' }}>Снова с собой</span>
             </Link>
             <p style={{ fontSize: '0.875rem', lineHeight: 1.7, color: '#8A9E88', maxWidth: '18rem' }}>
               Бережная программа восстановления после расставания. Психолог, небольшая группа, понятный маршрут.
@@ -106,7 +106,7 @@ export default function Footer() {
           textAlign: 'center',
         }}>
           <p style={{ fontSize: '0.875rem', color: '#5A6E58' }}>
-            © {currentYear} Restart. Все права защищены.
+            © {currentYear} Снова с собой. Все права защищены.
           </p>
           <p style={{ fontSize: '0.8rem', color: '#4A5E48', maxWidth: '44rem', lineHeight: 1.7 }}>
             Программа не является медицинской услугой и не заменяет психотерапию или медицинскую помощь. Если вам нужна кризисная или медицинская поддержка — пожалуйста, обратитесь к специалисту.
