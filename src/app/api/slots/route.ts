@@ -23,7 +23,8 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
-  const role = (session?.user as any)?.role
+  const userId = (session?.user as any)?.id as string
+  const role = (session?.user as any)?.role as string
   if (role !== 'admin' && role !== 'psychologist') {
     return NextResponse.json({ error: 'forbidden' }, { status: 403 })
   }
@@ -36,7 +37,8 @@ export async function POST(req: NextRequest) {
     if (!startAt) return NextResponse.json({ error: 'startAt required' }, { status: 400 })
 
     const slotId = `slot-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
-    const doctorId = 'doctor-maria-sokolova'
+    // admin uses doctor account; psychologist uses their own id
+    const doctorId = role === 'psychologist' ? userId : 'doctor-maria-sokolova'
     const dur = durationMin ?? 45
     const noteSafe = (note ?? '').replace(/'/g, "''")
     const startDate = new Date(startAt).toISOString()

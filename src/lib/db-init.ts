@@ -198,8 +198,36 @@ async function _init() {
   )`)
   await sql(`CREATE UNIQUE INDEX IF NOT EXISTS "Booking_slotId_key" ON "Booking"("slotId")`)
 
-  // ── Seed doctor account ──
+  // ── Seed accounts ──
   await seedDoctor()
+  await seedTestUser()
+}
+
+async function seedTestUser() {
+  const email = 'test@snova-s-soboy.ru'
+  try {
+    const existing = await (prisma as any).user.findUnique({ where: { email } })
+    if (existing) return
+
+    const { hash } = require('bcryptjs')
+    const passwordHash = await hash('Test2026!', 10)
+
+    const user = await (prisma as any).user.create({
+      data: {
+        id: 'test-user-anna',
+        email,
+        name: 'Анна (тест)',
+        passwordHash,
+        role: 'user',
+      },
+    })
+
+    // Give test user "personal" order so they have full access
+    await (prisma as any).$executeRawUnsafe(`
+      INSERT INTO "Order" ("id","userId","email","name","product","productName","amount","status","createdAt","updatedAt")
+      VALUES ('order-test-personal', '${user.id}', '${email}', 'Анна (тест)', 'personal', 'Персональный', 24990, 'paid', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    `)
+  } catch { /* ignore */ }
 }
 
 async function seedDoctor() {
