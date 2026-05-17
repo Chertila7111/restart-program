@@ -380,7 +380,7 @@ input:focus, textarea:focus, select:focus {
 .dashboard-layout {
   display: grid;
   grid-template-columns: 220px 1fr;
-  min-height: calc(100vh - 4rem);
+  min-height: 100vh;
 }
 
 .dashboard-sidebar {
@@ -389,8 +389,8 @@ input:focus, textarea:focus, select:focus {
   border-right: 1px solid var(--border);
   background: white;
   position: sticky;
-  top: 4rem;
-  height: calc(100vh - 4rem);
+  top: 0;
+  height: 100vh;
   overflow-y: auto;
 }
 

@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PrismaClient } from '@prisma/client'
-
 declare const globalThis: any
 
-function createClient(): PrismaClient {
+function createClient(): any {
+  // All requires inside try-catch so any import failure is caught at module level
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { PrismaClient } = require('@prisma/client')
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { PrismaLibSql } = require('@prisma/adapter-libsql')
   // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -17,14 +18,14 @@ function createClient(): PrismaClient {
   return new PrismaClient({ adapter })
 }
 
-function getClient(): PrismaClient {
+function getClient(): any {
   if (globalThis.__prisma) return globalThis.__prisma
   try {
     globalThis.__prisma = createClient()
   } catch (err) {
     console.error('[prisma] init failed:', err)
-    // Proxy that rejects on every query — page try-catch blocks handle it
-    globalThis.__prisma = new Proxy({} as PrismaClient, {
+    // Proxy that rejects on every query — caught by page-level try-catch blocks
+    globalThis.__prisma = new Proxy({}, {
       get: () => new Proxy({}, {
         get: () => () => Promise.reject(new Error('DB unavailable')),
       }),
@@ -33,4 +34,5 @@ function getClient(): PrismaClient {
   return globalThis.__prisma
 }
 
-export const prisma: PrismaClient = getClient()
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+export const prisma: any = getClient()

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { headers } from 'next/headers'
 import './globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -41,14 +42,18 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const headersList = await headers()
+  const pathname = headersList.get('x-pathname') ?? ''
+  const isDashboard = pathname.startsWith('/dashboard')
+
   return (
     <html lang="ru" className={inter.variable}>
       <body className="min-h-screen flex flex-col">
         <Providers>
-          <Header />
-          <main className="flex-1 pt-16">{children}</main>
-          <Footer />
+          {!isDashboard && <Header />}
+          <main className={`flex-1${isDashboard ? '' : ' pt-16'}`}>{children}</main>
+          {!isDashboard && <Footer />}
         </Providers>
       </body>
     </html>

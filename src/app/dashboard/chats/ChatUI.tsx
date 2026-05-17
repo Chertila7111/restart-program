@@ -8,12 +8,12 @@ type Message = { from: string; name: string; text: string; time: string }
 export function ChatUI({ messages: initial }: { messages: Message[] }) {
   const [messages, setMessages] = useState<Message[]>(initial)
   const [text, setText] = useState('')
-  const bottomRef = useRef<HTMLDivElement>(null)
-  const mountedRef = useRef(false)
+  const listRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!mountedRef.current) { mountedRef.current = true; return }
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (listRef.current) {
+      listRef.current.scrollTop = listRef.current.scrollHeight
+    }
   }, [messages.length])
 
   function send() {
@@ -48,7 +48,7 @@ export function ChatUI({ messages: initial }: { messages: Message[] }) {
       </div>
 
       {/* Messages */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div ref={listRef} style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {messages.map((msg, i) => {
           const isUser = msg.from === 'user'
           return (
@@ -77,7 +77,6 @@ export function ChatUI({ messages: initial }: { messages: Message[] }) {
             </div>
           )
         })}
-        <div ref={bottomRef} />
       </div>
 
       {/* Input */}
