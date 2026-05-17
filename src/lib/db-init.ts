@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from './prisma'
+import bcrypt from 'bcryptjs'
 
 let _initialized = false
 let _promise: Promise<void> | null = null
@@ -209,8 +210,7 @@ async function seedTestUser() {
     const existing = await (prisma as any).user.findUnique({ where: { email } })
     if (existing) return
 
-    const { hash } = require('bcryptjs')
-    const passwordHash = await hash('Test2026!', 10)
+    const passwordHash = await bcrypt.hash('Test2026!', 10)
 
     const user = await (prisma as any).user.create({
       data: {
@@ -236,8 +236,7 @@ async function seedDoctor() {
     const existing = await (prisma as any).user.findUnique({ where: { email } })
     if (existing) return
 
-    const { hash } = require('bcryptjs')
-    const passwordHash = await hash('Doctor2026!', 10)
+    const passwordHash = await bcrypt.hash('Doctor2026!', 10)
 
     const doctor = await (prisma as any).user.create({
       data: {
