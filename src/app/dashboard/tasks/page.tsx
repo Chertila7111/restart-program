@@ -9,19 +9,18 @@ export default async function TasksPage() {
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) redirect('/auth/login')
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    include: {
-      taskCompletions: { orderBy: { createdAt: 'desc' } },
-    },
-  })
-  if (!user) redirect('/auth/login')
-
-  const completions = user.taskCompletions.map(c => ({
-    taskId: c.taskId,
-    notes: c.notes,
-    createdAt: c.createdAt.toISOString(),
-  }))
+  let completions: { taskId: string; notes: string | null; createdAt: string }[] = []
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      include: { taskCompletions: { orderBy: { createdAt: 'desc' } } },
+    })
+    completions = (user?.taskCompletions ?? []).map(c => ({
+      taskId: c.taskId,
+      notes: c.notes,
+      createdAt: c.createdAt.toISOString(),
+    }))
+  } catch { /* DB unavailable — show empty list */ }
 
   return (
     <div style={{ maxWidth: '44rem' }}>

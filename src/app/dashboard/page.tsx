@@ -8,7 +8,7 @@ import { PROGRAM_MEETINGS, PROGRAM_TASKS } from '@/lib/dashboard-data'
 import { LighthouseIcon } from '@/components/LighthouseIcon'
 
 function getUserTier(role: string, orders: { product: string; status: string }[]) {
-  if (role === 'admin') return 'personal'
+  if (role === 'admin' || role === 'psychologist') return 'personal'
   const paid = orders.filter(o => o.status === 'paid').map(o => o.product)
   if (paid.includes('personal')) return 'personal'
   if (paid.includes('plus')) return 'plus'
@@ -58,6 +58,42 @@ export default async function DashboardPage() {
   const completedTaskIds = new Set(effectiveUser.taskCompletions.map(t => t.taskId))
 
   const firstName = effectiveUser.name?.split(' ')[0] || 'друг'
+
+  // ── Psychologist dashboard ───────────────────────────────────
+  if (effectiveRole === 'psychologist') {
+    return (
+      <div style={{ maxWidth: '44rem' }}>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text)', marginBottom: '0.25rem' }}>
+          Добро пожаловать, {firstName}
+        </h1>
+        <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Кабинет психолога / куратора</p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+          {[
+            { href: '/dashboard/patients', icon: '👥', title: 'Участники', desc: 'Список участников программы и их записи' },
+            { href: '/dashboard/chats',    icon: '💬', title: 'Чаты',      desc: 'Переписка с участниками' },
+            { href: '/dashboard/psych-profile', icon: '✏️', title: 'Мой профиль', desc: 'Информация о вас для участников' },
+            { href: '/dashboard/help',     icon: '❓', title: 'Помощь',    desc: 'FAQ и контакты поддержки' },
+          ].map(item => (
+            <Link key={item.href} href={item.href} style={{ textDecoration: 'none' }}>
+              <div className="card" style={{ padding: '1.25rem', height: '100%' }}>
+                <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{item.icon}</div>
+                <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text)', marginBottom: '0.25rem' }}>{item.title}</div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>{item.desc}</div>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        <div className="card" style={{ padding: '1.25rem', background: 'var(--bg-sage)', border: '1px solid var(--primary-light)' }}>
+          <div style={{ fontWeight: 600, fontSize: '0.875rem', color: 'var(--primary-dark)', marginBottom: '0.25rem' }}>Функционал куратора</div>
+          <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.6 }}>
+            Вы видите записи дневника участников, которые поделились с куратором. Отвечайте в чате от своего аккаунта. Заполните профиль — участники увидят его в разделе «Психолог».
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   // ── No purchase ─────────────────────────────────────────────
   if (tier === 'none') {

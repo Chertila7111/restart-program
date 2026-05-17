@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { DashboardShell, type Tier } from '@/components/dashboard/DashboardShell'
 
 function getUserTier(role: string, orders: { product: string; status: string }[]): Tier {
-  if (role === 'admin') return 'personal'
+  if (role === 'admin' || role === 'psychologist') return 'personal'
   const paid = orders.filter(o => o.status === 'paid').map(o => o.product)
   if (paid.includes('personal')) return 'personal'
   if (paid.includes('plus')) return 'plus'
