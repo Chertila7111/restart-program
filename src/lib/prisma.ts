@@ -11,7 +11,8 @@ function createClient() {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const libsqlPkg = require('@libsql/client')
   const rawUrl = process.env.DATABASE_URL || 'file:./prisma/dev.db'
-  const url = rawUrl.startsWith('file:') ? rawUrl : `file:${rawUrl}`
+  // Keep libsql:// and file: as-is; only prefix bare paths
+  const url = (rawUrl.startsWith('file:') || rawUrl.startsWith('libsql://') || rawUrl.startsWith('http')) ? rawUrl : `file:${rawUrl}`
   const libsql = libsqlPkg.createClient({ url })
   const adapter = new PrismaLibSql(libsql)
   return new PrismaClient({ adapter })

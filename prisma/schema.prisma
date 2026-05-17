@@ -18,9 +18,12 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts Account[]
-  sessions Session[]
-  orders   Order[]
+  accounts            Account[]
+  sessions            Session[]
+  orders              Order[]
+  journalEntries      JournalEntry[]
+  taskCompletions     TaskCompletion[]
+  PsychologistProfile PsychologistProfile?
 }
 
 model Account {
@@ -84,4 +87,72 @@ model Lead {
   message   String?
   source    String?
   createdAt DateTime @default(now())
+}
+
+model JournalEntry {
+  id          String   @id @default(cuid())
+  userId      String
+  date        String
+  type        String   @default("daily")
+
+  // Daily entry fields
+  mood        Int      @default(5)
+  anxiety     Int      @default(5)
+  urgeToWrite Int      @default(1)
+  energy      Int      @default(5)
+  sleep       String   @default("ok")
+  triggers    String?  // JSON array
+  helpers     String?  // JSON array
+  note        String?
+  nextStep    String?
+
+  // Quick crisis entry fields
+  situation   String?
+  intensity   Int?
+  wantToDo    String?
+  saferAction String?
+
+  // Weekly summary fields
+  weekSum1    String?
+  weekSum2    String?
+  weekSum3    String?
+  weekSum4    String?
+  weekSum5    String?
+
+  sharedWithSpecialist Boolean @default(false)
+  isDraft              Boolean @default(false)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date, type])
+}
+
+model PsychologistProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  speciality  String?
+  approach    String?
+  education   String?
+  experience  String?
+  bio         String?
+  photoUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model TaskCompletion {
+  id        String   @id @default(cuid())
+  userId    String
+  taskId    String
+  notes     String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, taskId])
 }

@@ -1,81 +1,127 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { Eye, EyeOff } from 'lucide-react'
+import { LighthouseIcon } from '@/components/LighthouseIcon'
 import { Suspense } from 'react'
 
 function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') || '/cabinet'
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
 
   const [form, setForm] = useState({ email: '', password: '' })
   const [showPass, setShowPass] = useState(false)
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle')
+  const [error, setError] = useState('')
 
-  const submit = async (e: React.FormEvent) => {
+  async function submit(e: React.FormEvent) {
     e.preventDefault()
     setStatus('loading')
+    setError('')
+
     const res = await signIn('credentials', {
-      email: form.email,
+      email: form.email.toLowerCase().trim(),
       password: form.password,
       redirect: false,
     })
+
     if (res?.ok) {
       router.push(callbackUrl)
     } else {
+      setError('Неверный email или пароль')
       setStatus('error')
     }
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #F5F3FF 0%, #FCE7F3 100%)', padding: '5rem 1.5rem' }}>
-      <div className="card" style={{ padding: '2.5rem', width: '100%', maxWidth: '26rem' }}>
+    <div style={{
+      minHeight: '100vh', display: 'flex', alignItems: 'center',
+      justifyContent: 'center', background: 'var(--bg-soft)', padding: '5rem 1.5rem',
+    }}>
+      <div style={{ width: '100%', maxWidth: '26rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{ width: '3rem', height: '3rem', borderRadius: '0.875rem', background: 'linear-gradient(135deg, #7C3AED, #EC4899)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800, fontSize: '1.25rem', margin: '0 auto 1rem' }}>R</div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#1F1535' }}>Вход в аккаунт</h1>
-          <p style={{ color: '#6B7280', fontSize: '0.875rem', marginTop: '0.25rem' }}>Добро пожаловать в Restart</p>
+          <Link href="/" style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
+            <div style={{
+              width: '3.5rem', height: '3.5rem', borderRadius: '1rem',
+              background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 4px 16px rgba(78,123,94,0.25)',
+            }}>
+              <LighthouseIcon size={26} color="white" />
+            </div>
+            <span style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--text)', letterSpacing: '-0.02em' }}>Restart</span>
+          </Link>
         </div>
 
-        <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div>
-            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: '#374151', marginBottom: '0.375rem' }}>Email</label>
-            <input type="email" required placeholder="your@email.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-          </div>
-          <div>
-            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: '#374151', marginBottom: '0.375rem' }}>Пароль</label>
-            <div style={{ position: 'relative' }}>
+        <div className="card" style={{ padding: '2rem 2rem 2.5rem' }}>
+          <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text)', marginBottom: '0.375rem', letterSpacing: '-0.02em' }}>
+            Войти в кабинет
+          </h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '1.75rem', lineHeight: 1.6 }}>
+            Доступ открыт участникам программы по приглашению
+          </p>
+
+          <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.375rem' }}>
+                Email
+              </label>
               <input
-                type={showPass ? 'text' : 'password'}
-                required
-                placeholder="Ваш пароль"
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                style={{ paddingRight: '2.5rem' }}
+                type="email" required autoComplete="email"
+                placeholder="your@email.com"
+                value={form.email}
+                onChange={e => setForm({ ...form, email: e.target.value })}
               />
-              <button type="button" onClick={() => setShowPass(!showPass)} style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF' }}>
-                {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
             </div>
-          </div>
 
-          {status === 'error' && (
-            <div style={{ color: '#EF4444', fontSize: '0.875rem', background: '#FEF2F2', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #FCA5A5' }}>
-              Неверный email или пароль
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.375rem' }}>
+                Пароль
+              </label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showPass ? 'text' : 'password'} required autoComplete="current-password"
+                  placeholder="Ваш пароль"
+                  value={form.password}
+                  onChange={e => setForm({ ...form, password: e.target.value })}
+                  style={{ paddingRight: '2.75rem' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPass(!showPass)}
+                  style={{ position: 'absolute', right: '0.875rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-light)', display: 'flex' }}
+                >
+                  {showPass ? <EyeOff size={17} /> : <Eye size={17} />}
+                </button>
+              </div>
             </div>
-          )}
 
-          <button type="submit" className="btn-primary" disabled={status === 'loading'} style={{ marginTop: '0.5rem' }}>
-            {status === 'loading' ? 'Входим...' : 'Войти →'}
-          </button>
-        </form>
+            {error && (
+              <div style={{ color: '#B91C1C', fontSize: '0.825rem', background: '#FEF2F2', padding: '0.75rem 1rem', borderRadius: '0.625rem', border: '1px solid #FCA5A5' }}>
+                {error}
+              </div>
+            )}
 
-        <div style={{ textAlign: 'center', marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid #E5E7EB' }}>
-          <span style={{ color: '#6B7280', fontSize: '0.875rem' }}>Нет аккаунта? </span>
-          <Link href="/auth/register" style={{ color: '#7C3AED', fontWeight: 600, fontSize: '0.875rem', textDecoration: 'none' }}>Зарегистрироваться</Link>
+            <button
+              type="submit" className="btn-primary"
+              disabled={status === 'loading'}
+              style={{ marginTop: '0.25rem', opacity: status === 'loading' ? 0.75 : 1 }}
+            >
+              {status === 'loading' ? 'Входим...' : 'Войти →'}
+            </button>
+          </form>
+        </div>
+
+        <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+          <p style={{ color: 'var(--text-light)', fontSize: '0.8rem', lineHeight: 1.7 }}>
+            Нет аккаунта? Доступ открывается после оплаты.{' '}
+            <Link href="/pricing" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>
+              Выбрать тариф →
+            </Link>
+          </p>
         </div>
       </div>
     </div>

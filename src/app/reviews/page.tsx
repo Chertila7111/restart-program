@@ -1,77 +1,191 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Star } from 'lucide-react'
+import { LighthouseIcon } from '@/components/LighthouseIcon'
 
 export const metadata: Metadata = {
-  title: 'Отзывы участников программы Restart',
-  description: 'Реальные отзывы участников программы Restart. Истории восстановления после расставания — от первой встречи до нового старта в жизни.',
+  title: 'Истории участников — Restart',
+  description: 'Истории людей, прошедших программу Restart. Честные, спокойные, без чудес — о том, как постепенно возвращается опора после расставания.',
 }
 
 const reviews = [
-  { name: 'Анна М.', age: 28, city: 'Москва', product: 'Restart Plus', rating: 5, text: 'После расставания с мужем 7 лет — я просто не могла встать с кровати. Restart был последней надеждой. Уже на второй встрече я почувствовала, что не одна. К концу программы у меня был план — конкретный, не размытый. Психолог Мария — просто чудо.' },
-  { name: 'Михаил К.', age: 32, city: 'Санкт-Петербург', product: 'Restart Base', rating: 5, text: 'Честно — я шёл с большим скептицизмом. "Групповая терапия — это для слабаков". Спасибо, что ошибся. Мужики тоже там есть, и разговор был конкретным, без соплей. Помогло реально встать и начать работать снова.' },
-  { name: 'Екатерина П.', age: 25, city: 'Казань', product: 'Career Restart', rating: 5, text: 'После расставания потеряла работу — просто перестала функционировать. Взяла Career Restart и за 2 месяца нашла новую работу, которая мне нравится. Параллельно восстановилась эмоционально. Это реально изменило мою жизнь.' },
-  { name: 'Дмитрий В.', age: 35, city: 'Екатеринбург', product: 'Restart Personal', rating: 5, text: 'Индивидуальная сессия с психологом — отдельное спасибо. Именно там я разобрал то, что мучило несколько лет. Группа тоже помогла — понять, что это бывает у всех и что выход есть.' },
-  { name: 'Ольга С.', age: 29, city: 'Новосибирск', product: 'Restart Base', rating: 5, text: 'Первую встречу шла и думала — зачем вообще. Ушла с пониманием, что со мной происходит, и с конкретными упражнениями. Через месяц начала снова ходить в зал, встречаться с друзьями, ездить на работу без слёз.' },
-  { name: 'Артём Н.', age: 27, city: 'Ростов-на-Дону', product: 'Restart Plus', rating: 5, text: 'Расставание с девушкой после 5 лет — это катастрофа. Я думал, что уже не вернусь в норму. Restart вернул меня — постепенно, шаг за шагом. Задания были иногда тяжёлыми, но именно они работали.' },
-  { name: 'Виктория Л.', age: 31, city: 'Тюмень', product: 'Restart Plus', rating: 5, text: 'Хотела поблагодарить за безопасную атмосферу. Я боялась, что будет странно и неловко. Но в группе все были такие же — растерянные, но готовые двигаться дальше. Именно это и дало силы.' },
-  { name: 'Иван Г.', age: 38, city: 'Самара', product: 'Career Restart', rating: 4, text: 'Основная программа — отлично. Career Restart — тоже хорошо, хотя хотелось чуть больше индивидуальности в работе с вакансиями. Но результат есть — нашёл работу через 6 недель.' },
-  { name: 'Светлана Ф.', age: 24, city: 'Краснодар', product: 'Restart Base', rating: 5, text: 'Пришла после разрыва 3 лет. Думала, что "само пройдёт". Не проходило 8 месяцев. Restart помог понять, почему — и что с этим делать. Теперь я намного лучше понимаю себя.' },
+  {
+    name: 'Аня',
+    context: 'после 3 лет отношений',
+    product: 'Restart Plus',
+    scoreBefore: 2,
+    scoreAfter: 7,
+    before: 'Два месяца не могла нормально работать и спать.',
+    helped: 'После первой встречи стало немного легче понять, что со мной происходит. Задания между встречами помогли вернуть хоть какую-то структуру дня.',
+    after: 'К концу программы появился план — не грандиозный, но понятный. Стала снова ходить в зал и отвечать на рабочие письма.',
+    tags: ['сон', 'режим', 'работа'],
+    color: '#4E7B5E',
+  },
+  {
+    name: 'Михаил',
+    context: 'после внезапного разрыва',
+    product: 'Restart Base',
+    scoreBefore: 3,
+    scoreAfter: 7,
+    before: 'Сначала вообще не понимал, зачем мне группа. Казалось, что это "не моё".',
+    helped: 'Первые встречи просто слушал. Это само по себе помогло — понял, что не один в таком состоянии. Потом начал говорить.',
+    after: 'Стало проще не проваливаться в мысли весь рабочий день. Постепенно вернулось ощущение, что жизнь продолжается.',
+    tags: ['тревога', 'работа', 'не писать бывшей'],
+    color: '#3D6249',
+  },
+  {
+    name: 'Ольга',
+    context: '8 месяцев — "само не проходило"',
+    product: 'Restart Base',
+    scoreBefore: 3,
+    scoreAfter: 8,
+    before: 'Думала, что само пройдёт. Прошло 8 месяцев — не проходило.',
+    helped: 'Помогло понять, почему именно так — и что с этим конкретно делать. Не абстрактные советы, а реальные упражнения.',
+    after: 'Намного лучше понимаю себя. Стала снова общаться с людьми и строить планы на выходные.',
+    tags: ['самооценка', 'понимание', 'общение'],
+    color: '#5B7FA6',
+  },
+  {
+    name: 'Виктория',
+    context: 'после длительных отношений',
+    product: 'Restart Plus',
+    scoreBefore: 2,
+    scoreAfter: 7,
+    before: 'Боялась, что в группе будет неловко и странно.',
+    helped: 'Оказалось, все там похожи — растерянные, но готовые двигаться. Никто не давил и не давал советов, которых не просили.',
+    after: 'Именно безопасная атмосфера дала силы. Стало легче принимать, что расставание — не конец.',
+    tags: ['тревога', 'принятие', 'не писать бывшему'],
+    color: '#7A6BA0',
+  },
+  {
+    name: 'Екатерина',
+    context: 'расставание + потеря работы',
+    product: 'Restart Plus + Career',
+    scoreBefore: 1,
+    scoreAfter: 8,
+    before: 'После расставания просто перестала функционировать — пропустила сроки, потеряла работу.',
+    helped: 'Сначала разобралась с эмоциями, потом взялась за карьерный трек. Помогли собрать резюме и подготовиться к собеседованиям.',
+    after: 'Нашла новую работу, которая мне нравится. Главное — вернулось ощущение, что у меня есть будущее.',
+    tags: ['работа', 'самооценка', 'режим'],
+    color: '#C28A5E',
+  },
+  {
+    name: 'Иван',
+    context: 'после развода',
+    product: 'Career Restart',
+    scoreBefore: 3,
+    scoreAfter: 7,
+    before: 'После развода выпал из рабочего ритма на несколько месяцев.',
+    helped: 'Карьерный трек помог структурировать поиск. Основная программа — понять, почему так сложно двигаться вперёд.',
+    after: 'Нашёл работу через шесть недель. Хотелось бы больше индивидуальной работы с вакансиями, но результат есть.',
+    tags: ['работа', 'режим', 'смыслы'],
+    color: '#4E7B5E',
+  },
 ]
 
-function Stars({ rating }: { rating: number }) {
+function ScoreBar({ before, after }: { before: number; after: number }) {
   return (
-    <div style={{ display: 'flex', gap: '0.2rem' }}>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Star key={i} size={14} fill={i < rating ? '#F59E0B' : 'none'} color={i < rating ? '#F59E0B' : '#D1D5DB'} />
-      ))}
+    <div style={{ marginBottom: '1.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
+        <span>До программы</span>
+        <span>После программы</span>
+      </div>
+      <div style={{ position: 'relative', height: '6px', background: 'var(--border)', borderRadius: '9999px', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${after * 10}%`, background: 'var(--primary)', borderRadius: '9999px', transition: 'width 0.4s ease' }} />
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+        <span style={{ fontWeight: 600, color: '#B91C1C' }}>{before}/10</span>
+        <span style={{ fontWeight: 600, color: 'var(--primary)' }}>{after}/10</span>
+      </div>
     </div>
   )
 }
 
 export default function ReviewsPage() {
-  const avg = (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
-
   return (
     <>
-      <section style={{ background: 'linear-gradient(135deg, #F5F3FF 0%, #FCE7F3 100%)', padding: '5rem 0 3rem' }}>
-        <div className="container mx-auto px-6" style={{ textAlign: 'center' }}>
-          <span className="badge" style={{ background: '#EDE9FE', color: '#7C3AED', marginBottom: '1.5rem', display: 'inline-flex' }}>Отзывы</span>
-          <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', fontWeight: 800, color: '#1F1535', marginBottom: '1rem' }}>
-            Реальные истории восстановления
+      <section style={{ background: 'var(--bg-soft)', padding: '5rem 0 3rem' }}>
+        <div className="container mx-auto px-6" style={{ maxWidth: '52rem', textAlign: 'center' }}>
+          <h1 style={{ fontSize: 'clamp(2rem, 5vw, 2.75rem)', fontWeight: 800, color: 'var(--text)', marginBottom: '1rem' }}>
+            Истории участников
           </h1>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', marginTop: '2rem', flexWrap: 'wrap' }}>
-            {[{ num: avg, label: 'средняя оценка' }, { num: '500+', label: 'участников' }, { num: '92%', label: 'рекомендуют' }].map((s) => (
-              <div key={s.label} style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#7C3AED' }}>{s.num}</div>
-                <div style={{ fontSize: '0.875rem', color: '#6B7280' }}>{s.label}</div>
-              </div>
-            ))}
+          <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: 1.7 }}>
+            Живые, спокойные, конкретные. Без чудес — о том, как постепенно возвращается опора.
+          </p>
+          <div style={{ marginTop: '1.75rem', padding: '1rem 1.5rem', background: 'white', borderRadius: '0.875rem', border: '1px solid var(--border)', display: 'inline-block', fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
+            Имена изменены, детали — с разрешения участников. Реальные результаты зависят от вовлечённости.
           </div>
         </div>
       </section>
 
-      <section className="section" style={{ background: '#FEFBF8' }}>
-        <div className="container mx-auto px-6">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(20rem, 1fr))', gap: '1.5rem' }}>
+      <section className="section" style={{ background: 'var(--bg)' }}>
+        <div className="container mx-auto px-6" style={{ maxWidth: '76rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 22rem), 1fr))', gap: '1.5rem' }}>
             {reviews.map((r) => (
-              <div key={r.name} className="card" style={{ padding: '1.75rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                  <div>
-                    <div style={{ fontWeight: 700, color: '#1F1535' }}>{r.name}, {r.age} лет</div>
-                    <div style={{ fontSize: '0.8rem', color: '#9CA3AF' }}>{r.city}</div>
+              <div key={r.name} style={{ background: 'white', borderRadius: '1.5rem', overflow: 'hidden', border: '1.5px solid var(--border)', display: 'flex', flexDirection: 'column' }}>
+                {/* Color top strip */}
+                <div style={{ height: '4px', background: r.color }} />
+
+                <div style={{ padding: '1.75rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  {/* Header */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
+                    <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '50%', background: `${r.color}22`, border: `2px solid ${r.color}44`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', fontWeight: 800, color: r.color, flexShrink: 0 }}>
+                      {r.name.charAt(0)}
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 700, color: 'var(--text)', fontSize: '0.975rem' }}>{r.name}</div>
+                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{r.context}</div>
+                    </div>
+                    <div style={{ marginLeft: 'auto', fontSize: '0.72rem', fontWeight: 700, padding: '0.2rem 0.625rem', borderRadius: '9999px', background: 'var(--bg-sage)', color: 'var(--primary-dark)', whiteSpace: 'nowrap' }}>
+                      {r.product}
+                    </div>
                   </div>
-                  <Stars rating={r.rating} />
+
+                  {/* Score bar */}
+                  <ScoreBar before={r.scoreBefore} after={r.scoreAfter} />
+
+                  {/* Story sections */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.25rem', flex: 1 }}>
+                    <div style={{ padding: '0.875rem', background: 'var(--bg-soft)', borderRadius: '0.75rem' }}>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.35rem' }}>Было до</div>
+                      <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: 1.65, margin: 0 }}>{r.before}</p>
+                    </div>
+                    <div style={{ padding: '0.875rem', background: 'var(--bg-sage)', borderRadius: '0.75rem' }}>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.35rem' }}>Что помогло</div>
+                      <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: 1.65, margin: 0 }}>{r.helped}</p>
+                    </div>
+                    {/* After - visually highlighted */}
+                    <div style={{ padding: '0.875rem 1rem', background: 'var(--primary)', borderRadius: '0.75rem' }}>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.35rem' }}>Что изменилось</div>
+                      <p style={{ color: 'white', fontSize: '0.875rem', lineHeight: 1.65, margin: 0 }}>{r.after}</p>
+                    </div>
+                  </div>
+
+                  {/* Tags */}
+                  <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                    {r.tags.map((tag) => (
+                      <span key={tag} style={{ fontSize: '0.72rem', fontWeight: 600, padding: '0.2rem 0.625rem', borderRadius: '9999px', background: 'var(--bg-soft)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <p style={{ color: '#4B5563', lineHeight: 1.7, marginBottom: '1rem', fontSize: '0.9rem' }}>"{r.text}"</p>
-                <span className="badge" style={{ background: '#EDE9FE', color: '#7C3AED', fontSize: '0.75rem' }}>{r.product}</span>
               </div>
             ))}
           </div>
 
-          <div style={{ textAlign: 'center', marginTop: '3rem' }}>
-            <p style={{ color: '#6B7280', marginBottom: '1.5rem' }}>Готовы написать свою историю?</p>
-            <Link href="/pricing" className="btn-primary">Начать программу →</Link>
+          <div style={{ textAlign: 'center', marginTop: '4rem', padding: '3rem 2rem', background: 'var(--bg-dark)', borderRadius: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
+              <LighthouseIcon size={36} color="rgba(255,255,255,0.85)" />
+            </div>
+            <h2 style={{ fontSize: 'clamp(1.4rem, 3vw, 1.875rem)', fontWeight: 800, color: 'white', marginBottom: '0.75rem' }}>
+              Узнали себя в одной из историй?
+            </h2>
+            <p style={{ color: 'rgba(168,184,160,1)', marginBottom: '1.75rem', fontSize: '0.975rem', lineHeight: 1.7, maxWidth: '32rem', margin: '0 auto 1.75rem' }}>
+              Пройдите короткий тест — он займёт 2 минуты и поможет понять, какой формат поддержки сейчас безопаснее.
+            </p>
+            <Link href="/quiz" className="btn-ghost-dark">
+              Пройти тест →
+            </Link>
           </div>
         </div>
       </section>

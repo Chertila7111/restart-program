@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
+import { LighthouseIcon } from './LighthouseIcon'
 
 const nav = [
   { href: '/program', label: 'Программа' },
@@ -17,28 +18,47 @@ export default function Header() {
   const [open, setOpen] = useState(false)
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
-      <div className="container mx-auto px-6 flex items-center justify-between h-16">
+    <header style={{
+      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
+      background: 'rgba(250,247,243,0.92)',
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+      borderBottom: '1px solid rgba(221,214,204,0.6)',
+    }}>
+      <div className="container mx-auto px-6" style={{
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between', height: '4rem',
+      }}>
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold"
-            style={{ background: 'linear-gradient(135deg, #7C3AED 0%, #EC4899 100%)' }}
-          >
-            R
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none' }}>
+          <div style={{
+            width: '2.25rem', height: '2.25rem', borderRadius: '0.6rem',
+            background: 'var(--primary)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(78,123,94,0.3)',
+          }}>
+            <LighthouseIcon size={22} color="white" />
           </div>
-          <span className="font-bold text-lg" style={{ color: '#1F1535' }}>
+          <span style={{
+            fontWeight: 800, fontSize: '1.1rem',
+            color: 'var(--text)', letterSpacing: '-0.02em',
+          }}>
             Restart
           </span>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav style={{ display: 'flex', alignItems: 'center', gap: '1.75rem' }}>
           {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm font-medium text-gray-600 hover:text-violet-600 transition-colors"
+              className="hidden md:block"
+              style={{
+                fontSize: '0.875rem', fontWeight: 500,
+                color: 'var(--text-muted)', textDecoration: 'none',
+                transition: 'color 0.2s',
+              }}
             >
               {item.label}
             </Link>
@@ -46,52 +66,68 @@ export default function Header() {
         </nav>
 
         {/* CTA */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-4">
           <Link
             href="/auth/login"
-            className="text-sm font-medium text-gray-600 hover:text-violet-600 transition-colors"
+            style={{
+              fontSize: '0.875rem', fontWeight: 500,
+              color: 'var(--text-muted)', textDecoration: 'none',
+            }}
           >
             Войти
           </Link>
-          <Link
-            href="/pricing"
-            className="btn-primary text-sm py-2 px-5"
-            style={{ padding: '0.5rem 1.25rem', fontSize: '0.875rem' }}
-          >
-            Начать
+          <Link href="/quiz" className="btn-primary" style={{ padding: '0.5rem 1.25rem', fontSize: '0.875rem' }}>
+            Пройти тест
           </Link>
         </div>
 
         {/* Mobile burger */}
         <button
-          className="md:hidden p-2"
           onClick={() => setOpen(!open)}
           aria-label="Меню"
+          className="md:hidden"
+          style={{
+            padding: '0.5rem', background: 'none', border: 'none',
+            cursor: 'pointer', color: 'var(--text)',
+          }}
         >
-          {open ? <X size={20} /> : <Menu size={20} />}
+          {open ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
 
       {/* Mobile menu */}
       {open && (
-        <div className="md:hidden bg-white border-t border-gray-100 px-6 py-4">
-          <nav className="flex flex-col gap-4">
+        <div style={{
+          background: 'var(--bg)',
+          borderTop: '1px solid var(--border)',
+          padding: '1rem 1.5rem 1.5rem',
+        }}>
+          <nav style={{ display: 'flex', flexDirection: 'column' }}>
             {nav.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-sm font-medium text-gray-700 hover:text-violet-600"
                 onClick={() => setOpen(false)}
+                style={{
+                  padding: '0.875rem 0',
+                  borderBottom: '1px solid var(--border)',
+                  fontSize: '0.975rem', fontWeight: 500,
+                  color: 'var(--text)', textDecoration: 'none',
+                }}
               >
                 {item.label}
               </Link>
             ))}
-            <div className="border-t border-gray-100 pt-4 flex flex-col gap-3">
-              <Link href="/auth/login" className="text-sm text-center text-gray-600" onClick={() => setOpen(false)}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', paddingTop: '1.25rem' }}>
+              <Link
+                href="/auth/login"
+                style={{ textAlign: 'center', fontSize: '0.9rem', color: 'var(--text-muted)', textDecoration: 'none' }}
+                onClick={() => setOpen(false)}
+              >
                 Войти
               </Link>
-              <Link href="/pricing" className="btn-primary text-center text-sm" onClick={() => setOpen(false)}>
-                Начать программу
+              <Link href="/quiz" className="btn-primary" style={{ textAlign: 'center', fontSize: '0.9rem' }} onClick={() => setOpen(false)}>
+                Пройти тест
               </Link>
             </div>
           </nav>

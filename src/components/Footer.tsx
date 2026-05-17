@@ -1,77 +1,115 @@
 import Link from 'next/link'
+import { LighthouseIcon } from './LighthouseIcon'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-gray-900 text-gray-300 mt-20">
-      <div className="container mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer style={{ background: '#1C2B23', color: '#A8B8A0' }}>
+      <div style={{ height: '5px', background: 'linear-gradient(to right, transparent, #C28A5E 20%, #C28A5E 80%, transparent)' }} />
+      <div className="container mx-auto px-6" style={{ paddingTop: '4.5rem', paddingBottom: '4rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 14rem), 1fr))', gap: '2.5rem' }}>
           {/* Brand */}
-          <div className="md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold"
-                style={{ background: 'linear-gradient(135deg, #7C3AED 0%, #EC4899 100%)' }}
-              >
-                R
+          <div>
+            <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', marginBottom: '1rem' }}>
+              <div style={{
+                width: '2.25rem', height: '2.25rem', borderRadius: '0.6rem',
+                background: 'var(--primary)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <LighthouseIcon size={22} color="white" />
               </div>
-              <span className="font-bold text-white text-lg">Restart</span>
+              <span style={{ fontWeight: 800, color: 'white', fontSize: '1.1rem' }}>Restart</span>
             </Link>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Программа восстановления и нового старта после расставания. Психолог, группа поддержки и практический план.
+            <p style={{ fontSize: '0.875rem', lineHeight: 1.7, color: '#8A9E88', maxWidth: '18rem' }}>
+              Бережная программа восстановления после расставания. Психолог, небольшая группа, понятный маршрут.
             </p>
           </div>
 
           {/* Программа */}
           <div>
-            <h4 className="font-semibold text-white mb-4">Программа</h4>
-            <ul className="space-y-2 text-sm">
-              <li><Link href="/program" className="hover:text-violet-400 transition-colors">О программе</Link></li>
-              <li><Link href="/pricing" className="hover:text-violet-400 transition-colors">Тарифы</Link></li>
-              <li><Link href="/reviews" className="hover:text-violet-400 transition-colors">Отзывы</Link></li>
-              <li><Link href="/faq" className="hover:text-violet-400 transition-colors">FAQ</Link></li>
+            <h4 style={{ fontWeight: 600, color: 'white', marginBottom: '1rem', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Программа</h4>
+            <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              {[
+                { href: '/program', label: 'О программе' },
+                { href: '/pricing', label: 'Тарифы' },
+                { href: '/reviews', label: 'Отзывы' },
+                { href: '/faq', label: 'FAQ' },
+              ].map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} style={{ fontSize: '0.875rem', color: '#8A9E88', textDecoration: 'none', transition: 'color 0.2s' }}>
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Полезное */}
           <div>
-            <h4 className="font-semibold text-white mb-4">Полезное</h4>
-            <ul className="space-y-2 text-sm">
-              <li><Link href="/blog" className="hover:text-violet-400 transition-colors">Блог</Link></li>
-              <li><Link href="/blog/kak-perezhit-rasstoanie-7-shagov" className="hover:text-violet-400 transition-colors">Как пережить расставание</Link></li>
-              <li><Link href="/blog/kak-zabyt-byvshego-rukovodstvo" className="hover:text-violet-400 transition-colors">Как забыть бывшего</Link></li>
-              <li><Link href="/contacts" className="hover:text-violet-400 transition-colors">Контакты</Link></li>
+            <h4 style={{ fontWeight: 600, color: 'white', marginBottom: '1rem', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Материалы</h4>
+            <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              {[
+                { href: '/blog', label: 'Блог' },
+                { href: '/blog/kak-perezhit-rasstoanie-7-shagov', label: 'Как пережить расставание' },
+                { href: '/blog/kak-zabyt-byvshego-rukovodstvo', label: 'Как перестать думать о бывшем' },
+                { href: '/contacts', label: 'Контакты' },
+              ].map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} style={{ fontSize: '0.875rem', color: '#8A9E88', textDecoration: 'none' }}>
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Юридическое */}
           <div>
-            <h4 className="font-semibold text-white mb-4">Документы</h4>
-            <ul className="space-y-2 text-sm">
-              <li><Link href="/legal/privacy" className="hover:text-violet-400 transition-colors">Политика конфиденциальности</Link></li>
-              <li><Link href="/legal/terms" className="hover:text-violet-400 transition-colors">Пользовательское соглашение</Link></li>
-              <li><Link href="/legal/offer" className="hover:text-violet-400 transition-colors">Публичная оферта</Link></li>
+            <h4 style={{ fontWeight: 600, color: 'white', marginBottom: '1rem', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Документы</h4>
+            <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              {[
+                { href: '/legal/privacy', label: 'Политика конфиденциальности' },
+                { href: '/legal/terms', label: 'Пользовательское соглашение' },
+                { href: '/legal/offer', label: 'Публичная оферта' },
+              ].map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} style={{ fontSize: '0.875rem', color: '#8A9E88', textDecoration: 'none' }}>
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
 
-            <div className="mt-6">
-              <p className="text-xs text-gray-500">ИП Иванов И.И.</p>
-              <p className="text-xs text-gray-500">ОГРНИП: 000000000000000</p>
-              <p className="text-xs text-gray-500 mt-2">
-                <a href="mailto:hello@restart-program.ru" className="hover:text-violet-400 transition-colors">
-                  hello@restart-program.ru
-                </a>
+            <div style={{ marginTop: '1.5rem' }}>
+              <a
+                href="mailto:hello@restart-program.ru"
+                style={{ fontSize: '0.875rem', color: '#8A9E88', textDecoration: 'none' }}
+              >
+                hello@restart-program.ru
+              </a>
+              <p style={{ fontSize: '0.75rem', color: '#5A6E58', marginTop: '0.5rem', lineHeight: 1.6 }}>
+                Юридические реквизиты будут опубликованы при запуске сервиса
               </p>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-gray-500">
+        <div style={{
+          borderTop: '1px solid #2E3F2C',
+          marginTop: '3rem',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.75rem',
+          alignItems: 'center',
+          textAlign: 'center',
+        }}>
+          <p style={{ fontSize: '0.875rem', color: '#5A6E58' }}>
             © {currentYear} Restart. Все права защищены.
           </p>
-          <p className="text-xs text-gray-600 text-center max-w-md">
-            Программа не является медицинской услугой. Результаты индивидуальны и зависят от активности участника.
+          <p style={{ fontSize: '0.8rem', color: '#4A5E48', maxWidth: '44rem', lineHeight: 1.7 }}>
+            Программа не является медицинской услугой и не заменяет психотерапию или медицинскую помощь. Если вам нужна кризисная или медицинская поддержка — пожалуйста, обратитесь к специалисту.
           </p>
         </div>
       </div>

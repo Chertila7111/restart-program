@@ -54,7 +54,7 @@ function CheckoutForm() {
   return (
     <div style={{ minHeight: '100vh', background: '#F5F3FF', padding: '5rem 1.5rem' }}>
       <div className="container mx-auto" style={{ maxWidth: '52rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(20rem, 1fr))', gap: '2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 20rem), 1fr))', gap: '2rem' }}>
           {/* Product summary */}
           <div>
             <h2 style={{ fontWeight: 700, fontSize: '1.25rem', color: '#1F1535', marginBottom: '1.5rem' }}>Ваш выбор</h2>
