@@ -66,6 +66,13 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { targetUserId, subject } = body as { targetUserId?: string; subject?: string }
 
+    // Ensure the current user exists in DB (admin logs in via env vars, no DB record)
+    const emailSafe = (session.user.email ?? '').replace(/'/g, "''")
+    const nameSafe = ((session.user.name ?? session.user.email ?? userId).replace(/'/g, "''"))
+    await (prisma as any).$executeRawUnsafe(
+      `INSERT OR IGNORE INTO "User" ("id","email","name","role","createdAt","updatedAt") VALUES ('${userId}', '${emailSafe}', '${nameSafe}', '${role}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
+    )
+
     // If no target, create a conversation with the doctor
     const doctorId = 'doctor-maria-sokolova'
     const otherUserId = targetUserId ?? doctorId
@@ -89,13 +96,14 @@ export async function POST(req: NextRequest) {
     }
 
     const convId = `conv-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
-    const subjectText = subject ?? (role === 'admin' || role === 'psychologist' ? 'Личный чат' : 'Чат с психологом')
+    const subjectText = subject ?? 'Чат с психологом'
+    const subjectSafe = subjectText.replace(/'/g, "''")
 
     await (prisma as any).$executeRawUnsafe(
-      `INSERT INTO "Conversation" ("id","subject","createdAt","updatedAt") VALUES ('${convId}', '${subjectText.replace(/'/g, "''")}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
+      `INSERT INTO "Conversation" ("id","subject","createdAt","updatedAt") VALUES ('${convId}', '${subjectSafe}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
     )
     await (prisma as any).$executeRawUnsafe(
-      `INSERT INTO "ConversationMember" ("id","conversationId","userId") VALUES ('cm-${convId}-u1', '${convId}', '${userId}')`
+      `INSERT OR IGNORE INTO "ConversationMember" ("id","conversationId","userId") VALUES ('cm-${convId}-u1', '${convId}', '${userId}')`
     )
     await (prisma as any).$executeRawUnsafe(
       `INSERT OR IGNORE INTO "ConversationMember" ("id","conversationId","userId") VALUES ('cm-${convId}-u2', '${convId}', '${otherUserId}')`
