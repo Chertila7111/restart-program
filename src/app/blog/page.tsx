@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BLOG_POSTS } from '@/lib/blog'
 import { Clock, ArrowRight } from 'lucide-react'
-import { LighthouseIcon } from '@/components/LighthouseIcon'
+import Image from 'next/image'
 
 export const metadata: Metadata = {
   title: 'Блог о расставаниях и восстановлении — Restart',
@@ -188,7 +188,7 @@ export default function BlogPage() {
       <section style={{ background: 'var(--bg-dark)', padding: '5rem 0' }}>
         <div className="container mx-auto px-6" style={{ textAlign: 'center', maxWidth: '44rem' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
-            <LighthouseIcon size={40} color="rgba(255,255,255,0.9)" />
+            <Image src="/logo-icon.png" alt="" width={80} height={80} style={{ objectFit: 'contain', height: '72px', width: 'auto', opacity: 0.9 }} />
           </div>
           <h2 style={{ fontSize: 'clamp(1.5rem, 4vw, 2.25rem)', fontWeight: 800, color: 'white', marginBottom: '1rem', lineHeight: 1.3 }}>
             Статьи помогают понять.<br />Программа помогает изменить.

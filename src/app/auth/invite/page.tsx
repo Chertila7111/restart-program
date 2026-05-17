@@ -4,7 +4,7 @@ import { useEffect, useState, Suspense } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { LighthouseIcon } from '@/components/LighthouseIcon'
+import Image from 'next/image'
 
 function InviteContent() {
   const router = useRouter()
@@ -62,15 +62,8 @@ function InviteContent() {
     }}>
       <div style={{ width: '100%', maxWidth: '28rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <Link href="/" style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
-            <div style={{
-              width: '3.5rem', height: '3.5rem', borderRadius: '1rem',
-              background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 4px 16px rgba(78,123,94,0.25)',
-            }}>
-              <LighthouseIcon size={26} color="white" />
-            </div>
-            <span style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--text)', letterSpacing: '-0.02em' }}>Restart</span>
+          <Link href="/" style={{ display: 'inline-block', textDecoration: 'none' }}>
+            <Image src="/logo-icon.png" alt="Снова с собой" width={100} height={100} style={{ objectFit: 'contain', display: 'block', height: '80px', width: 'auto', margin: '0 auto' }} />
           </Link>
         </div>
 

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { LighthouseIcon } from '@/components/LighthouseIcon'
+import Image from 'next/image'
 
 export const metadata: Metadata = {
   title: 'Истории участников — Restart',
@@ -175,7 +175,7 @@ export default function ReviewsPage() {
 
           <div style={{ textAlign: 'center', marginTop: '4rem', padding: '3rem 2rem', background: 'var(--bg-dark)', borderRadius: '1.5rem' }}>
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
-              <LighthouseIcon size={36} color="rgba(255,255,255,0.85)" />
+              <Image src="/logo-icon.png" alt="" width={72} height={72} style={{ objectFit: 'contain', height: '64px', width: 'auto', opacity: 0.85 }} />
             </div>
             <h2 style={{ fontSize: 'clamp(1.4rem, 3vw, 1.875rem)', fontWeight: 800, color: 'white', marginBottom: '0.75rem' }}>
               Узнали себя в одной из историй?

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { CheckCircle, ArrowLeft } from 'lucide-react'
-import { LighthouseIcon } from '@/components/LighthouseIcon'
+import Image from 'next/image'
 
 const steps = [
   {
@@ -169,11 +169,8 @@ export default function QuizPage() {
         display: 'flex', alignItems: 'center',
       }}>
         <div className="container mx-auto px-6" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
-            <div style={{ width: '2rem', height: '2rem', borderRadius: '0.5rem', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <LighthouseIcon size={16} color="white" />
-            </div>
-            <span style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text)' }}>Restart</span>
+          <Link href="/" style={{ display: 'inline-block', textDecoration: 'none' }}>
+            <Image src="/logo-icon.png" alt="Снова с собой" width={56} height={56} style={{ objectFit: 'contain', height: '40px', width: 'auto' }} />
           </Link>
 
           {!isResult && (
@@ -273,9 +270,7 @@ export default function QuizPage() {
           <div>
             {/* Icon */}
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
-              <div style={{ width: '4rem', height: '4rem', borderRadius: '50%', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <LighthouseIcon size={28} color="var(--primary)" />
-              </div>
+              <Image src="/logo-icon.png" alt="" width={64} height={64} style={{ objectFit: 'contain', height: '64px', width: 'auto' }} />
             </div>
 
             {/* Block 1: "Ваша ситуация" */}

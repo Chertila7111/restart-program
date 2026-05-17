@@ -108,7 +108,7 @@ export function DashboardShell({ user, tier, role = 'user', children }: Props) {
         {/* Brand + back to site */}
         <div style={{ padding: '1rem 1rem 0.75rem', borderBottom: '1px solid var(--border)' }}>
           <Link href="/" style={{ display: 'block', textDecoration: 'none', marginBottom: '0.625rem' }}>
-            <Image src="/logo.png" alt="Снова с собой" width={130} height={130} style={{ objectFit: 'contain', display: 'block', height: '56px', width: 'auto' }} />
+            <Image src="/logo-icon.png" alt="Снова с собой" width={130} height={130} style={{ objectFit: 'contain', display: 'block', height: '72px', width: 'auto' }} />
           </Link>
           <Link
             href="/"

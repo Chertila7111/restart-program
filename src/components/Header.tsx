@@ -34,7 +34,7 @@ export default function Header() {
       }}>
         {/* Logo */}
         <Link href="/" style={{ textDecoration: 'none' }}>
-          <Image src="/logo.png" alt="Снова с собой" width={110} height={110} style={{ objectFit: 'contain', display: 'block', height: '52px', width: 'auto' }} />
+          <Image src="/logo-icon.png" alt="Снова с собой" width={110} height={110} style={{ objectFit: 'contain', display: 'block', height: '56px', width: 'auto' }} />
         </Link>
 
         {/* Desktop nav */}

@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { LighthouseIcon } from './LighthouseIcon'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
@@ -12,11 +11,8 @@ export default function Footer() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 14rem), 1fr))', gap: '2.5rem' }}>
           {/* Brand */}
           <div>
-            <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', marginBottom: '1rem' }}>
-              <div style={{ width: '2.25rem', height: '2.25rem', borderRadius: '0.6rem', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <LighthouseIcon size={22} color="white" />
-              </div>
-              <span style={{ fontWeight: 800, color: 'white', fontSize: '1.05rem' }}>Снова с собой</span>
+            <Link href="/" style={{ display: 'inline-block', textDecoration: 'none', marginBottom: '1rem' }}>
+              <Image src="/logo-icon.png" alt="Снова с собой" width={80} height={80} style={{ objectFit: 'contain', display: 'block', height: '64px', width: 'auto' }} />
             </Link>
             <p style={{ fontSize: '0.875rem', lineHeight: 1.7, color: '#8A9E88', maxWidth: '18rem' }}>
               Бережная программа восстановления после расставания. Психолог, небольшая группа, понятный маршрут.

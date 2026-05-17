@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { CheckCircle, Star } from 'lucide-react'
 import { OrganizationSchema, ServiceSchema, FaqSchema } from '@/components/JsonLd'
 import { FaqAccordion } from '@/components/FaqAccordion'
-import { LighthouseIcon } from '@/components/LighthouseIcon'
+import Image from 'next/image'
 
 export const metadata: Metadata = {
   title: 'Restart — пережить расставание и снова почувствовать опору',
@@ -277,11 +277,9 @@ export default function Home() {
               }}>
                 {/* Card header */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem', paddingBottom: '1.25rem', borderBottom: '1px solid var(--border)' }}>
-                  <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.75rem', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(78,123,94,0.3)' }}>
-                    <LighthouseIcon size={20} color="white" />
-                  </div>
+                  <Image src="/logo-icon.png" alt="Снова с собой" width={40} height={40} style={{ objectFit: 'contain', height: '2.5rem', width: 'auto', flexShrink: 0 }} />
                   <div>
-                    <div style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text)', letterSpacing: '-0.01em' }}>Restart</div>
+                    <div style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text)', letterSpacing: '-0.01em' }}>Снова с собой</div>
                     <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>Программа восстановления</div>
                   </div>
                 </div>
@@ -579,11 +577,9 @@ export default function Home() {
                 {/* Sidebar */}
                 <div className="cabinet-sidebar" style={{ background: 'var(--bg-soft)', padding: '1.75rem 1.5rem', borderRight: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '1.75rem', paddingBottom: '1.25rem', borderBottom: '1px solid var(--border)' }}>
-                    <div style={{ width: '2rem', height: '2rem', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <LighthouseIcon size={14} color="white" />
-                    </div>
+                    <Image src="/logo-icon.png" alt="" width={32} height={32} style={{ objectFit: 'contain', height: '2rem', width: 'auto' }} />
                     <div>
-                      <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text)' }}>Restart</div>
+                      <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text)' }}>Снова с собой</div>
                       <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Неделя 2 из 4</div>
                     </div>
                   </div>
@@ -926,7 +922,7 @@ export default function Home() {
       <section className="section" style={{ background: 'var(--bg-sage)' }}>
         <div className="container mx-auto px-6" style={{ textAlign: 'center', maxWidth: '44rem' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
-            <LighthouseIcon size={48} color="var(--primary)" />
+            <Image src="/logo-icon.png" alt="" width={96} height={96} style={{ objectFit: 'contain', height: '80px', width: 'auto' }} />
           </div>
           <h2 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', fontWeight: 800, marginBottom: '1rem', color: 'var(--text)' }}>
             Не оставайтесь один на один с этим

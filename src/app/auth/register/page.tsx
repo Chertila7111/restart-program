@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff } from 'lucide-react'
-import { LighthouseIcon } from '@/components/LighthouseIcon'
+import Image from 'next/image'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -51,21 +51,13 @@ export default function RegisterPage() {
     }}>
       <div className="card" style={{ padding: '2.5rem', width: '100%', maxWidth: '28rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <Link href="/" style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
-            <div style={{
-              width: '3rem', height: '3rem', borderRadius: '0.875rem',
-              background: 'var(--primary)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 4px 16px rgba(78,123,94,0.25)',
-            }}>
-              <LighthouseIcon size={24} color="white" />
-            </div>
-            <span style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--text)', letterSpacing: '-0.02em' }}>Restart</span>
+          <Link href="/" style={{ display: 'inline-block', textDecoration: 'none' }}>
+            <Image src="/logo-icon.png" alt="Снова с собой" width={100} height={100} style={{ objectFit: 'contain', display: 'block', height: '80px', width: 'auto', margin: '0 auto' }} />
           </Link>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text)', marginTop: '1.25rem', marginBottom: '0.25rem' }}>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text)', marginTop: '1rem', marginBottom: '0.25rem' }}>
             Создать аккаунт
           </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Присоединяйтесь к программе Restart</p>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Присоединяйтесь к программе «Снова с собой»</p>
         </div>
 
         <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CheckCircle } from 'lucide-react'
-import { LighthouseIcon } from '@/components/LighthouseIcon'
+import Image from 'next/image'
 
 export const metadata: Metadata = {
   title: 'О программе Restart — как это работает',
@@ -475,7 +475,7 @@ export default function ProgramPage() {
       <section style={{ padding: '5rem 0', background: 'var(--bg-dark)' }}>
         <div className="container mx-auto px-6" style={{ textAlign: 'center' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
-            <LighthouseIcon size={44} color="rgba(255,255,255,0.9)" />
+            <Image src="/logo-icon.png" alt="" width={80} height={80} style={{ objectFit: 'contain', height: '80px', width: 'auto', opacity: 0.9 }} />
           </div>
           <h2 style={{ fontSize: 'clamp(1.75rem, 4vw, 2.25rem)', fontWeight: 800, color: 'white', marginBottom: '1rem' }}>
             Начать восстановление

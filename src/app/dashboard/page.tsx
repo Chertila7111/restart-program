@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { ArrowRight, BookOpen, CheckSquare, PenLine, Calendar, Sparkles } from 'lucide-react'
 import { PROGRAM_MEETINGS, PROGRAM_TASKS } from '@/lib/dashboard-data'
-import { LighthouseIcon } from '@/components/LighthouseIcon'
+import Image from 'next/image'
 
 function getUserTier(role: string, orders: { product: string; status: string }[]) {
   if (role === 'admin' || role === 'psychologist') return 'personal'
@@ -114,9 +114,7 @@ export default async function DashboardPage() {
           <div style={{ position: 'absolute', top: '-2rem', right: '-2rem', width: '10rem', height: '10rem', borderRadius: '50%', background: 'rgba(78,123,94,0.15)' }} />
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '1rem' }}>
-              <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '50%', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <LighthouseIcon size={18} color="rgba(255,255,255,0.9)" />
-              </div>
+              <Image src="/logo-icon.png" alt="" width={40} height={40} style={{ objectFit: 'contain', height: '2.5rem', width: 'auto', opacity: 0.9 }} />
               <span style={{ color: 'rgba(168,184,160,1)', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>С чего начать</span>
             </div>
             <h2 style={{ color: 'white', fontWeight: 800, fontSize: '1.3rem', marginBottom: '0.75rem', lineHeight: 1.3 }}>

@@ -45,7 +45,7 @@ function LoginForm() {
       <div style={{ width: '100%', maxWidth: '26rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <Link href="/" style={{ display: 'inline-block', textDecoration: 'none' }}>
-            <Image src="/logo.png" alt="Снова с собой" width={160} height={160} style={{ objectFit: 'contain', display: 'block', height: '100px', width: 'auto', margin: '0 auto' }} />
+            <Image src="/logo-icon.png" alt="Снова с собой" width={160} height={160} style={{ objectFit: 'contain', display: 'block', height: '120px', width: 'auto', margin: '0 auto' }} />
           </Link>
         </div>
 

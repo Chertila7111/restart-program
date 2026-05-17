@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { LighthouseIcon } from '@/components/LighthouseIcon'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function SetupPage() {
   const [form, setForm] = useState({
@@ -46,9 +46,7 @@ export default function SetupPage() {
     }}>
       <div style={{ width: '100%', maxWidth: '26rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{ width: '3rem', height: '3rem', borderRadius: '0.875rem', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.5rem', boxShadow: '0 4px 16px rgba(78,123,94,0.25)' }}>
-            <LighthouseIcon size={22} color="white" />
-          </div>
+          <Image src="/logo-icon.png" alt="Снова с собой" width={80} height={80} style={{ objectFit: 'contain', display: 'block', height: '72px', width: 'auto', margin: '0 auto 0.5rem' }} />
           <h1 style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--text)' }}>Создать Admin-аккаунт</h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '0.25rem' }}>Одноразовая страница настройки</p>
         </div>
