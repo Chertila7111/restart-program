@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { BLOG_POSTS, getPost } from '@/lib/blog'
 import { Clock, ArrowLeft, ArrowRight } from 'lucide-react'
-import Image from 'next/image'
+import { LogoSvg } from '@/components/LogoSvg'
 import { ArticleReader } from '@/components/ArticleReader'
 
 type Props = { params: Promise<{ slug: string }> }
@@ -110,7 +110,7 @@ export default async function BlogPostPage({ params }: Props) {
             border: '1px solid var(--primary-light)',
             maxWidth: '52rem',
           }}>
-            <Image src="/logo-icon.png" alt="" width={32} height={32} style={{ objectFit: 'contain', height: '28px', width: 'auto', flexShrink: 0 }} />
+            <LogoSvg size={28} />
             <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.5 }}>
               Материал подготовлен командой «Снова с собой» совместно с практикующими психологами.
             </p>
@@ -152,7 +152,7 @@ export default async function BlogPostPage({ params }: Props) {
             <div style={{ position: 'absolute', top: '-3rem', right: '-3rem', width: '12rem', height: '12rem', borderRadius: '50%', background: 'rgba(78,123,94,0.15)' }} />
             <div style={{ position: 'relative', zIndex: 1 }}>
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
-                <Image src="/logo-icon.png" alt="" width={64} height={64} style={{ objectFit: 'contain', height: '56px', width: 'auto', opacity: 0.9 }} />
+                <LogoSvg size={56} />
               </div>
               <h3 style={{ fontWeight: 800, color: 'white', fontSize: '1.4rem', marginBottom: '0.625rem', lineHeight: 1.3 }}>
                 Начните с вводной встречи

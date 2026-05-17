@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { CheckCircle, ArrowLeft } from 'lucide-react'
-import Image from 'next/image'
+import { LogoSvg } from '@/components/LogoSvg'
 
 const steps = [
   {
@@ -170,7 +170,7 @@ export default function QuizPage() {
       }}>
         <div className="container mx-auto px-6" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link href="/" style={{ display: 'inline-block', textDecoration: 'none' }}>
-            <Image src="/logo-icon.png" alt="Снова с собой" width={56} height={56} style={{ objectFit: 'contain', height: '40px', width: 'auto' }} />
+            <LogoSvg size={40} />
           </Link>
 
           {!isResult && (
@@ -270,7 +270,7 @@ export default function QuizPage() {
           <div>
             {/* Icon */}
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
-              <Image src="/logo-icon.png" alt="" width={64} height={64} style={{ objectFit: 'contain', height: '64px', width: 'auto' }} />
+              <LogoSvg size={64} />
             </div>
 
             {/* Block 1: "Ваша ситуация" */}

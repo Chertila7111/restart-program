@@ -207,77 +207,45 @@ async function _init() {
 async function seedTestUser() {
   const email = 'test@snova-s-soboy.ru'
   try {
-    const existing = await (prisma as any).user.findUnique({ where: { email } })
-    if (existing) return
-
     const passwordHash = await bcrypt.hash('Test2026!', 10)
-
-    const user = await (prisma as any).user.create({
-      data: {
-        id: 'test-user-anna',
-        email,
-        name: 'Анна (тест)',
-        passwordHash,
-        role: 'user',
-      },
-    })
-
-    // Give test user "personal" order so they have full access
     await (prisma as any).$executeRawUnsafe(`
-      INSERT INTO "Order" ("id","userId","email","name","product","productName","amount","status","createdAt","updatedAt")
-      VALUES ('order-test-personal', '${user.id}', '${email}', 'Анна (тест)', 'personal', 'Персональный', 24990, 'paid', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      INSERT OR IGNORE INTO "User" ("id","email","name","passwordHash","role","createdAt","updatedAt")
+      VALUES ('test-user-anna', '${email}', 'Анна (тест)', '${passwordHash}', 'user', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    `)
+    await (prisma as any).$executeRawUnsafe(`
+      INSERT OR IGNORE INTO "Order" ("id","userId","email","name","product","productName","amount","status","createdAt","updatedAt")
+      VALUES ('order-test-personal', 'test-user-anna', '${email}', 'Анна (тест)', 'personal', 'Персональный', 24990, 'paid', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
     `)
   } catch { /* ignore */ }
 }
 
 async function seedDoctor() {
   const email = 'doctor@snova-s-soboy.ru'
+  const doctorId = 'doctor-maria-sokolova'
+  const convId = 'conv-support-general'
   try {
-    const existing = await (prisma as any).user.findUnique({ where: { email } })
-    if (existing) return
-
     const passwordHash = await bcrypt.hash('Doctor2026!', 10)
-
-    const doctor = await (prisma as any).user.create({
-      data: {
-        id: 'doctor-maria-sokolova',
-        email,
-        name: 'Мария Соколова',
-        passwordHash,
-        role: 'psychologist',
-      },
-    })
-
-    await (prisma as any).psychologistProfile.create({
-      data: {
-        userId: doctor.id,
-        speciality: 'Клинический психолог',
-        approach: 'КПТ и схема-терапия',
-        education: 'МГУ, факультет психологии · Сертификат КПТ (Beck Institute)',
-        experience: '9 лет практики · 300+ индивидуальных клиентов · 4 года ведения групп',
-        bio: 'Специализируюсь на работе с расставаниями, потерями и переходными периодами. Провожу как групповые, так и индивидуальные сессии.',
-      },
-    })
-
-    // Create welcome conversation for all new users to find
-    const convId = 'conv-support-general'
-    try {
-      await (prisma as any).$executeRawUnsafe(`
-        INSERT OR IGNORE INTO "Conversation" ("id","subject","createdAt","updatedAt")
-        VALUES ('${convId}', 'Общий чат с психологом', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-      `)
-      await (prisma as any).$executeRawUnsafe(`
-        INSERT OR IGNORE INTO "ConversationMember" ("id","conversationId","userId")
-        VALUES ('cm-doctor-general', '${convId}', '${doctor.id}')
-      `)
-      // Welcome message
-      const msgId = 'msg-welcome-' + Date.now()
-      await (prisma as any).$executeRawUnsafe(`
-        INSERT INTO "Message" ("id","conversationId","senderId","text","createdAt")
-        VALUES ('${msgId}', '${convId}', '${doctor.id}',
-          'Добро пожаловать! Я Мария — психолог программы «Снова с собой». Здесь вы можете задать вопросы по программе, записаться на индивидуальную встречу или просто написать, если нужна поддержка. Отвечаю в будни с 10:00 до 19:00 МСК.',
-          CURRENT_TIMESTAMP)
-      `)
-    } catch { /* ignore */ }
+    await (prisma as any).$executeRawUnsafe(`
+      INSERT OR IGNORE INTO "User" ("id","email","name","passwordHash","role","createdAt","updatedAt")
+      VALUES ('${doctorId}', '${email}', 'Мария Соколова', '${passwordHash}', 'psychologist', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    `)
+    await (prisma as any).$executeRawUnsafe(`
+      INSERT OR IGNORE INTO "PsychologistProfile" ("id","userId","speciality","approach","education","experience","bio","createdAt","updatedAt")
+      VALUES ('psych-maria-sokolova', '${doctorId}', 'Клинический психолог', 'КПТ и схема-терапия', 'МГУ, факультет психологии · Сертификат КПТ (Beck Institute)', '9 лет практики · 300+ индивидуальных клиентов · 4 года ведения групп', 'Специализируюсь на работе с расставаниями, потерями и переходными периодами. Провожу как групповые, так и индивидуальные сессии.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    `)
+    await (prisma as any).$executeRawUnsafe(`
+      INSERT OR IGNORE INTO "Conversation" ("id","subject","createdAt","updatedAt")
+      VALUES ('${convId}', 'Общий чат с психологом', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    `)
+    await (prisma as any).$executeRawUnsafe(`
+      INSERT OR IGNORE INTO "ConversationMember" ("id","conversationId","userId")
+      VALUES ('cm-doctor-general', '${convId}', '${doctorId}')
+    `)
+    await (prisma as any).$executeRawUnsafe(`
+      INSERT OR IGNORE INTO "Message" ("id","conversationId","senderId","text","createdAt")
+      VALUES ('msg-welcome-init', '${convId}', '${doctorId}',
+        'Добро пожаловать! Я Мария — психолог программы «Снова с собой». Здесь вы можете задать вопросы по программе, записаться на индивидуальную встречу или просто написать, если нужна поддержка. Отвечаю в будни с 10:00 до 19:00 МСК.',
+        CURRENT_TIMESTAMP)
+    `)
   } catch { /* ignore */ }
 }
