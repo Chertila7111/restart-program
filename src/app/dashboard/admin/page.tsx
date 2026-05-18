@@ -12,6 +12,7 @@ export default async function AdminPage() {
   if (sessionRole !== 'admin') redirect('/dashboard')
 
   let users: { id: string; name: string | null; email: string; role: string; createdAt: Date; orders: { status: string; product: string }[] }[] = []
+  let leads: { id: string; name: string; email: string; phone: string | null; message: string | null; createdAt: Date }[] = []
   let totalUsers = 0
   let totalPaid = 0
 
@@ -23,6 +24,7 @@ export default async function AdminPage() {
     })
     totalUsers = await prisma.user.count()
     totalPaid = await prisma.order.count({ where: { status: 'paid' } })
+    leads = await prisma.lead.findMany({ orderBy: { createdAt: 'desc' }, take: 50 })
   } catch { /* DB unavailable */ }
 
   const serialized = users.map(u => ({
@@ -76,6 +78,44 @@ export default async function AdminPage() {
       </div>
 
       <AdminPanel users={serialized} />
+
+      {/* Leads */}
+      <div style={{ marginTop: '2.5rem' }}>
+        <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text)', marginBottom: '1rem' }}>
+          Заявки с сайта ({leads.length})
+        </h2>
+        {leads.length === 0 ? (
+          <div className="card" style={{ padding: '1.5rem', color: 'var(--text-muted)', fontSize: '0.875rem' }}>Заявок пока нет</div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {leads.map(lead => (
+              <div key={lead.id} className="card" style={{ padding: '1.25rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', marginBottom: '0.5rem' }}>
+                  <div>
+                    <span style={{ fontWeight: 700, color: 'var(--text)', fontSize: '0.9rem' }}>{lead.name}</span>
+                    {' · '}
+                    <a href={`mailto:${lead.email}`} style={{ color: 'var(--primary)', fontSize: '0.875rem' }}>{lead.email}</a>
+                    {lead.phone && <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginLeft: '0.5rem' }}>{lead.phone}</span>}
+                  </div>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-light)', whiteSpace: 'nowrap' }}>
+                    {new Date(lead.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+                {lead.message && (
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.6, background: 'var(--bg-soft)', padding: '0.625rem 0.875rem', borderRadius: '0.5rem' }}>
+                    {lead.message}
+                  </p>
+                )}
+                <div style={{ marginTop: '0.625rem' }}>
+                  <a href={`mailto:${lead.email}?subject=Ответ на вашу заявку`} style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>
+                    Ответить →
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
