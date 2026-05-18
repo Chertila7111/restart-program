@@ -933,8 +933,8 @@ export default function Home() {
                 <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', lineHeight: 1.7, margin: '0 0 1rem' }}>
                   Индивидуальные пакеты с психологом — от 4 до 8 встреч по 45 минут. Без группы, в своём темпе.
                 </p>
-                <Link href="/pricing" style={{ fontSize: '0.875rem', color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>
-                  Смотреть индивидуальные пакеты →
+                <Link href="/pricing" style={{ fontSize: '0.875rem', color: 'var(--primary)', fontWeight: 600, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                  Смотреть пакеты →
                 </Link>
               </div>
               <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'stretch' }}>

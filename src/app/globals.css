@@ -490,9 +490,9 @@ html, body {
     grid-template-columns: 1fr !important;
   }
 
-  /* Roadmap 4-col → 2-col */
+  /* Roadmap 4-col → 1-col on mobile */
   .grid-roadmap {
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: 1fr !important;
     gap: 1rem !important;
   }
 
@@ -523,10 +523,29 @@ html, body {
     flex: 1 1 calc(50% - 1px) !important;
     border-right: none !important;
     border-bottom: 1px solid var(--border) !important;
+    padding: 1rem 0.75rem !important;
+  }
+
+  .route-strip > div:nth-child(odd) {
+    border-right: 1px solid var(--border) !important;
   }
 
   .route-strip > div:nth-child(3),
   .route-strip > div:nth-child(4) {
     border-bottom: none !important;
+  }
+
+  /* Shrink route label font on mobile */
+  .route-strip > div > div:first-child {
+    font-size: 1rem !important;
+  }
+
+  /* Hide long subtitles in route strip on mobile */
+  .route-strip > div > div:last-child {
+    font-size: 0.72rem !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
   }
 }
