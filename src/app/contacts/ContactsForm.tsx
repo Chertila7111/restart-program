@@ -106,7 +106,7 @@ export default function ContactsPage() {
                   </div>
                   <div>
                     <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: '0.125rem', fontSize: '0.9rem' }}>Email</div>
-                    <a href="mailto:hello@snova-s-soboy.ru" style={{ color: 'var(--primary)', textDecoration: 'none', fontSize: '0.9rem' }}>hello@snova-s-soboy.ru</a>
+                    <a href="mailto:snovassoboi@yandex.com" style={{ color: 'var(--primary)', textDecoration: 'none', fontSize: '0.9rem' }}>snovassoboi@yandex.com</a>
                   </div>
                 </div>
               </div>

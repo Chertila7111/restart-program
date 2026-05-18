@@ -3,7 +3,7 @@ import ContactsForm from './ContactsForm'
 
 export const metadata: Metadata = {
   title: 'Контакты | Снова с собой',
-  description: 'Напишите нам — ответим в течение нескольких часов. Email: hello@snova-s-soboy.ru.',
+  description: 'Напишите нам — ответим в течение нескольких часов. Email: snovassoboi@yandex.com.',
   openGraph: {
     title: 'Контакты — Снова с собой',
     description: 'Если сомневаетесь, подходит ли программа — напишите. Ответим честно без давления.',
