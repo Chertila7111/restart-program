@@ -5,157 +5,259 @@ import Link from 'next/link'
 import { CheckCircle, ArrowLeft } from 'lucide-react'
 import { LogoSvg } from '@/components/LogoSvg'
 
-const steps = [
-  {
+// ── Step definitions ──────────────────────────────────────────────────────────
+
+type StepId =
+  | 'situation'
+  | 'fresh_when' | 'fresh_hard'
+  | 'months_when' | 'months_block'
+  | 'divorce_kids' | 'divorce_hard'
+  | 'other_when' | 'other_hard'
+  | 'psych'
+
+type QuizStep = {
+  id: StepId
+  question: string
+  hint: string
+  options: { id: string; text: string }[]
+}
+
+const allSteps: Record<StepId, QuizStep> = {
+  situation: {
     id: 'situation',
     question: 'Что сейчас происходит?',
-    hint: 'Выберите то, что ближе к вашей ситуации',
+    hint: 'Выберите то, что ближе всего к вашей ситуации',
     options: [
-      { id: 'fresh', text: 'Мы только расстались — ещё свежо и очень больно' },
-      { id: 'months', text: 'Прошло несколько месяцев, но легче не стало' },
+      { id: 'fresh',   text: 'Мы только расстались — ещё свежо и очень больно' },
+      { id: 'months',  text: 'Прошло несколько месяцев, но легче не стало' },
       { id: 'divorce', text: 'Я переживаю развод' },
-      { id: 'other', text: 'Сложно описать словами, но мне плохо' },
+      { id: 'other',   text: 'Сложно описать словами, но мне плохо' },
     ],
   },
-  {
-    id: 'hardest',
+
+  // ── FRESH branch ─────────────────────────────────────────────────────────
+  fresh_when: {
+    id: 'fresh_when',
+    question: 'Как давно это случилось?',
+    hint: 'Это поможет понять, на каком этапе вы сейчас',
+    options: [
+      { id: 'days',  text: 'Несколько дней или меньше недели' },
+      { id: 'weeks', text: '1-4 недели назад' },
+      { id: 'month', text: 'Около месяца назад' },
+    ],
+  },
+  fresh_hard: {
+    id: 'fresh_hard',
     question: 'Что сейчас тяжелее всего?',
-    hint: 'Выберите то, что откликается сильнее',
+    hint: 'Выберите то, что резонирует сильнее',
     options: [
-      { id: 'thoughts', text: 'Постоянно думаю о нём/ней и хочу написать' },
-      { id: 'work', text: 'Не могу нормально работать и держать режим' },
-      { id: 'anxiety', text: 'Тревога, пустота, не понимаю что со мной' },
-      { id: 'future', text: 'Кажется, жизнь остановилась и будущего нет' },
+      { id: 'thoughts',    text: 'Постоянно думаю о нём/ней — хочется написать' },
+      { id: 'body',        text: 'Физически плохо: не сплю, ничего не ем' },
+      { id: 'understand',  text: 'Не понимаю за что — ищу объяснение этому' },
+      { id: 'alone',       text: 'Страшно оставаться одной/одним' },
     ],
   },
-  {
-    id: 'style',
-    question: 'Как вы обычно справляетесь с трудным?',
-    hint: 'Нет правильных ответов — просто честно',
+
+  // ── MONTHS branch ────────────────────────────────────────────────────────
+  months_when: {
+    id: 'months_when',
+    question: 'Сколько времени прошло?',
+    hint: 'Примерно — точность не важна',
     options: [
-      { id: 'distract', text: 'Стараюсь не думать и отвлекаться' },
-      { id: 'friends', text: 'Говорю с друзьями или близкими' },
-      { id: 'research', text: 'Читаю, ищу ответы, разбираюсь сам(а)' },
-      { id: 'alone', text: 'Жду, пока само пройдёт, и стараюсь держаться' },
+      { id: 'three_six',  text: '3–6 месяцев' },
+      { id: 'six_year',   text: '6–12 месяцев' },
+      { id: 'over_year',  text: 'Больше года' },
     ],
   },
-  {
+  months_block: {
+    id: 'months_block',
+    question: 'Что мешает двигаться дальше?',
+    hint: 'Что резонирует сильнее всего?',
+    options: [
+      { id: 'social',   text: 'Слежу за ним/ней в соцсетях и сравниваю себя' },
+      { id: 'compare',  text: 'Сравниваю всех новых людей с бывшим/бывшей' },
+      { id: 'fear',     text: 'Боюсь новых отношений — не хочу снова ошибиться' },
+      { id: 'empty',    text: 'Просто пусто и нет интереса к жизни' },
+    ],
+  },
+
+  // ── DIVORCE branch ───────────────────────────────────────────────────────
+  divorce_kids: {
+    id: 'divorce_kids',
+    question: 'Есть ли дети в вашей ситуации?',
+    hint: 'Это помогает точнее подобрать формат поддержки',
+    options: [
+      { id: 'no_kids',    text: 'Нет, детей нет' },
+      { id: 'kids_me',    text: 'Да, они остаются со мной' },
+      { id: 'kids_share', text: 'Да, совместная опека' },
+    ],
+  },
+  divorce_hard: {
+    id: 'divorce_hard',
+    question: 'Что сейчас самое тяжёлое?',
+    hint: 'Можно выбрать то, что давит сильнее всего',
+    options: [
+      { id: 'practical',  text: 'Юридические, бытовые и финансовые вопросы' },
+      { id: 'loneliness', text: 'Одиночество и перестройка всей жизни с нуля' },
+      { id: 'guilt',      text: 'Вина, обида или злость — не знаю, куда деть' },
+      { id: 'worryKids',  text: 'Переживаю за детей и их состояние' },
+    ],
+  },
+
+  // ── OTHER branch ─────────────────────────────────────────────────────────
+  other_when: {
+    id: 'other_when',
+    question: 'Как долго вам уже плохо?',
+    hint: 'Примерно — это важно для понимания ситуации',
+    options: [
+      { id: 'weeks',  text: 'Несколько недель' },
+      { id: 'months', text: 'Несколько месяцев' },
+      { id: 'long',   text: 'Долго — уже не помню, когда было иначе' },
+    ],
+  },
+  other_hard: {
+    id: 'other_hard',
+    question: 'Что захватывает сильнее всего?',
+    hint: 'Нет правильного или неправильного ответа',
+    options: [
+      { id: 'anxiety',    text: 'Тревога и мысли, которые ходят по кругу' },
+      { id: 'loneliness', text: 'Одиночество и ощущение пустоты' },
+      { id: 'anger',      text: 'Злость или обида, которую некуда деть' },
+      { id: 'apathy',     text: 'Апатия — ничего не хочется и не интересно' },
+    ],
+  },
+
+  // ── PSYCH (common last) ──────────────────────────────────────────────────
+  psych: {
     id: 'psych',
     question: 'Работали ли вы раньше с психологом?',
     hint: 'Это поможет подобрать подходящий формат',
     options: [
-      { id: 'yes_good', text: 'Да, и это хорошо помогало' },
-      { id: 'yes_bad', text: 'Да, но не очень подошло' },
-      { id: 'no_want', text: 'Нет, хочу попробовать — давно думаю об этом' },
+      { id: 'yes_good',  text: 'Да, и это хорошо помогало' },
+      { id: 'yes_bad',   text: 'Да, но не очень подошло' },
+      { id: 'no_want',   text: 'Нет, хочу попробовать — давно думаю об этом' },
       { id: 'no_unsure', text: 'Нет, и пока немного страшно' },
     ],
   },
-]
+}
 
-// Block 1: main insight text — 4 situations × 4 hardest = 16 combinations
+function getNextStep(stepId: StepId, answerId: string): StepId | 'result' {
+  if (stepId === 'situation') {
+    if (answerId === 'fresh')   return 'fresh_when'
+    if (answerId === 'months')  return 'months_when'
+    if (answerId === 'divorce') return 'divorce_kids'
+    return 'other_when'
+  }
+  if (stepId === 'fresh_when')   return 'fresh_hard'
+  if (stepId === 'months_when')  return 'months_block'
+  if (stepId === 'divorce_kids') return 'divorce_hard'
+  if (stepId === 'other_when')   return 'other_hard'
+  if (stepId === 'fresh_hard' || stepId === 'months_block' || stepId === 'divorce_hard' || stepId === 'other_hard') return 'psych'
+  return 'result'
+}
+
+// Maps Q3 answer → result category (thoughts/work/anxiety/future)
+function getResultCategory(situation: string, q3Answer: string): string {
+  const map: Record<string, Record<string, string>> = {
+    fresh:   { thoughts: 'thoughts', body: 'anxiety', understand: 'anxiety', alone: 'future' },
+    months:  { social: 'thoughts', compare: 'thoughts', fear: 'future', empty: 'anxiety' },
+    divorce: { practical: 'work', loneliness: 'future', guilt: 'anxiety', worryKids: 'anxiety' },
+    other:   { anxiety: 'anxiety', loneliness: 'future', anger: 'anxiety', apathy: 'work' },
+  }
+  return map[situation]?.[q3Answer] ?? 'anxiety'
+}
+
+// ── Result content ────────────────────────────────────────────────────────────
+
 const situationTexts: Record<string, Record<string, string>> = {
   fresh: {
-    thoughts: 'Похоже, сейчас вам важнее всего остановить навязчивые мысли и справиться с желанием написать. Расставание ещё свежее — это один из самых острых периодов, когда сильно тянет вернуть контакт.',
-    work: 'Похоже, расставание выбило вас из привычной жизни: стало сложнее работать, держать режим и собираться с силами. Когда разрыв ещё свежий, это частая реакция на сильную эмоциональную потерю.',
-    anxiety: 'Похоже, сейчас сильнее всего ощущаются тревога, пустота и непонимание, что с вами происходит. После свежего расставания состояние может резко меняться — от боли до оцепенения.',
-    future: 'Похоже, сейчас тяжелее всего ощущение, что будущего нет и жизнь остановилась. Расставание ещё свежее — это один из самых острых периодов, когда особенно важно не оставаться одному.',
+    thoughts: 'Похоже, сейчас самое трудное — остановить навязчивые мысли и справиться с желанием написать. Расставание ещё совсем свежее — это один из самых острых периодов, когда сильно тянет вернуть контакт.',
+    anxiety:  'Похоже, расставание ударило сразу по нескольким уровням: и эмоционально, и физически. Тревога, пустота, непонимание — всё это нормальная реакция на острую потерю.',
+    future:   'Похоже, сейчас тяжелее всего ощущение, что будущего нет и жизнь остановилась. Расставание ещё свежее — это один из самых острых периодов, когда особенно важно не оставаться одному.',
+    work:     'Похоже, расставание выбило вас из привычного ритма. Когда разрыв ещё свежий — это частая реакция на сильную эмоциональную потерю.',
   },
   months: {
-    thoughts: 'Похоже, прошло уже время, но мысли о человеке всё ещё возвращаются, и желание написать не отпускает. Это может быть особенно тяжело: внешне жизнь вроде идёт дальше, а внутри связь всё ещё держит.',
-    work: 'Похоже, расставание продолжает влиять на вашу обычную жизнь: работу, режим и способность собираться. Даже спустя месяцы состояние может оставаться тяжёлым, если внутри нет опоры и понятного следующего шага.',
-    anxiety: 'Похоже, легче так и не стало: внутри остаются тревога, пустота и ощущение, что с вами что-то происходит, но сложно это объяснить. Такое состояние важно не игнорировать, а спокойно разобрать.',
-    future: 'Похоже, прошло уже несколько месяцев, но ощущение остановившейся жизни всё ещё держит. Это не значит, что вы «застряли навсегда» — скорее, сейчас не хватает понятной поддержки и маршрута восстановления.',
+    thoughts: 'Похоже, прошло уже время, но мысли о человеке всё ещё возвращаются. Это может быть особенно тяжело: внешне жизнь вроде идёт дальше, а внутри связь всё ещё держит.',
+    anxiety:  'Похоже, легче так и не стало: внутри остаются пустота и ощущение, что жизнь остановилась. Такое состояние важно не игнорировать.',
+    future:   'Похоже, прошло уже несколько месяцев, но страх или пустота всё ещё держат. Это не значит, что вы «застряли навсегда» — скорее, сейчас не хватает понятного маршрута.',
+    work:     'Похоже, даже спустя месяцы состояние продолжает влиять на обычную жизнь. Без опоры и понятного следующего шага трудно двигаться вперёд.',
   },
   divorce: {
-    thoughts: 'Похоже, развод сейчас связан не только с болью, но и с сильной тягой к контакту. Когда рушится общая жизнь, привычки и планы, желание написать или всё вернуть может становиться особенно навязчивым.',
-    work: 'Похоже, развод сильно выбил вас из режима: стало труднее работать, заниматься делами и держать обычную жизнь. В такой ситуации важно сначала вернуть базовую опору, а уже потом требовать от себя быстрых решений.',
-    anxiety: 'Похоже, развод сейчас ощущается как сильная внутренняя потеря: тревога, пустота и непонимание, что будет дальше. Это не просто расставание, а перестройка привычной жизни.',
-    future: 'Похоже, развод сейчас ощущается как точка, где жизнь будто остановилась. Когда меняется быт, планы и представление о будущем, особенно важно пройти этот период не в одиночку.',
+    thoughts: 'Похоже, развод связан не только с болью, но и с сильной тягой вернуться к привычному. Когда рушится общая жизнь и планы — это один из самых трудных периодов.',
+    work:     'Похоже, развод выбил вас из привычного ритма: бытовые, юридические вопросы накапливаются. Важно сначала вернуть внутреннюю опору.',
+    anxiety:  'Похоже, развод ощущается как сильная внутренняя потеря: тревога, обида, непонимание что будет дальше. Это не просто расставание — это перестройка всей жизни.',
+    future:   'Похоже, развод сейчас ощущается как точка, где жизнь будто остановилась. Особенно важно пройти этот период не в одиночку.',
   },
   other: {
-    thoughts: 'Похоже, сейчас сложно описать всё словами, но сильнее всего держат мысли о человеке и желание написать. Когда внутри много чувств, психика часто цепляется за один понятный импульс — вернуть контакт.',
-    work: 'Похоже, вам плохо, и это уже влияет на обычную жизнь: работу, режим и повседневные дела. Даже если состояние сложно точно назвать, с ним можно начать разбираться постепенно.',
-    anxiety: 'Похоже, сейчас внутри много тревоги, пустоты и непонимания, что происходит. Если сложно подобрать слова — это нормально: иногда сначала нужна не формулировка, а безопасное пространство, где можно разобраться.',
-    future: 'Похоже, сейчас тяжело даже представить, что дальше будет лучше. Когда внутри ощущение, что жизнь остановилась, важно начать с маленького шага — не с больших решений, а с возвращения опоры.',
+    thoughts: 'Похоже, сложно даже точно описать, что происходит. Психика часто цепляется за один понятный импульс — вернуть контакт — когда внутри много чувств.',
+    anxiety:  'Похоже, внутри много тревоги и мыслей по кругу. Если сложно подобрать слова — это нормально: иногда сначала нужно безопасное пространство.',
+    future:   'Похоже, сейчас тяжело даже представить, что дальше будет лучше. Важно начать с маленького шага — не с больших решений, а с возвращения опоры.',
+    work:     'Похоже, вам плохо, и это уже влияет на обычную жизнь. Даже если состояние сложно точно назвать, с ним можно начать разбираться постепенно.',
   },
 }
 
-// Block 2: 3 bullets for the intro meeting card — by Q2 (hardest)
 const hardestBullets: Record<string, string[]> = {
-  thoughts: [
-    'Разберём, почему так сильно тянет написать',
-    'Покажем, что делать в момент отката',
-    'Объясним, как программа помогает не оставаться в этом цикле',
-  ],
-  work: [
-    'Разберём, почему после разрыва проседают силы и режим',
-    'Поможем наметить первые маленькие шаги к обычной жизни',
-    'Покажем, как в программе возвращается структура недели',
-  ],
-  anxiety: [
-    'Поможем разложить состояние на понятные части',
-    'Дадим первые способы стабилизации',
-    'Объясним, какой формат поддержки сейчас может подойти',
-  ],
-  future: [
-    'Разберём, почему сейчас так сложно думать о будущем',
-    'Поможем найти первые точки опоры',
-    'Покажем, как программа постепенно возвращает движение вперёд',
-  ],
+  thoughts: ['Разберём, почему так сильно тянет написать', 'Покажем, что делать в момент отката', 'Объясним, как программа помогает не оставаться в этом цикле'],
+  work:     ['Разберём, почему после разрыва проседают силы и режим', 'Поможем наметить первые маленькие шаги к обычной жизни', 'Покажем, как в программе возвращается структура недели'],
+  anxiety:  ['Поможем разложить состояние на понятные части', 'Дадим первые способы стабилизации', 'Объясним, какой формат поддержки сейчас подойдёт'],
+  future:   ['Разберём, почему сейчас так сложно думать о будущем', 'Поможем найти первые точки опоры', 'Покажем, как программа постепенно возвращает движение вперёд'],
 }
 
-// Block 3: coping style note — by Q3 (style)
-const styleNotes: Record<string, string> = {
-  distract: 'Похоже, вы стараетесь держаться через отвлечение. Это может помогать на короткое время, но если боль возвращается снова, лучше добавить более устойчивую поддержку.',
-  friends: 'Хорошо, что рядом есть люди, с кем можно говорить. Вводная встреча добавит к этому профессиональную структуру и понимание, что именно с вами происходит.',
-  research: 'Похоже, вы уже пытаетесь разобраться самостоятельно. На встрече можно будет собрать эти мысли в более понятную картину и понять следующий шаг.',
-  alone: 'Похоже, вы сейчас просто стараетесь выдержать это состояние. Иногда этого мало — поддержка помогает не ждать, пока станет совсем тяжело.',
-}
-
-// Block 4: psychologist experience note — by Q4 (psych)
 const psychNotes: Record<string, string> = {
-  yes_good: 'Значит, формат поддержки вам уже знаком — вводная встреча поможет понять, подойдёт ли именно групповая программа.',
-  yes_bad: 'На вводной встрече можно спокойно посмотреть формат без обязательств и понять, подходит ли вам такой подход.',
-  no_want: 'Вводная встреча подойдёт как мягкий первый шаг: можно просто слушать и не рассказывать о себе.',
+  yes_good:  'Значит, формат поддержки вам уже знаком — вводная встреча поможет понять, подойдёт ли именно групповая программа.',
+  yes_bad:   'На вводной встрече можно спокойно посмотреть формат без обязательств и понять, подходит ли вам такой подход.',
+  no_want:   'Вводная встреча подойдёт как мягкий первый шаг: можно просто слушать и не рассказывать о себе.',
   no_unsure: 'Можно прийти без готовности говорить о личном. На встрече разрешено просто слушать и знакомиться с форматом.',
 }
 
-function getMainText(situation: string, hardest: string): string {
-  return situationTexts[situation]?.[hardest]
-    ?? 'То, через что вы сейчас проходите — это серьёзно. На вводной встрече можно разобраться, какая поддержка подойдёт именно вам.'
-}
+// ── Component ─────────────────────────────────────────────────────────────────
 
 export default function QuizPage() {
-  const [step, setStep] = useState(0)
+  const [history, setHistory] = useState<StepId[]>(['situation'])
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [selected, setSelected] = useState<string | null>(null)
+  const [isResult, setIsResult] = useState(false)
 
-  const currentStep = steps[step]
-  const isResult = step === steps.length
-
-  const handleSelect = (optionId: string) => setSelected(optionId)
+  const currentStepId = history[history.length - 1]
+  const currentStep = allSteps[currentStepId]
+  const stepIndex = history.length - 1 // 0..3
+  const totalSteps = 4
 
   const handleNext = () => {
     if (!selected) return
-    const newAnswers = { ...answers, [currentStep.id]: selected }
+    const next = getNextStep(currentStepId, selected)
+    const newAnswers = { ...answers, [currentStepId]: selected }
     setAnswers(newAnswers)
     setSelected(null)
-    setStep(step + 1)
+    if (next === 'result') {
+      setIsResult(true)
+    } else {
+      setHistory([...history, next])
+    }
   }
 
   const handleBack = () => {
-    if (step === 0) return
-    setStep(step - 1)
-    setSelected(answers[steps[step - 1].id] || null)
-    const prev = { ...answers }
-    delete prev[currentStep.id]
-    setAnswers(prev)
+    if (history.length <= 1) return
+    const prev = history[history.length - 2]
+    setHistory(history.slice(0, -1))
+    setSelected(answers[prev] ?? null)
   }
 
-  const bullets = isResult ? (hardestBullets[answers.hardest] ?? hardestBullets.thoughts) : []
-  const styleNote = isResult ? (styleNotes[answers.style] ?? '') : ''
-  const psychNote = isResult ? (psychNotes[answers.psych] ?? '') : ''
-  const mainText = isResult ? getMainText(answers.situation, answers.hardest) : ''
+  const reset = () => {
+    setHistory(['situation'])
+    setAnswers({})
+    setSelected(null)
+    setIsResult(false)
+  }
+
+  // Result values
+  const situation = answers['situation'] ?? ''
+  const q3Id = situation === 'fresh' ? 'fresh_hard' : situation === 'months' ? 'months_block' : situation === 'divorce' ? 'divorce_hard' : 'other_hard'
+  const q3Answer = answers[q3Id] ?? ''
+  const category = getResultCategory(situation, q3Answer)
+  const mainText = situationTexts[situation]?.[category] ?? 'То, через что вы сейчас проходите — это серьёзно. На вводной встрече можно разобраться, какая поддержка подойдёт именно вам.'
+  const bullets = hardestBullets[category] ?? hardestBullets.thoughts
+  const psychNote = psychNotes[answers['psych'] ?? ''] ?? ''
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingTop: '4rem' }}>
@@ -174,34 +276,31 @@ export default function QuizPage() {
           </Link>
 
           {!isResult && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              {steps.map((_, i) => (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              {Array.from({ length: totalSteps }).map((_, i) => (
                 <div key={i} style={{
-                  width: i === step ? '1.75rem' : '0.5rem',
+                  width: i === stepIndex ? '1.75rem' : '0.5rem',
                   height: '0.5rem',
                   borderRadius: '9999px',
-                  background: i <= step ? 'var(--primary)' : 'var(--primary-light)',
+                  background: i <= stepIndex ? 'var(--primary)' : 'var(--primary-light)',
                   transition: 'all 0.3s ease',
                 }} />
               ))}
             </div>
           )}
 
-          {!isResult && (
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-              {step + 1} из {steps.length}
-            </span>
-          )}
-          {isResult && <span style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 600 }}>Ваш результат</span>}
+          <span style={{ fontSize: '0.8rem', color: isResult ? 'var(--primary)' : 'var(--text-muted)', fontWeight: isResult ? 600 : 400 }}>
+            {isResult ? 'Ваш результат' : `${stepIndex + 1} из ${totalSteps}`}
+          </span>
         </div>
       </div>
 
       <div style={{ maxWidth: '42rem', margin: '0 auto', padding: '3rem 1.5rem 5rem' }}>
 
-        {/* ── Question screen ── */}
+        {/* ── Question ── */}
         {!isResult && (
           <div>
-            {step > 0 && (
+            {history.length > 1 && (
               <button
                 onClick={handleBack}
                 style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '2rem', padding: 0 }}
@@ -223,7 +322,7 @@ export default function QuizPage() {
                 return (
                   <button
                     key={option.id}
-                    onClick={() => handleSelect(option.id)}
+                    onClick={() => setSelected(option.id)}
                     style={{
                       width: '100%', textAlign: 'left',
                       padding: '1.25rem 1.5rem', borderRadius: '1rem',
@@ -256,7 +355,7 @@ export default function QuizPage() {
               className="btn-primary"
               style={{ width: '100%', opacity: selected ? 1 : 0.45, cursor: selected ? 'pointer' : 'not-allowed', fontSize: '1rem', padding: '0.875rem' }}
             >
-              {step === steps.length - 1 ? 'Получить рекомендацию →' : 'Продолжить →'}
+              {stepIndex === totalSteps - 1 ? 'Получить рекомендацию →' : 'Продолжить →'}
             </button>
 
             <p style={{ textAlign: 'center', fontSize: '0.78rem', color: 'var(--text-light)', marginTop: '1rem' }}>
@@ -265,15 +364,13 @@ export default function QuizPage() {
           </div>
         )}
 
-        {/* ── Result screen ── */}
+        {/* ── Result ── */}
         {isResult && (
           <div>
-            {/* Icon */}
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
               <LogoSvg size={64} />
             </div>
 
-            {/* Block 1: "Ваша ситуация" */}
             <div style={{ marginBottom: '1.25rem' }}>
               <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.09em', marginBottom: '0.75rem' }}>
                 Ваша ситуация
@@ -285,16 +382,6 @@ export default function QuizPage() {
               </div>
             </div>
 
-            {/* Block 3: coping style note */}
-            {styleNote && (
-              <div style={{ marginBottom: '1.5rem', padding: '0 0.25rem' }}>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.75, margin: 0 }}>
-                  {styleNote}
-                </p>
-              </div>
-            )}
-
-            {/* Block 2: intro meeting card */}
             <div style={{ background: 'var(--primary)', borderRadius: '1.5rem', padding: '2rem', marginBottom: '1rem', position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: '-2rem', right: '-2rem', width: '10rem', height: '10rem', borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
               <div style={{ position: 'relative', zIndex: 1 }}>
@@ -308,7 +395,6 @@ export default function QuizPage() {
                   90 минут в небольшой группе с психологом. Можно просто слушать, не рассказывая о себе. Без обязательства покупать программу.
                 </p>
 
-                {/* Bullets from Block 2 */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.75rem' }}>
                   {bullets.map(f => (
                     <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
@@ -318,7 +404,6 @@ export default function QuizPage() {
                   ))}
                 </div>
 
-                {/* Block 4: psych note — before button */}
                 {psychNote && (
                   <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '0.75rem', padding: '0.875rem 1rem', marginBottom: '1.25rem' }}>
                     <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.825rem', lineHeight: 1.65, margin: 0 }}>
@@ -327,8 +412,7 @@ export default function QuizPage() {
                   </div>
                 )}
 
-                {/* Price + CTA */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.12)', borderRadius: '0.875rem', padding: '1rem 1.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.12)', borderRadius: '0.875rem', padding: '1rem 1.25rem', gap: '1rem', flexWrap: 'wrap' }}>
                   <div>
                     <div style={{ fontSize: '1.75rem', fontWeight: 900, color: 'white', lineHeight: 1 }}>1 490 ₽</div>
                     <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)', marginTop: '0.2rem' }}>разово · засчитается в тариф</div>
@@ -352,7 +436,7 @@ export default function QuizPage() {
                 Есть вопросы? Напишите нам →
               </Link>
               <button
-                onClick={() => { setStep(0); setAnswers({}); setSelected(null) }}
+                onClick={reset}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.8rem', color: 'var(--text-light)', textDecoration: 'underline' }}
               >
                 Пройти тест заново
