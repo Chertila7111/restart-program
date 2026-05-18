@@ -17,6 +17,11 @@ function getUserTier(role: string, orders: { product: string; status: string }[]
   return 'none'
 }
 
+const DEMO_EMAIL_TIERS: Record<string, string> = {
+  'test@snova-s-soboy.ru':   'intro',
+  'doctor@snova-s-soboy.ru': 'personal',
+}
+
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) redirect('/auth/login?callbackUrl=/dashboard')
@@ -52,12 +57,13 @@ export default async function DashboardPage() {
     taskCompletions: [],
   }
 
+  const emailKey = (session.user.email ?? '').toLowerCase()
+  const hardcodedTier = DEMO_EMAIL_TIERS[emailKey]
   const sessionTier = (session.user as any).tier as string | undefined
   const dbTier = getUserTier(effectiveRole, effectiveUser.orders)
-  // If DB has no paid orders, fall back to JWT tier; for regular users without either → 'intro'
-  const tier = dbTier !== 'none'
+  const tier = hardcodedTier ?? (dbTier !== 'none'
     ? dbTier
-    : (sessionTier ?? (effectiveRole === 'user' ? 'intro' : 'none'))
+    : (sessionTier ?? (effectiveRole === 'user' ? 'intro' : 'none')))
   const today = new Date().toISOString().split('T')[0]
   const hasJournalToday = effectiveUser.journalEntries.some(e => e.date === today)
   const completedTaskIds = new Set(effectiveUser.taskCompletions.map(t => t.taskId))

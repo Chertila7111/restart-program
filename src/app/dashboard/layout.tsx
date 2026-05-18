@@ -14,6 +14,12 @@ function getUserTier(role: string, orders: { product: string; status: string }[]
   return 'none'
 }
 
+// Hardcoded tiers for demo/test accounts — highest priority, bypasses JWT and DB
+const DEMO_EMAIL_TIERS: Record<string, Tier> = {
+  'test@snova-s-soboy.ru':   'intro',
+  'doctor@snova-s-soboy.ru': 'personal',
+}
+
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) redirect('/auth/login?callbackUrl=/dashboard')
@@ -21,6 +27,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // Psychologists have their own portal
   const sessionRole = (session.user as any).role as string | undefined
   if (sessionRole === 'psychologist') redirect('/specialist')
+
+  // Hardcoded tier for demo accounts — bypasses JWT cookie state and DB seed state
+  const emailKey = session.user.email.toLowerCase()
+  const hardcodedTier = DEMO_EMAIL_TIERS[emailKey]
 
   // Admin via env vars — no DB needed
   if (sessionRole === 'admin') {
@@ -47,9 +57,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!user) {
     const role = sessionRole ?? 'user'
     const sessionTier = (session.user as any).tier as string | undefined
-    // If tier is in JWT (demo accounts), use it; otherwise default to 'intro'
-    // so users who paid and have creds never see the fully locked state
-    const tier = (sessionTier as Tier | undefined) ?? (role === 'user' ? 'intro' : getUserTier(role, []))
+    const tier = hardcodedTier ?? (sessionTier as Tier | undefined) ?? (role === 'user' ? 'intro' : getUserTier(role, []))
     return (
       <DashboardShell
         user={{ name: session.user.name ?? null, email: session.user.email! }}
@@ -63,11 +71,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   const dbTier = getUserTier(user.role, user.orders)
   const sessionTier = (session.user as any).tier as string | undefined
-  // If DB has no paid orders (e.g. Vercel cold-start seed race), fall back to JWT tier
-  // For regular users without either, default to 'intro' — they can only have creds if they paid
-  const tier: Tier = dbTier !== 'none'
+  const tier: Tier = hardcodedTier ?? (dbTier !== 'none'
     ? dbTier
-    : (sessionTier as Tier | undefined) ?? (user.role === 'user' ? 'intro' : 'none')
+    : (sessionTier as Tier | undefined) ?? (user.role === 'user' ? 'intro' : 'none'))
   const role = user.role
 
   return (
