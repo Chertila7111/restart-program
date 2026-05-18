@@ -167,8 +167,8 @@ export default async function PlanPage() {
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center' }}>
             {tier !== 'none' && tier !== 'personal' && 'Стоимость текущего тарифа засчитывается. '}
             Вопросы — напишите нам:{' '}
-            <a href="mailto:support@restart-program.ru" style={{ color: 'var(--primary)', textDecoration: 'none' }}>
-              support@restart-program.ru
+            <a href="mailto:support@snova-s-soboy.ru" style={{ color: 'var(--primary)', textDecoration: 'none' }}>
+              support@snova-s-soboy.ru
             </a>
           </p>
         </div>

@@ -9,7 +9,7 @@ import {
   HelpCircle, Lock, LogOut, Users, Settings, Shield,
   ArrowLeft, Sparkles,
 } from 'lucide-react'
-import Image from 'next/image'
+import { LogoSvg } from '@/components/LogoSvg'
 
 export type Tier = 'none' | 'intro' | 'base' | 'plus' | 'personal'
 
@@ -108,7 +108,7 @@ export function DashboardShell({ user, tier, role = 'user', children }: Props) {
         {/* Brand + back to site */}
         <div style={{ padding: '1rem 1rem 0.75rem', borderBottom: '1px solid var(--border)' }}>
           <Link href="/" style={{ display: 'block', textDecoration: 'none', marginBottom: '0.625rem' }}>
-            <Image src="/logo-icon.png" alt="Снова с собой" width={130} height={130} style={{ objectFit: 'contain', display: 'block', height: '72px', width: 'auto' }} />
+            <LogoSvg size={64} />
           </Link>
           <Link
             href="/"

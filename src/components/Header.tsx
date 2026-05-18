@@ -1,10 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { useState } from 'react'
 import { Menu, X, LayoutDashboard } from 'lucide-react'
 import { useSession } from 'next-auth/react'
+import { LogoSvg } from './LogoSvg'
 
 const nav = [
   { href: '/program', label: 'Программа' },
@@ -34,7 +34,7 @@ export default function Header() {
       }}>
         {/* Logo */}
         <Link href="/" style={{ textDecoration: 'none' }}>
-          <Image src="/logo-icon.png" alt="Снова с собой" width={110} height={110} style={{ objectFit: 'contain', display: 'block', height: '56px', width: 'auto' }} />
+          <LogoSvg size={48} />
         </Link>
 
         {/* Desktop nav */}

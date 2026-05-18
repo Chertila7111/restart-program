@@ -99,8 +99,8 @@ export default function ContactsPage() {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2rem' }}>
                 {[
-                  { icon: Mail, title: 'Email', value: 'hello@restart-program.ru', href: 'mailto:hello@restart-program.ru' },
-                  { icon: MessageCircle, title: 'Telegram', value: '@restart_support', href: 'https://t.me/restart_support' },
+                  { icon: Mail, title: 'Email', value: 'hello@snova-s-soboy.ru', href: 'mailto:hello@snova-s-soboy.ru' },
+                  { icon: MessageCircle, title: 'Telegram', value: '@snova_s_soboy', href: 'https://t.me/snova_s_soboy' },
                   { icon: Clock, title: 'Время ответа', value: 'Пн–Пт 10:00–19:00 МСК', href: null },
                 ].map((c) => {
                   const Icon = c.icon

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import Image from 'next/image'
+import { LogoSvg } from './LogoSvg'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
@@ -12,7 +12,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <Link href="/" style={{ display: 'inline-block', textDecoration: 'none', marginBottom: '1rem' }}>
-              <Image src="/logo-icon.png" alt="Снова с собой" width={80} height={80} style={{ objectFit: 'contain', display: 'block', height: '64px', width: 'auto' }} />
+              <LogoSvg size={60} />
             </Link>
             <p style={{ fontSize: '0.875rem', lineHeight: 1.7, color: '#8A9E88', maxWidth: '18rem' }}>
               Бережная программа восстановления после расставания. Психолог, небольшая группа, понятный маршрут.
@@ -76,10 +76,10 @@ export default function Footer() {
 
             <div style={{ marginTop: '1.5rem' }}>
               <a
-                href="mailto:hello@restart-program.ru"
+                href="mailto:hello@snova-s-soboy.ru"
                 style={{ fontSize: '0.875rem', color: '#8A9E88', textDecoration: 'none' }}
               >
-                hello@restart-program.ru
+                hello@snova-s-soboy.ru
               </a>
               <p style={{ fontSize: '0.75rem', color: '#5A6E58', marginTop: '0.5rem', lineHeight: 1.6 }}>
                 Юридические реквизиты будут опубликованы при запуске сервиса

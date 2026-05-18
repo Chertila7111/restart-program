@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Публичная оферта — Restart',
-  description: 'Публичная оферта программы Restart на оказание информационных услуг.',
+  title: 'Публичная оферта — Снова с собой',
+  description: 'Публичная оферта программы «Снова с собой» на оказание информационных услуг.',
   robots: { index: false },
 }
 
@@ -26,11 +26,11 @@ export default function OfferPage() {
 
           <h2>1. Определения</h2>
           <ul>
-            <li><strong>Оферта</strong> — настоящий документ, опубликованный на сайте restart-program.ru/legal/offer</li>
+            <li><strong>Оферта</strong> — настоящий документ, опубликованный на сайте snova-s-soboy.ru/legal/offer</li>
             <li><strong>Акцепт</strong> — полное и безоговорочное принятие условий Оферты путём оплаты услуг</li>
             <li><strong>Заказчик</strong> — физическое лицо, совершившее Акцепт</li>
             <li><strong>Услуги</strong> — информационные, консультационные и образовательные услуги, указанные в Оферте</li>
-            <li><strong>Программа</strong> — онлайн-программа «Restart» в выбранном Заказчиком тарифе</li>
+            <li><strong>Программа</strong> — онлайн-программа «Снова с собой» в выбранном Заказчиком тарифе</li>
           </ul>
 
           <h2>2. Предмет договора</h2>
@@ -50,11 +50,11 @@ export default function OfferPage() {
             <tbody>
               {[
                 { name: 'Вводная встреча', desc: '90 минут с психологом', price: '1 490 ₽' },
-                { name: 'Restart Base', desc: '4 встречи, чат, материалы', price: '14 990 ₽' },
-                { name: 'Restart Plus', desc: 'Base + диагностика + план', price: '19 990 ₽' },
-                { name: 'Restart Personal', desc: 'Plus + инд. сессия', price: '24 990 ₽' },
-                { name: 'Career Restart', desc: 'Карьерный трек', price: '29 990 ₽' },
-                { name: 'Career Restart (для участников)', desc: 'Скидка 50% для участников Restart', price: '14 990 ₽' },
+                { name: 'Base', desc: '4 встречи, чат, материалы', price: '14 990 ₽' },
+                { name: 'Plus', desc: 'Base + диагностика + план', price: '19 990 ₽' },
+                { name: 'Plus Pro', desc: 'Plus + инд. сессия', price: '24 990 ₽' },
+                { name: 'Карьерный трек', desc: 'Карьерное сопровождение', price: '29 990 ₽' },
+                { name: 'Карьерный трек (для участников)', desc: 'Скидка 50% для участников программы', price: '14 990 ₽' },
               ].map((row, i) => (
                 <tr key={row.name} style={{ background: i % 2 === 0 ? 'white' : '#FAFAFA' }}>
                   <td style={{ padding: '0.75rem', border: '1px solid #E5E7EB', fontWeight: 600 }}>{row.name}</td>
@@ -97,7 +97,7 @@ export default function OfferPage() {
             <li>После первой встречи, в течение 7 дней — полный возврат при обоснованных претензиях к качеству</li>
             <li>После второй встречи и далее — возврат пропорционально неоказанным услугам</li>
           </ul>
-          <p>Заявление на возврат направлять на: support@restart-program.ru</p>
+          <p>Заявление на возврат направлять на: support@snova-s-soboy.ru</p>
 
           <h2>8. Форс-мажор</h2>
           <p>
@@ -116,7 +116,7 @@ export default function OfferPage() {
             ИНН: [номер]<br />
             Расчётный счёт: [номер]<br />
             Банк: [наименование]<br />
-            Email: legal@restart-program.ru<br />
+            Email: legal@snova-s-soboy.ru<br />
             Телефон: [номер]
           </p>
         </div>

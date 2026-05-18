@@ -5,7 +5,7 @@ import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Eye, EyeOff } from 'lucide-react'
-import Image from 'next/image'
+import { LogoSvg } from '@/components/LogoSvg'
 import { Suspense } from 'react'
 
 function LoginForm() {
@@ -45,7 +45,7 @@ function LoginForm() {
       <div style={{ width: '100%', maxWidth: '26rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <Link href="/" style={{ display: 'inline-block', textDecoration: 'none' }}>
-            <Image src="/logo-icon.png" alt="Снова с собой" width={160} height={160} style={{ objectFit: 'contain', display: 'block', height: '120px', width: 'auto', margin: '0 auto' }} />
+            <LogoSvg size={100} />
           </Link>
         </div>
 

@@ -436,7 +436,7 @@ export default function PricingPage() {
               borderBottom: '1px solid #e8d5be',
             }}>
               <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                Career Restart
+                Карьерный трек
               </span>
               <span style={{ color: '#e8d5be' }}>·</span>
               <p style={{ fontSize: '0.875rem', color: 'var(--secondary)', margin: 0 }}>

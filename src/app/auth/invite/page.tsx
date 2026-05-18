@@ -4,7 +4,7 @@ import { useEffect, useState, Suspense } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
+import { LogoSvg } from '@/components/LogoSvg'
 
 function InviteContent() {
   const router = useRouter()
@@ -63,7 +63,7 @@ function InviteContent() {
       <div style={{ width: '100%', maxWidth: '28rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <Link href="/" style={{ display: 'inline-block', textDecoration: 'none' }}>
-            <Image src="/logo-icon.png" alt="Снова с собой" width={100} height={100} style={{ objectFit: 'contain', display: 'block', height: '80px', width: 'auto', margin: '0 auto' }} />
+            <LogoSvg size={80} />
           </Link>
         </div>
 

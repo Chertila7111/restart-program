@@ -15,8 +15,8 @@ export default function HelpPage() {
           <span style={{ fontSize: '1.5rem', flexShrink: 0 }}>✉️</span>
           <div>
             <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text)', marginBottom: '0.2rem' }}>Написать нам</div>
-            <a href="mailto:support@restart-program.ru" style={{ fontSize: '0.825rem', color: 'var(--primary)', textDecoration: 'none', fontWeight: 500 }}>
-              support@restart-program.ru
+            <a href="mailto:support@snova-s-soboy.ru" style={{ fontSize: '0.825rem', color: 'var(--primary)', textDecoration: 'none', fontWeight: 500 }}>
+              support@snova-s-soboy.ru
             </a>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>Отвечаем в течение суток</div>
           </div>

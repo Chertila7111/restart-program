@@ -107,10 +107,10 @@ export default function ProgramPage() {
           {/* Route strip */}
           <div className="route-strip" style={{ display: 'flex', alignItems: 'center', gap: '0', background: 'white', borderRadius: '1.25rem 1.25rem 0 0', border: '1.5px solid var(--border)', borderBottom: 'none', overflow: 'hidden' }}>
             {[
-              { label: '4 недели', sub: 'Длительность' },
-              { label: '4 фокуса', sub: 'Каждую неделю — своя тема' },
-              { label: '6 артефактов', sub: 'Что вы получаете в руки' },
-              { label: '1 личный план', sub: 'В конце программы' },
+              { label: '4 недели', sub: 'Один месяц, понятный темп' },
+              { label: '4 встречи', sub: 'По 90 мин с психологом в группе' },
+              { label: '6 инструментов', sub: 'Кабинет, чат, дневник, задания, записи, план' },
+              { label: '1 личный план', sub: 'Ваш документ на выход — навсегда' },
             ].map((item, i) => (
               <div key={item.label} style={{ flex: 1, padding: '1.5rem 1.25rem', textAlign: 'center', borderRight: i < 3 ? '1px solid var(--border)' : 'none', position: 'relative' }}>
                 {i === 0 && (
@@ -147,7 +147,7 @@ export default function ProgramPage() {
                     ))}
                   </div>
                   <div style={{ background: 'white', borderRadius: '0.375rem', padding: '0.25rem 0.875rem', fontSize: '0.72rem', color: 'var(--text-muted)', border: '1px solid var(--border)', maxWidth: '200px' }}>
-                    restart.app/cabinet
+                    snova-s-soboy.ru/cabinet
                   </div>
                 </div>
 

@@ -42,7 +42,7 @@ export default function BlogPage() {
             Статьи о расставании<br />и восстановлении
           </h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '1.05rem', maxWidth: '36rem', lineHeight: 1.7 }}>
-            От психологов и команды Restart — честно, без банальностей и пустых советов
+            От психологов и команды «Снова с собой» — честно, без банальностей и пустых советов
           </p>
         </div>
       </section>

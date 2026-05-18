@@ -25,11 +25,11 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: 'Снова с собой' }],
   creator: 'Снова с собой',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://restart-program.ru'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://snova-s-soboy.ru'),
   openGraph: {
     type: 'website',
     locale: 'ru_RU',
-    url: 'https://restart-program.ru',
+    url: 'https://snova-s-soboy.ru',
     siteName: 'Снова с собой',
     title: 'Снова с собой — восстановление после расставания',
     description:

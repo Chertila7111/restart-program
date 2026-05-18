@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
+import { LogoSvg } from '@/components/LogoSvg'
 
 export default function SetupPage() {
   const [form, setForm] = useState({
@@ -46,7 +46,7 @@ export default function SetupPage() {
     }}>
       <div style={{ width: '100%', maxWidth: '26rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <Image src="/logo-icon.png" alt="Снова с собой" width={80} height={80} style={{ objectFit: 'contain', display: 'block', height: '72px', width: 'auto', margin: '0 auto 0.5rem' }} />
+          <LogoSvg size={72} />
           <h1 style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--text)' }}>Создать Admin-аккаунт</h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '0.25rem' }}>Одноразовая страница настройки</p>
         </div>
