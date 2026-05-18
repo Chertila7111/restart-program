@@ -1,22 +1,8 @@
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 
-const FROM = `"Снова с собой" <${process.env.SMTP_USER || 'hello@snova-s-soboy.ru'}>`
+const resend = new Resend(process.env.RESEND_API_KEY)
+const FROM = 'Снова с собой <hello@snova-s-soboy.ru>'
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://snova-s-soboy.ru'
-
-function getTransport() {
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.yandex.ru',
-    port: Number(process.env.SMTP_PORT || 465),
-    secure: process.env.SMTP_SECURE !== 'false',
-    auth: {
-      user: process.env.SMTP_USER || 'hello@snova-s-soboy.ru',
-      pass: process.env.SMTP_PASS || '',
-    },
-    connectionTimeout: 8000,
-    greetingTimeout: 8000,
-    socketTimeout: 10000,
-  })
-}
 
 function header() {
   return `<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -42,7 +28,7 @@ export async function sendWelcomeEmail({
 }: {
   to: string; name: string; product: string; productName: string; tempPassword?: string
 }) {
-  if (!process.env.SMTP_PASS) return
+  if (!process.env.RESEND_API_KEY) return
 
   const passwordRow = tempPassword
     ? `<tr><td style="padding:0.35rem 0;font-size:0.875rem;color:#6B7280;width:6rem">Пароль</td>
@@ -53,8 +39,9 @@ export async function sendWelcomeEmail({
     ? `<p style="color:#6B7280;font-size:0.8rem;line-height:1.6;margin:0 0 1rem">Это временный пароль — после входа вы сможете сменить его в настройках.</p>`
     : `<p style="color:#6B7280;font-size:0.8rem;line-height:1.6;margin:0 0 1rem">Куратор свяжется с вами в течение рабочего дня.</p>`
 
-  await getTransport().sendMail({
-    from: FROM, to,
+  await resend.emails.send({
+    from: FROM,
+    to,
     subject: `Доступ к программе «${productName}» — Снова с собой`,
     html: header() + `
     <h1 style="font-size:1.25rem;font-weight:800;color:#1C2B23;margin:0 0 0.75rem">Добро пожаловать, ${name || 'друг'}!</h1>
@@ -77,10 +64,11 @@ export async function sendWelcomeEmail({
 }
 
 export async function sendPasswordResetEmail({ to, resetUrl }: { to: string; resetUrl: string }) {
-  if (!process.env.SMTP_PASS) return
+  if (!process.env.RESEND_API_KEY) return
 
-  await getTransport().sendMail({
-    from: FROM, to,
+  await resend.emails.send({
+    from: FROM,
+    to,
     subject: 'Сброс пароля — Снова с собой',
     html: header() + `
     <h1 style="font-size:1.25rem;font-weight:800;color:#1C2B23;margin:0 0 0.75rem">Сброс пароля</h1>
@@ -95,10 +83,10 @@ export async function sendPasswordResetEmail({ to, resetUrl }: { to: string; res
 }
 
 export async function sendContactEmail({ name, email, message }: { name: string; email: string; message: string }) {
-  if (!process.env.SMTP_PASS) return
+  if (!process.env.RESEND_API_KEY) return
 
   const adminEmail = process.env.ADMIN_NOTIFY_EMAIL || 'snovassoboi@yandex.com'
-  await getTransport().sendMail({
+  await resend.emails.send({
     from: FROM,
     to: adminEmail,
     replyTo: email,
