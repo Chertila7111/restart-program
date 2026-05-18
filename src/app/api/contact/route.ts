@@ -1,21 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { sendContactEmail } from '@/lib/mailer'
 
 export async function POST(req: NextRequest) {
+  const { name, email, phone, message } = await req.json()
+
+  if (!name || !email || !message) {
+    return NextResponse.json({ error: 'Заполните обязательные поля' }, { status: 400 })
+  }
+
+  // Save lead to DB — non-fatal if DB unavailable
   try {
-    const { name, email, phone, message } = await req.json()
-
-    if (!name || !email || !message) {
-      return NextResponse.json({ error: 'Заполните обязательные поля' }, { status: 400 })
-    }
-
     await prisma.lead.create({
       data: { name, email, phone: phone || null, message, source: 'contact_form' },
     })
-
-    return NextResponse.json({ ok: true })
-  } catch (error) {
-    console.error('Contact error:', error)
-    return NextResponse.json({ error: 'Ошибка сервера' }, { status: 500 })
+  } catch (e) {
+    console.error('Contact lead save error:', e)
   }
+
+  // Send email notification — non-fatal
+  try {
+    await sendContactEmail({ name, email, message })
+  } catch (e) {
+    console.error('Contact email error:', e)
+  }
+
+  return NextResponse.json({ ok: true })
 }
