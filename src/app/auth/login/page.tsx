@@ -30,7 +30,7 @@ function LoginForm() {
     })
 
     if (res?.ok) {
-      router.push(callbackUrl)
+      window.location.href = callbackUrl
     } else {
       setError('Неверный email или пароль')
       setStatus('error')

@@ -10,6 +10,7 @@ import { LogoSvg } from '@/components/LogoSvg'
 export default function RegisterPage() {
   const router = useRouter()
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', confirm: '' })
+  const [consent, setConsent] = useState(false)
   const [showPass, setShowPass] = useState(false)
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle')
   const [error, setError] = useState('')
@@ -99,21 +100,36 @@ export default function RegisterPage() {
             <input type="password" required placeholder="Повторите пароль" value={form.confirm} onChange={(e) => setForm({ ...form, confirm: e.target.value })} />
           </div>
 
+          {/* Consent — 152-ФЗ */}
+          <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.625rem', cursor: 'pointer', padding: '0.875rem', borderRadius: '0.75rem', background: 'var(--bg-soft)', border: `1.5px solid ${consent ? 'var(--primary)' : 'var(--border)'}`, transition: 'border-color 0.15s' }}>
+            <input
+              type="checkbox"
+              required
+              checked={consent}
+              onChange={e => setConsent(e.target.checked)}
+              style={{ marginTop: '0.1rem' }}
+            />
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
+              Я даю согласие на обработку персональных данных в соответствии с{' '}
+              <Link href="/legal/privacy" style={{ color: 'var(--primary)', fontWeight: 600 }}>Политикой конфиденциальности</Link>
+              {' '}и принимаю{' '}
+              <Link href="/legal/terms" style={{ color: 'var(--primary)', fontWeight: 600 }}>Пользовательское соглашение</Link>
+            </span>
+          </label>
+
           {error && (
             <div style={{ color: '#B91C1C', fontSize: '0.875rem', background: '#FEF2F2', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #FCA5A5' }}>
               {error}
             </div>
           )}
 
-          <button type="submit" className="btn-primary" disabled={status === 'loading'} style={{ marginTop: '0.5rem' }}>
+          <button type="submit" className="btn-primary" disabled={status === 'loading' || !consent} style={{ marginTop: '0.5rem', opacity: consent ? 1 : 0.6 }}>
             {status === 'loading' ? 'Создаём аккаунт...' : 'Создать аккаунт →'}
           </button>
 
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-light)', textAlign: 'center' }}>
-            Регистрируясь, вы соглашаетесь с{' '}
-            <Link href="/legal/terms" style={{ color: 'var(--primary)' }}>условиями использования</Link>
-            {' '}и{' '}
-            <Link href="/legal/privacy" style={{ color: 'var(--primary)' }}>политикой конфиденциальности</Link>
+          <p style={{ fontSize: '0.72rem', color: 'var(--text-light)', textAlign: 'center', lineHeight: 1.6 }}>
+            Программа не является медицинской помощью и не заменяет консультацию врача.
+            Участие в программе — для лиц 18 лет и старше.
           </p>
         </form>
 

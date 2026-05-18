@@ -141,6 +141,18 @@ async function _init() {
   // Add columns to existing tables (silently ignored if column already exists)
   await sql(`ALTER TABLE "PsychologistProfile" ADD COLUMN "workStyle" TEXT`)
   await sql(`ALTER TABLE "PsychologistProfile" ADD COLUMN "quote" TEXT`)
+  await sql(`ALTER TABLE "PsychologistProfile" ADD COLUMN "meetingLink" TEXT`)
+
+  await sql(`CREATE TABLE IF NOT EXISTS "PushSubscription" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "endpoint" TEXT NOT NULL,
+    "p256dh" TEXT NOT NULL,
+    "auth" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "PS_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE
+  )`)
+  await sql(`CREATE UNIQUE INDEX IF NOT EXISTS "PS_userId_endpoint_key" ON "PushSubscription"("userId","endpoint")`)
 
   await sql(`CREATE TABLE IF NOT EXISTS "TaskCompletion" (
     "id" TEXT NOT NULL PRIMARY KEY,
@@ -282,6 +294,23 @@ async function _init() {
     CONSTRAINT "SA_specialistId_fkey" FOREIGN KEY ("specialistId") REFERENCES "User"("id") ON DELETE CASCADE
   )`)
 
+  await sql(`CREATE TABLE IF NOT EXISTS "Meeting" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "type" TEXT NOT NULL DEFAULT 'custom',
+    "title" TEXT NOT NULL,
+    "description" TEXT,
+    "date" TEXT NOT NULL,
+    "time" TEXT NOT NULL,
+    "duration" TEXT NOT NULL DEFAULT '90 мин',
+    "meetingLink" TEXT,
+    "doctorId" TEXT,
+    "targetTiers" TEXT NOT NULL DEFAULT '["intro","base","plus","personal"]',
+    "status" TEXT NOT NULL DEFAULT 'scheduled',
+    "createdBy" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`)
+
   // ── Seed accounts ──
   await seedDoctor()
   await seedTestUser()
@@ -329,6 +358,15 @@ async function seedDoctor() {
       VALUES ('msg-welcome-init', '${convId}', '${doctorId}',
         'Добро пожаловать! Я Мария — психолог программы «Снова с собой». Здесь вы можете задать вопросы по программе, записаться на индивидуальную встречу или просто написать, если нужна поддержка. Отвечаю в будни с 10:00 до 19:00 МСК.',
         CURRENT_TIMESTAMP)
+    `)
+    // Demo group with Anna as participant
+    await (prisma as any).$executeRawUnsafe(`
+      INSERT OR IGNORE INTO "Group" ("id","title","psychologistId","status","currentWeek","createdAt")
+      VALUES ('group-demo-spring-2026', 'Группа «Снова с собой» — Весна 2026', '${doctorId}', 'active', 2, CURRENT_TIMESTAMP)
+    `)
+    await (prisma as any).$executeRawUnsafe(`
+      INSERT OR IGNORE INTO "GroupParticipant" ("id","groupId","userId","status","joinedAt")
+      VALUES ('gp-anna-demo', 'group-demo-spring-2026', 'test-user-anna', 'active', CURRENT_TIMESTAMP)
     `)
   } catch { /* ignore */ }
 }

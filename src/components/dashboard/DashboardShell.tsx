@@ -7,9 +7,10 @@ import {
   LayoutDashboard, BookOpen, PenLine, CheckSquare,
   Calendar, MessageCircle, Video, User, CreditCard,
   HelpCircle, Lock, LogOut, Users, Settings, Shield,
-  ArrowLeft, Sparkles,
+  ArrowLeft, Sparkles, GraduationCap,
 } from 'lucide-react'
 import { LogoSvg } from '@/components/LogoSvg'
+import OnboardingTour from './OnboardingTour'
 
 export type Tier = 'none' | 'intro' | 'base' | 'plus' | 'personal'
 
@@ -21,16 +22,17 @@ type NavItem = {
 }
 
 const USER_NAV: NavItem[] = [
-  { href: '/dashboard',              label: 'Главная',   icon: LayoutDashboard, access: ['none','intro','base','plus','personal'] },
-  { href: '/dashboard/program',      label: 'Программа', icon: BookOpen,         access: ['base','plus','personal'] },
-  { href: '/dashboard/journal',      label: 'Дневник',   icon: PenLine,          access: ['base','plus','personal'] },
-  { href: '/dashboard/tasks',        label: 'Задания',   icon: CheckSquare,      access: ['base','plus','personal'] },
-  { href: '/dashboard/calendar',     label: 'Календарь', icon: Calendar,         access: ['base','plus','personal'] },
-  { href: '/dashboard/chats',        label: 'Чаты',      icon: MessageCircle,    access: ['base','plus','personal'] },
-  { href: '/dashboard/recordings',   label: 'Записи',    icon: Video,            access: ['base','plus','personal'] },
-  { href: '/dashboard/psychologist', label: 'Психолог',  icon: User,             access: ['intro','base','plus','personal'] },
-  { href: '/dashboard/plan',         label: 'Тариф',     icon: CreditCard,       access: ['none','intro','base','plus','personal'] },
-  { href: '/dashboard/help',         label: 'Помощь',    icon: HelpCircle,       access: ['none','intro','base','plus','personal'] },
+  { href: '/dashboard',              label: 'Главная',    icon: LayoutDashboard, access: ['none','intro','base','plus','personal'] },
+  { href: '/dashboard/program',      label: 'Программа',  icon: BookOpen,         access: ['base','plus','personal'] },
+  { href: '/dashboard/journal',      label: 'Дневник',    icon: PenLine,          access: ['base','plus','personal'] },
+  { href: '/dashboard/tasks',        label: 'Задания',    icon: CheckSquare,      access: ['base','plus','personal'] },
+  { href: '/dashboard/calendar',     label: 'Календарь',  icon: Calendar,         access: ['base','plus','personal'] },
+  { href: '/dashboard/chats',        label: 'Чаты',       icon: MessageCircle,    access: ['intro','base','plus','personal'] },
+  { href: '/dashboard/recordings',   label: 'Записи',     icon: Video,            access: ['base','plus','personal'] },
+  { href: '/dashboard/psychologist', label: 'Мой психолог', icon: User,           access: ['intro','base','plus','personal'] },
+  { href: '/dashboard/profile',      label: 'Мой профиль', icon: Settings,        access: ['none','intro','base','plus','personal'] },
+  { href: '/dashboard/plan',         label: 'Тариф',      icon: CreditCard,       access: ['none','intro','base','plus','personal'] },
+  { href: '/dashboard/help',         label: 'Помощь',     icon: HelpCircle,       access: ['none','intro','base','plus','personal'] },
 ]
 
 type SimpleNavItem = { href: string; label: string; icon: React.ElementType }
@@ -74,6 +76,12 @@ function initials(name: string | null, email: string) {
   return email[0].toUpperCase()
 }
 
+function navId(href: string): string {
+  if (href === '/dashboard') return 'nav-main'
+  const seg = href.split('/').pop() ?? 'item'
+  return `nav-${seg}`
+}
+
 export function DashboardShell({ user, tier, role = 'user', children }: Props) {
   const pathname = usePathname()
 
@@ -103,6 +111,8 @@ export function DashboardShell({ user, tier, role = 'user', children }: Props) {
 
   return (
     <div className="dashboard-layout">
+      <OnboardingTour tier={tier} role={role} />
+
       {/* ── Desktop sidebar ── */}
       <aside className="dashboard-sidebar">
         {/* Brand + back to site */}
@@ -149,7 +159,7 @@ export function DashboardShell({ user, tier, role = 'user', children }: Props) {
             const Icon = item.icon
             if (!accessible) {
               return (
-                <Link key={item.href} href="/dashboard/plan" title="Доступно в платном тарифе" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.625rem', borderRadius: '0.625rem', marginBottom: '0.125rem', textDecoration: 'none', color: 'var(--text-light)', fontSize: '0.825rem', opacity: 0.6 }}>
+                <Link key={item.href} href="/dashboard/plan" data-onboarding={navId(item.href)} title="Доступно в платном тарифе" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.625rem', borderRadius: '0.625rem', marginBottom: '0.125rem', textDecoration: 'none', color: 'var(--text-light)', fontSize: '0.825rem', opacity: 0.6 }}>
                   <Icon size={15} style={{ flexShrink: 0 }} />
                   {item.label}
                   <Lock size={10} style={{ marginLeft: 'auto', flexShrink: 0 }} />
@@ -157,7 +167,7 @@ export function DashboardShell({ user, tier, role = 'user', children }: Props) {
               )
             }
             return (
-              <Link key={item.href} href={item.href} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.625rem', borderRadius: '0.625rem', marginBottom: '0.125rem', textDecoration: 'none', background: active ? 'var(--primary-light)' : 'transparent', color: active ? 'var(--primary-dark)' : 'var(--text-muted)', fontWeight: active ? 600 : 400, fontSize: '0.825rem', transition: 'background 0.15s, color 0.15s' }}>
+              <Link key={item.href} href={item.href} data-onboarding={navId(item.href)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 0.625rem', borderRadius: '0.625rem', marginBottom: '0.125rem', textDecoration: 'none', background: active ? 'var(--primary-light)' : 'transparent', color: active ? 'var(--primary-dark)' : 'var(--text-muted)', fontWeight: active ? 600 : 400, fontSize: '0.825rem', transition: 'background 0.15s, color 0.15s' }}>
                 <Icon size={15} style={{ flexShrink: 0 }} />
                 {item.label}
               </Link>
@@ -170,6 +180,7 @@ export function DashboardShell({ user, tier, role = 'user', children }: Props) {
           <div style={{ padding: '0.75rem', borderTop: '1px solid var(--border)' }}>
             <Link
               href={upsell.href}
+              data-onboarding="sidebar-upsell"
               style={{
                 display: 'block', textDecoration: 'none',
                 background: 'linear-gradient(135deg, var(--primary-light), #FFF7F0)',
@@ -189,8 +200,16 @@ export function DashboardShell({ user, tier, role = 'user', children }: Props) {
           </div>
         )}
 
-        {/* Sign out */}
-        <div style={{ padding: '0.75rem', borderTop: upsell ? 'none' : '1px solid var(--border)' }}>
+        {/* Sign out + onboarding */}
+        <div style={{ padding: '0.5rem 0.75rem 0.75rem', borderTop: upsell ? 'none' : '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '0.125rem' }}>
+          {!isPsychologist && !isAdmin && (
+            <button
+              onClick={() => window.dispatchEvent(new Event('startOnboarding'))}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', padding: '0.5rem 0.625rem', borderRadius: '0.625rem', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-light)', fontSize: '0.8rem', textAlign: 'left' }}
+            >
+              <GraduationCap size={14} /> Обучение
+            </button>
+          )}
           <button onClick={() => signOut({ callbackUrl: '/' })} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', padding: '0.5rem 0.625rem', borderRadius: '0.625rem', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-light)', fontSize: '0.8rem', textAlign: 'left' }}>
             <LogOut size={14} /> Выйти
           </button>

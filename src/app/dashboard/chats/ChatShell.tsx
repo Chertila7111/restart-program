@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Send, Plus, MessageCircle, Search, User } from 'lucide-react'
+import { Send, Plus, MessageCircle, Search, User, X } from 'lucide-react'
 
 type Participant = { id: string; name: string | null; email: string; role: string }
 type Conversation = {
@@ -17,6 +17,7 @@ type Message = {
   createdAt: string
   sender: { id: string; name: string | null; email: string; role: string }
 }
+type Specialist = { id: string; name: string | null; email: string; role: string; speciality: string | null; bio: string | null }
 
 function timeLabel(iso: string) {
   const d = new Date(iso)
@@ -49,6 +50,9 @@ export function ChatShell({ userId, userName, userRole }: { userId: string; user
   const [msgLoading, setMsgLoading] = useState(false)
   const [sending, setSending] = useState(false)
   const [creatingConv, setCreatingConv] = useState(false)
+  const [showPicker, setShowPicker] = useState(false)
+  const [specialists, setSpecialists] = useState<Specialist[]>([])
+  const [specsLoading, setSpecsLoading] = useState(false)
   const listRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -99,10 +103,27 @@ export function ChatShell({ userId, userName, userRole }: { userId: string; user
     }
   }, [messages.length])
 
-  async function startDoctorChat() {
+  async function openPicker() {
+    setShowPicker(true)
+    if (specialists.length > 0) return
+    setSpecsLoading(true)
+    try {
+      const res = await fetch('/api/specialists')
+      if (res.ok) setSpecialists(await res.json())
+    } finally {
+      setSpecsLoading(false)
+    }
+  }
+
+  async function startChatWith(targetUserId: string, targetName: string) {
+    setShowPicker(false)
     setCreatingConv(true)
     try {
-      const res = await fetch('/api/conversations', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+      const res = await fetch('/api/conversations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetUserId, subject: `Чат с ${targetName}` }),
+      })
       if (res.ok) {
         const data = await res.json()
         await loadConversations()
@@ -171,9 +192,9 @@ export function ChatShell({ userId, userName, userRole }: { userId: string; user
             />
           </div>
           <button
-            onClick={startDoctorChat}
+            onClick={openPicker}
             disabled={creatingConv}
-            title="Новый чат с психологом"
+            title="Написать специалисту"
             style={{
               width: '2rem', height: '2rem', borderRadius: '0.625rem', border: 'none',
               background: 'var(--primary)', color: 'white', cursor: 'pointer',
@@ -198,11 +219,11 @@ export function ChatShell({ userId, userName, userRole }: { userId: string; user
               </div>
               {conversations.length === 0 && (
                 <button
-                  onClick={startDoctorChat}
+                  onClick={openPicker}
                   disabled={creatingConv}
                   style={{ fontSize: '0.78rem', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '0.625rem', padding: '0.5rem 1rem', cursor: 'pointer', fontWeight: 600 }}
                 >
-                  Написать психологу
+                  Написать специалисту
                 </button>
               )}
             </div>
@@ -355,6 +376,79 @@ export function ChatShell({ userId, userName, userRole }: { userId: string; user
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontWeight: 600, marginBottom: '0.25rem', fontSize: '0.9rem' }}>Выберите переписку</div>
             <div style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>или начните новую, нажав +</div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Specialist picker modal ── */}
+      {showPicker && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, zIndex: 9000,
+            background: 'rgba(28,43,35,0.55)', backdropFilter: 'blur(2px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem',
+          }}
+          onClick={e => { if (e.target === e.currentTarget) setShowPicker(false) }}
+        >
+          <div style={{
+            background: 'var(--card)', borderRadius: '1.25rem',
+            padding: '1.75rem', maxWidth: '400px', width: '100%',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+              <h3 style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text)' }}>Написать специалисту</h3>
+              <button onClick={() => setShowPicker(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.25rem' }}>
+                <X size={18} />
+              </button>
+            </div>
+
+            {specsLoading ? (
+              <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '0.875rem' }}>Загрузка…</div>
+            ) : specialists.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '0.875rem' }}>Специалистов не найдено</div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+                {specialists.map(s => {
+                  const initial = ((s.name ?? s.email)[0] ?? '?').toUpperCase()
+                  const roleLabel = s.role === 'psychologist' ? 'Психолог' : 'Куратор'
+                  return (
+                    <button
+                      key={s.id}
+                      onClick={() => startChatWith(s.id, s.name ?? s.email)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '0.875rem',
+                        padding: '0.875rem 1rem', borderRadius: '0.875rem',
+                        border: '1.5px solid var(--border)', background: 'var(--bg)',
+                        cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s',
+                      }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--primary)'; (e.currentTarget as HTMLButtonElement).style.background = 'var(--primary-light)' }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg)' }}
+                    >
+                      <div style={{
+                        width: '2.5rem', height: '2.5rem', borderRadius: '50%', flexShrink: 0,
+                        background: 'var(--primary)', display: 'flex', alignItems: 'center',
+                        justifyContent: 'center', fontSize: '0.875rem', fontWeight: 700, color: 'white',
+                      }}>
+                        {initial}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text)', marginBottom: '0.15rem' }}>
+                          {s.name ?? s.email.split('@')[0]}
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 600 }}>{roleLabel}</div>
+                        {s.speciality && (
+                          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>{s.speciality}</div>
+                        )}
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '1rem', lineHeight: 1.5 }}>
+              Специалист ответит в рабочее время — пн–пт с 10:00 до 19:00 МСК
+            </p>
           </div>
         </div>
       )}

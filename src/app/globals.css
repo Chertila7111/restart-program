@@ -265,6 +265,16 @@ input:focus, textarea:focus, select:focus {
   box-shadow: 0 0 0 3px rgba(78, 123, 94, 0.12);
 }
 
+input[type="radio"],
+input[type="checkbox"] {
+  width: auto;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  flex-shrink: 0;
+}
+
 /* ─── Prose ───────────────────────────────────── */
 .prose h2 {
   font-size: 1.5rem;

@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { headers } from 'next/headers'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import './globals.css'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
 import Providers from '@/components/Providers'
+import SwRegister from '@/components/SwRegister'
+import LayoutShell from '@/components/LayoutShell'
+import CookieBanner from '@/components/CookieBanner'
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'], variable: '--font-inter' })
 
@@ -42,23 +42,26 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true },
   },
+  manifest: '/manifest.json',
+  appleWebApp: { capable: true, statusBarStyle: 'default', title: 'Снова с собой' },
+  other: { 'mobile-web-app-capable': 'yes' },
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const headersList = await headers()
-  const pathname = headersList.get('x-pathname') ?? ''
-  const isDashboard = pathname.startsWith('/dashboard') || pathname.startsWith('/specialist')
-  // Pre-fetch session so SessionProvider pre-populates useSession() with no loading flash
   const session = await getServerSession(authOptions).catch(() => null)
 
   return (
     <html lang="ru" className={inter.variable}>
+      <head>
+        <link rel="apple-touch-icon" href="/icon-192.png" />
+        <meta name="theme-color" content="#4E7B5E" />
+      </head>
       <body className="min-h-screen flex flex-col">
         <Providers session={session}>
-          {!isDashboard && <Header />}
-          <main className={`flex-1${isDashboard ? '' : ' pt-16'}`}>{children}</main>
-          {!isDashboard && <Footer />}
+          <LayoutShell>{children}</LayoutShell>
+          <CookieBanner />
         </Providers>
+        <SwRegister />
       </body>
     </html>
   )

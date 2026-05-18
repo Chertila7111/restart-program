@@ -1,0 +1,16 @@
+{
+  "name": "Снова с собой",
+  "short_name": "Снова",
+  "description": "Программа восстановления после расставания",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#F5F0EB",
+  "theme_color": "#4E7B5E",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "screenshots": [],
+  "categories": ["health", "lifestyle"]
+}

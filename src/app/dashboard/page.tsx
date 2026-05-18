@@ -2,9 +2,10 @@ import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { ensureDb } from '@/lib/db-init'
 import Link from 'next/link'
 import { ArrowRight, BookOpen, CheckSquare, PenLine, Calendar, Sparkles } from 'lucide-react'
-import { PROGRAM_MEETINGS, PROGRAM_TASKS } from '@/lib/dashboard-data'
+import { PROGRAM_TASKS } from '@/lib/dashboard-data'
 import { LogoSvg } from '@/components/LogoSvg'
 
 function getUserTier(role: string, orders: { product: string; status: string }[]) {
@@ -67,8 +68,22 @@ export default async function DashboardPage() {
   const today = new Date().toISOString().split('T')[0]
   const hasJournalToday = effectiveUser.journalEntries.some(e => e.date === today)
   const completedTaskIds = new Set(effectiveUser.taskCompletions.map(t => t.taskId))
-
   const firstName = effectiveUser.name?.split(' ')[0] || 'друг'
+
+  // Fetch next scheduled meeting from DB for this tier
+  type DbMeeting = { id: string; title: string; description: string; date: string; time: string; duration: string; meetingLink: string | null }
+  let nextMeeting: DbMeeting | null = null
+  try {
+    await ensureDb()
+    const rows = (await (prisma as any).$queryRawUnsafe(
+      `SELECT id, title, description, date, time, duration, meetingLink
+       FROM "Meeting"
+       WHERE status = 'scheduled' AND date >= ? AND targetTiers LIKE ?
+       ORDER BY date ASC, time ASC LIMIT 1`,
+      today, `%"${tier}"%`
+    )) as DbMeeting[]
+    nextMeeting = rows[0] ?? null
+  } catch { /* DB unavailable */ }
 
   // ── Psychologist dashboard ───────────────────────────────────
   if (effectiveRole === 'psychologist') {
@@ -81,10 +96,10 @@ export default async function DashboardPage() {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
           {[
+            { href: '/dashboard/admin/meetings', icon: '📅', title: 'Встречи', desc: 'Запланировать и управлять созвонами' },
             { href: '/dashboard/patients', icon: '👥', title: 'Участники', desc: 'Список участников программы и их записи' },
             { href: '/dashboard/chats',    icon: '💬', title: 'Чаты',      desc: 'Переписка с участниками' },
             { href: '/dashboard/psych-profile', icon: '✏️', title: 'Мой профиль', desc: 'Информация о вас для участников' },
-            { href: '/dashboard/help',     icon: '❓', title: 'Помощь',    desc: 'FAQ и контакты поддержки' },
           ].map(item => (
             <Link key={item.href} href={item.href} style={{ textDecoration: 'none' }}>
               <div className="card" style={{ padding: '1.25rem', height: '100%' }}>
@@ -178,32 +193,41 @@ export default async function DashboardPage() {
 
   // ── Intro only ───────────────────────────────────────────────
   if (tier === 'intro') {
-    const nextMeeting = PROGRAM_MEETINGS[0]
     return (
       <div style={{ maxWidth: '44rem' }}>
         <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text)', marginBottom: '0.375rem' }}>
           Привет, {firstName}!
         </h1>
         <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>
-          Вы записались на вводную встречу. Вот всё, что нужно знать.
+          {nextMeeting ? 'Вы записались на вводную встречу. Вот всё, что нужно знать.' : 'Рады, что вы здесь! Встреча скоро будет назначена куратором.'}
         </p>
 
-        <div className="card" style={{ padding: '1.75rem', marginBottom: '1.5rem', borderLeft: '4px solid var(--primary)' }}>
-          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.625rem' }}>
-            Ваша встреча
+        {nextMeeting ? (
+          <Link href="/dashboard/meeting" style={{ textDecoration: 'none', display: 'block', marginBottom: '1.5rem' }}>
+            <div className="card" style={{ padding: '1.75rem', borderLeft: '4px solid var(--primary)' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.625rem' }}>
+                Ваша встреча →
+              </div>
+              <h2 style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--text)', marginBottom: '0.5rem' }}>
+                {nextMeeting.title}
+              </h2>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '1rem' }}>
+                {nextMeeting.description}
+              </p>
+              <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                <span>📅 {new Date(nextMeeting.date + 'T12:00:00').toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}</span>
+                <span>🕖 {nextMeeting.time} МСК</span>
+                <span>⏱ {nextMeeting.duration}</span>
+              </div>
+            </div>
+          </Link>
+        ) : (
+          <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem', borderLeft: '4px solid var(--border)' }}>
+            <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+              📅 Дата встречи будет назначена куратором и появится здесь автоматически
+            </div>
           </div>
-          <h2 style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--text)', marginBottom: '0.5rem' }}>
-            {nextMeeting.title}
-          </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '1rem' }}>
-            {nextMeeting.description}
-          </p>
-          <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-            <span>📅 {new Date(nextMeeting.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}</span>
-            <span>🕖 {nextMeeting.time} МСК</span>
-            <span>⏱ {nextMeeting.duration}</span>
-          </div>
-        </div>
+        )}
 
         <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
           <h3 style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text)', marginBottom: '1rem' }}>Как подготовиться</h3>
@@ -239,7 +263,6 @@ export default async function DashboardPage() {
   const completedTasks = PROGRAM_TASKS.filter(t => completedTaskIds.has(t.id))
   const progress = Math.round((completedTasks.length / PROGRAM_TASKS.length) * 100)
   const currentWeek = Math.min(4, Math.floor(completedTasks.length / 3) + 1)
-  const nextMeeting = PROGRAM_MEETINGS[currentWeek - 1] ?? PROGRAM_MEETINGS[3]
   const streak = effectiveUser.journalEntries.length
 
   return (
@@ -288,16 +311,24 @@ export default async function DashboardPage() {
       )}
 
       {/* Next meeting */}
-      <div className="card" style={{ padding: '1.25rem', marginBottom: '1.25rem' }}>
-        <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.5rem' }}>
-          Следующая встреча
+      {nextMeeting ? (
+        <Link href="/dashboard/meeting" style={{ textDecoration: 'none', display: 'block', marginBottom: '1.25rem' }}>
+          <div className="card" style={{ padding: '1.25rem', borderLeft: '3px solid var(--primary)' }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.5rem' }}>
+              Следующая встреча →
+            </div>
+            <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text)', marginBottom: '0.25rem' }}>{nextMeeting.title}</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'flex', gap: '1rem' }}>
+              <span>{new Date(nextMeeting.date + 'T12:00:00').toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}</span>
+              <span>{nextMeeting.time} МСК</span>
+            </div>
+          </div>
+        </Link>
+      ) : (
+        <div className="card" style={{ padding: '1.25rem', marginBottom: '1.25rem' }}>
+          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>📅 Следующая встреча будет назначена куратором</div>
         </div>
-        <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text)', marginBottom: '0.25rem' }}>{nextMeeting.title}</div>
-        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', display: 'flex', gap: '1rem' }}>
-          <span>{new Date(nextMeeting.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}</span>
-          <span>{nextMeeting.time} МСК</span>
-        </div>
-      </div>
+      )}
 
       {/* Quick links */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.875rem', marginBottom: '1.25rem' }}>

@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 import { BLOG_POSTS } from '@/lib/blog'
 
-const baseUrl = 'https://restart-program.ru'
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://snova-s-soboy.ru'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [

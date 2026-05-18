@@ -63,6 +63,18 @@ export default async function AdminPage() {
         ))}
       </div>
 
+      {/* Quick actions */}
+      <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
+        <a href="/dashboard/admin/meetings" style={{
+          display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+          padding: '0.625rem 1.125rem', borderRadius: '0.75rem',
+          background: 'var(--primary)', color: 'white', textDecoration: 'none',
+          fontWeight: 600, fontSize: '0.875rem',
+        }}>
+          📅 Управление встречами
+        </a>
+      </div>
+
       <AdminPanel users={serialized} />
     </div>
   )

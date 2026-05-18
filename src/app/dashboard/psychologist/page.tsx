@@ -244,14 +244,14 @@ export default async function PsychologistPage() {
         /* None/Intro: upgrade prompt */
         <div className="card" style={{ padding: '1.75rem', marginBottom: '1.25rem', background: 'var(--bg-dark)', border: 'none' }}>
           <h3 style={{ color: 'white', fontWeight: 700, fontSize: '1rem', marginBottom: '0.5rem' }}>
-            Хотите встречу с психологом?
+            Индивидуальная встреча с психологом
           </h3>
           <p style={{ color: 'rgba(168,184,160,0.85)', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '1.25rem' }}>
-            Индивидуальная встреча — 2 900 ₽. Или выберите тариф Персональный — включает 2 встречи бесплатно.
+            45 минут один на один — 2 900 ₽. Или выберите тариф Персональный — включает 2 встречи.
           </p>
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             <Link href="/checkout?product=session" className="btn-ghost-dark" style={{ fontSize: '0.875rem', padding: '0.625rem 1.25rem' }}>
-              Купить встречу — 2 900 ₽
+              Записаться — 2 900 ₽
             </Link>
             <Link href="/checkout?product=personal" style={{ color: 'rgba(168,184,160,0.7)', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>
               Персональный тариф →
