@@ -5,8 +5,7 @@ import { ChatShell } from '@/app/dashboard/chats/ChatShell'
 export default async function CuratorChatsPage() {
   const session = await getServerSession(authOptions)
   const userId = (session?.user as any)?.id as string
-  const userName = session?.user?.name ?? null
-  const userEmail = session?.user?.email ?? ''
+  const userName = session?.user?.name ?? ''
 
   return (
     <div style={{ height: 'calc(100vh - 2rem)', display: 'flex', flexDirection: 'column' }}>
@@ -15,7 +14,7 @@ export default async function CuratorChatsPage() {
         <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Переписка с участниками программы</p>
       </div>
       <div style={{ flex: 1, minHeight: 0 }}>
-        <ChatShell userId={userId} userName={userName} userEmail={userEmail} />
+        <ChatShell userId={userId} userName={userName} userRole="curator" />
       </div>
     </div>
   )

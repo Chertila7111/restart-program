@@ -5,6 +5,7 @@ import { BLOG_POSTS, getPost } from '@/lib/blog'
 import { Clock, ArrowLeft, ArrowRight } from 'lucide-react'
 import { LogoSvg } from '@/components/LogoSvg'
 import { ArticleReader } from '@/components/ArticleReader'
+import { ArticleSchema, BreadcrumbSchema } from '@/components/JsonLd'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -55,6 +56,8 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <>
+      <ArticleSchema title={post.seoTitle} description={post.seoDescription} publishedAt={post.publishedAt} slug={post.slug} />
+      <BreadcrumbSchema items={[{ name: 'Главная', href: '/' }, { name: 'Блог', href: '/blog' }, { name: post.title, href: `/blog/${post.slug}` }]} />
       {/* Hero */}
       <section style={{ background: 'var(--bg-dark)', padding: '5rem 0 3.5rem', position: 'relative', overflow: 'hidden' }}>
         {/* Decorative circles */}

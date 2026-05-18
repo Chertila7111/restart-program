@@ -76,7 +76,7 @@ export default async function ClientProfilePage({ params }: { params: { id: stri
       {/* Header */}
       <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem', display: 'flex', gap: '1.25rem', alignItems: 'flex-start' }}>
         <div style={{ width: '4rem', height: '4rem', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '1.1rem', fontWeight: 700, color: 'white', overflow: 'hidden' }}>
-          {client.image ? <img src={client.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : initials}
+          {client.image ? <img src={client.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" decoding="async" /> : initials}
         </div>
         <div style={{ flex: 1 }}>
           <h1 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text)', marginBottom: '0.25rem' }}>{client.name || client.email}</h1>

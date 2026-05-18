@@ -98,7 +98,7 @@ export function PsychProfileForm({ initialName, initialEmail, initialProfile }: 
       <div className="card" style={{ padding: '1.5rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
         <div style={{ width: '4rem', height: '4rem', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 800, color: 'white', flexShrink: 0, overflow: 'hidden' }}>
           {form.photoUrl
-            ? <img src={form.photoUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ? <img src={form.photoUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" decoding="async" />
             : (form.name || initialEmail)[0].toUpperCase()
           }
         </div>

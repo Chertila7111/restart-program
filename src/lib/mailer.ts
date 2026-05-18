@@ -89,6 +89,43 @@ export async function sendWelcomeEmail({
   })
 }
 
+export async function sendPasswordResetEmail({ to, resetUrl }: { to: string; resetUrl: string }) {
+  if (!process.env.SMTP_PASS) return
+
+  const transport = getTransport()
+  await transport.sendMail({
+    from: `"Снова с собой" <${process.env.SMTP_USER || 'hello@snova-s-soboy.ru'}>`,
+    to,
+    subject: 'Сброс пароля — Снова с собой',
+    html: `
+<!DOCTYPE html>
+<html lang="ru">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#F5F0EB;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+<div style="max-width:560px;margin:2rem auto;background:white;border-radius:1rem;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08)">
+  <div style="background:#4E7B5E;padding:2rem;text-align:center">
+    <div style="font-size:1.5rem;font-weight:800;color:white;letter-spacing:-0.02em">Снова с собой</div>
+  </div>
+  <div style="padding:2rem">
+    <h1 style="font-size:1.25rem;font-weight:800;color:#1C2B23;margin:0 0 0.75rem">Сброс пароля</h1>
+    <p style="color:#4A5E48;line-height:1.7;margin:0 0 1.5rem">
+      Мы получили запрос на сброс пароля для аккаунта <strong>${to}</strong>.<br>
+      Ссылка действительна 1 час.
+    </p>
+    <a href="${resetUrl}" style="display:block;text-align:center;background:#4E7B5E;color:white;text-decoration:none;padding:0.875rem 2rem;border-radius:0.75rem;font-weight:700;font-size:1rem;margin-bottom:1.5rem">
+      Сбросить пароль →
+    </a>
+    <p style="color:#9CA3AF;font-size:0.8rem;line-height:1.6;margin:0">
+      Если вы не запрашивали сброс пароля — просто проигнорируйте это письмо.
+    </p>
+  </div>
+</div>
+</body>
+</html>
+    `.trim(),
+  })
+}
+
 export async function sendContactEmail({ name, email, message }: { name: string; email: string; message: string }) {
   if (!process.env.SMTP_PASS) return
 

@@ -6,7 +6,15 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/cabinet', '/checkout', '/api/', '/auth/'],
+        disallow: [
+          '/cabinet',
+          '/checkout',
+          '/api/',
+          '/auth/',
+          '/dashboard',
+          '/specialist',
+          '/curator',
+        ],
       },
     ],
     sitemap: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://snova-s-soboy.ru'}/sitemap.xml`,

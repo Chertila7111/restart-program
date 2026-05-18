@@ -85,7 +85,7 @@ export default function SpecialistProfilePage() {
         <div style={{ width: '5rem', height: '5rem', borderRadius: '50%', background: '#3D6249', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden', cursor: 'pointer' }}
           onClick={() => fileRef.current?.click()}>
           {profile.photoUrl
-            ? <img src={profile.photoUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ? <img src={profile.photoUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" decoding="async" />
             : <User size={32} color="white" />
           }
         </div>

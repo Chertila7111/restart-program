@@ -78,9 +78,12 @@ function LoginForm() {
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.375rem' }}>
-                Пароль
-              </label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.375rem' }}>
+                <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text)' }}>Пароль</label>
+                <Link href="/auth/forgot-password" style={{ fontSize: '0.75rem', color: 'var(--primary)', textDecoration: 'none' }}>
+                  Забыли пароль?
+                </Link>
+              </div>
               <div style={{ position: 'relative' }}>
                 <input
                   type={showPass ? 'text' : 'password'} required autoComplete="current-password"

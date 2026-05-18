@@ -182,7 +182,7 @@ export default async function MeetingPage() {
               overflow: 'hidden',
             }}>
               {doctor.photoUrl
-                ? <img src={doctor.photoUrl} alt={doctor.name ?? ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ? <img src={doctor.photoUrl} alt={doctor.name ?? ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" decoding="async" />
                 : <span style={{ color: 'white', fontWeight: 700, fontSize: '1.25rem' }}>{(doctor.name ?? 'П')[0]}</span>
               }
             </div>
