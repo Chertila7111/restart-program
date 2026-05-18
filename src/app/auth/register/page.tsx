@@ -13,6 +13,18 @@ export default function RegisterPage() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', confirm: '' })
   const [consent, setConsent] = useState(false)
   const [showPass, setShowPass] = useState(false)
+
+  const formatPhone = (raw: string) => {
+    const d = raw.replace(/\D/g, '').slice(0, 11)
+    if (!d) return ''
+    const local = d.startsWith('7') || d.startsWith('8') ? d.slice(1) : d
+    let r = '+7'
+    if (local.length > 0) r += ' (' + local.slice(0, 3)
+    if (local.length >= 3) r += ') ' + local.slice(3, 6)
+    if (local.length >= 6) r += '-' + local.slice(6, 8)
+    if (local.length >= 8) r += '-' + local.slice(8, 10)
+    return r
+  }
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle')
   const [error, setError] = useState('')
 
@@ -74,7 +86,7 @@ export default function RegisterPage() {
           </div>
           <div>
             <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text)', marginBottom: '0.375rem' }}>Телефон</label>
-            <input type="tel" placeholder="+7 (999) 000-00-00" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+            <input type="tel" placeholder="+7 (999) 000-00-00" value={form.phone} onChange={(e) => setForm({ ...form, phone: formatPhone(e.target.value) })} />
           </div>
           <div>
             <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text)', marginBottom: '0.375rem' }}>Пароль *</label>

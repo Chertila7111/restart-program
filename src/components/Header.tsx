@@ -11,7 +11,7 @@ const nav = [
   { href: '/pricing', label: 'Тарифы' },
   { href: '/reviews', label: 'Отзывы' },
   { href: '/blog', label: 'Блог' },
-  { href: '/faq', label: 'FAQ' },
+  { href: '/faq', label: 'Вопросы' },
   { href: '/contacts', label: 'Контакты' },
 ]
 

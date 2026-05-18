@@ -1,8 +1,13 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
 const FROM = 'Снова с собой <hello@snova-s-soboy.ru>'
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://snova-s-soboy.ru'
+
+function getResend() {
+  const key = process.env.RESEND_API_KEY
+  if (!key) throw new Error('RESEND_API_KEY is not set')
+  return new Resend(key)
+}
 
 function header() {
   return `<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -28,7 +33,7 @@ export async function sendWelcomeEmail({
 }: {
   to: string; name: string; product: string; productName: string; tempPassword?: string
 }) {
-  if (!process.env.RESEND_API_KEY) return
+  if (!process.env.RESEND_API_KEY) { console.warn('[mailer] RESEND_API_KEY not set, skipping'); return }
 
   const passwordRow = tempPassword
     ? `<tr><td style="padding:0.35rem 0;font-size:0.875rem;color:#6B7280;width:6rem">Пароль</td>
@@ -39,7 +44,7 @@ export async function sendWelcomeEmail({
     ? `<p style="color:#6B7280;font-size:0.8rem;line-height:1.6;margin:0 0 1rem">Это временный пароль — после входа вы сможете сменить его в настройках.</p>`
     : `<p style="color:#6B7280;font-size:0.8rem;line-height:1.6;margin:0 0 1rem">Куратор свяжется с вами в течение рабочего дня.</p>`
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to,
     subject: `Доступ к программе «${productName}» — Снова с собой`,
@@ -64,9 +69,9 @@ export async function sendWelcomeEmail({
 }
 
 export async function sendPasswordResetEmail({ to, resetUrl }: { to: string; resetUrl: string }) {
-  if (!process.env.RESEND_API_KEY) return
+  if (!process.env.RESEND_API_KEY) { console.warn('[mailer] RESEND_API_KEY not set, skipping'); return }
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to,
     subject: 'Сброс пароля — Снова с собой',
@@ -83,10 +88,10 @@ export async function sendPasswordResetEmail({ to, resetUrl }: { to: string; res
 }
 
 export async function sendContactEmail({ name, email, message }: { name: string; email: string; message: string }) {
-  if (!process.env.RESEND_API_KEY) return
+  if (!process.env.RESEND_API_KEY) { console.warn('[mailer] RESEND_API_KEY not set, skipping'); return }
 
   const adminEmail = process.env.ADMIN_NOTIFY_EMAIL || 'snovassoboi@yandex.com'
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: adminEmail,
     replyTo: email,
