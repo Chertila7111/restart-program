@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Mail, MessageCircle, Clock } from 'lucide-react'
+import { Mail } from 'lucide-react'
 import { ymGoal } from '@/lib/metrika'
 
 export default function ContactsPage() {
@@ -100,28 +100,15 @@ export default function ContactsPage() {
               <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text)', marginBottom: '1.5rem' }}>Наши контакты</h2>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2rem' }}>
-                {[
-                  { icon: Mail, title: 'Email', value: 'hello@snova-s-soboy.ru', href: 'mailto:hello@snova-s-soboy.ru' },
-                  { icon: MessageCircle, title: 'Telegram', value: '@snova_s_soboy', href: 'https://t.me/snova_s_soboy' },
-                  { icon: Clock, title: 'Время ответа', value: 'Пн–Пт 10:00–19:00 МСК', href: null },
-                ].map((c) => {
-                  const Icon = c.icon
-                  return (
-                    <div key={c.title} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                      <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.75rem', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <Icon size={18} style={{ color: 'var(--primary)' }} />
-                      </div>
-                      <div>
-                        <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: '0.125rem', fontSize: '0.9rem' }}>{c.title}</div>
-                        {c.href ? (
-                          <a href={c.href} style={{ color: 'var(--primary)', textDecoration: 'none', fontSize: '0.9rem' }}>{c.value}</a>
-                        ) : (
-                          <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{c.value}</span>
-                        )}
-                      </div>
-                    </div>
-                  )
-                })}
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                  <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '0.75rem', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Mail size={18} style={{ color: 'var(--primary)' }} />
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: '0.125rem', fontSize: '0.9rem' }}>Email</div>
+                    <a href="mailto:hello@snova-s-soboy.ru" style={{ color: 'var(--primary)', textDecoration: 'none', fontSize: '0.9rem' }}>hello@snova-s-soboy.ru</a>
+                  </div>
+                </div>
               </div>
 
               <div className="card" style={{ padding: '1.5rem', background: 'var(--bg-sage)', border: '1.5px solid var(--primary-light)' }}>
