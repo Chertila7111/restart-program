@@ -43,6 +43,14 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true },
   },
   manifest: '/manifest.json',
+  icons: {
+    icon: [
+      { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/icon-512.png', type: 'image/png', sizes: '512x512' },
+    ],
+    apple: [{ url: '/icon-192.png', sizes: '192x192', type: 'image/png' }],
+    shortcut: '/icon-192.png',
+  },
   appleWebApp: { capable: true, statusBarStyle: 'default', title: 'Снова с собой' },
   other: { 'mobile-web-app-capable': 'yes' },
 }
@@ -53,7 +61,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="ru" className={inter.variable}>
       <head>
-        <link rel="apple-touch-icon" href="/icon-192.png" />
+        <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
+        <link rel="icon" href="/icon-512.png" type="image/png" sizes="512x512" />
+        <link rel="shortcut icon" href="/icon-192.png" />
+        <link rel="apple-touch-icon" href="/icon-192.png" sizes="192x192" />
         <meta name="theme-color" content="#4E7B5E" />
       </head>
       <body className="min-h-screen flex flex-col">
