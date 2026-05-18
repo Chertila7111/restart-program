@@ -453,9 +453,12 @@ input[type="checkbox"] {
 }
 
 /* ─── Prevent horizontal scroll globally ─────── */
-/* overflow-x: clip prevents overflow without creating a new scroll container,
-   so position: sticky still works correctly (unlike overflow-x: hidden) */
-html, body {
+/* overflow-x: clip on html breaks position:fixed on mobile WebKit — apply to body only */
+html {
+  max-width: 100%;
+}
+
+body {
   overflow-x: clip;
   max-width: 100%;
 }
