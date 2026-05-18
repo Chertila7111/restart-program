@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Mail, MessageCircle, Clock } from 'lucide-react'
+import { ymGoal } from '@/lib/metrika'
 
 export default function ContactsPage() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' })
@@ -20,6 +21,7 @@ export default function ContactsPage() {
       if (res.ok) {
         setStatus('ok')
         setForm({ name: '', email: '', phone: '', message: '' })
+        ymGoal('contact_form')
       } else {
         setStatus('error')
       }

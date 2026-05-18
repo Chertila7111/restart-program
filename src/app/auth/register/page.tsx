@@ -6,6 +6,7 @@ import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Eye, EyeOff } from 'lucide-react'
 import { LogoSvg } from '@/components/LogoSvg'
+import { ymGoal } from '@/lib/metrika'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -37,6 +38,7 @@ export default function RegisterPage() {
       return
     }
 
+    ymGoal('registration')
     await signIn('credentials', { email: form.email, password: form.password, redirect: false })
     router.push('/dashboard')
   }

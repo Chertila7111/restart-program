@@ -9,6 +9,9 @@ function getTransport() {
       user: process.env.SMTP_USER || 'hello@snova-s-soboy.ru',
       pass: process.env.SMTP_PASS || '',
     },
+    connectionTimeout: 8000,
+    greetingTimeout: 8000,
+    socketTimeout: 10000,
   })
 }
 

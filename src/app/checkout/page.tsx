@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState, Suspense, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { getProduct, PRODUCTS } from '@/lib/products'
 import Link from 'next/link'
 import { CheckCircle, Shield, Lock, ArrowLeft } from 'lucide-react'
+import { ymGoal, ymEcommerceCheckout } from '@/lib/metrika'
 
 function CheckoutForm() {
   const searchParams = useSearchParams()
@@ -15,9 +16,16 @@ function CheckoutForm() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
 
+  useEffect(() => {
+    ymGoal('checkout_start', { product: product.id, product_name: product.name, price: product.price })
+    ymEcommerceCheckout({ productId: product.id, productName: product.name, price: product.price, step: 1 })
+  }, [product.id, product.name, product.price])
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setStatus('loading')
+    ymGoal('checkout_submit', { product: product.id, product_name: product.name, order_price: product.price })
+    ymEcommerceCheckout({ productId: product.id, productName: product.name, price: product.price, step: 2 })
     try {
       const res = await fetch('/api/payment/create', {
         method: 'POST',

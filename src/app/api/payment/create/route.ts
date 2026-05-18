@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
           amount: { value: (product.price / 100).toFixed(2), currency: 'RUB' },
           confirmation: {
             type: 'redirect',
-            return_url: `${siteUrl}/cabinet?order=${order.id}`,
+            return_url: `${siteUrl}/checkout/success?order=${order.id}&product=${product.id}&name=${encodeURIComponent(product.name)}&amount=${product.price}`,
           },
           capture: true,
           description: `${product.name} — Restart`,

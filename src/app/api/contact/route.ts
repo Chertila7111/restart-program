@@ -18,12 +18,8 @@ export async function POST(req: NextRequest) {
     console.error('Contact lead save error:', e)
   }
 
-  // Send email notification — non-fatal
-  try {
-    await sendContactEmail({ name, email, message })
-  } catch (e) {
-    console.error('Contact email error:', e)
-  }
+  // Send email notification — fire and forget, never blocks response
+  sendContactEmail({ name, email, message }).catch(e => console.error('Contact email error:', e))
 
   return NextResponse.json({ ok: true })
 }
