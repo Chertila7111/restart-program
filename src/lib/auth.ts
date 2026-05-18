@@ -68,6 +68,18 @@ export const authOptions: NextAuthOptions = {
         token.role = (user as any).role
         if ((user as any).tier) token.tier = (user as any).tier
       }
+      // Backfill tier for existing sessions created before this field was added.
+      // jwt callback runs on every getServerSession call, so this takes effect immediately
+      // without requiring the user to log out.
+      if (!token.tier && token.id) {
+        const demoTierMap: Record<string, string> = {
+          'test-user-anna':       'intro',
+          'doctor-maria-sokolova': 'personal',
+        }
+        if (demoTierMap[token.id as string]) {
+          token.tier = demoTierMap[token.id as string]
+        }
+      }
       return token
     },
     async session({ session, token }) {
