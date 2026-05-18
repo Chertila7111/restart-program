@@ -21,95 +21,105 @@ export default function Header() {
   const isLoggedIn = !!session?.user
 
   return (
-    <header style={{
-      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
-      background: 'rgba(250,247,243,0.92)',
-      backdropFilter: 'blur(20px)',
-      WebkitBackdropFilter: 'blur(20px)',
-      borderBottom: '1px solid rgba(221,214,204,0.6)',
-    }}>
-      <div className="container mx-auto px-6" style={{
-        display: 'flex', alignItems: 'center',
-        justifyContent: 'space-between', height: '4rem',
+    <>
+      <header style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
+        height: '4rem',
+        background: 'rgba(250,247,243,0.92)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(221,214,204,0.6)',
       }}>
-        {/* Logo */}
-        <Link href="/" style={{ textDecoration: 'none' }}>
-          <LogoSvg size={48} />
-        </Link>
+        <div className="container mx-auto px-6" style={{
+          display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between', height: '4rem',
+        }}>
+          {/* Logo */}
+          <Link href="/" style={{ textDecoration: 'none' }}>
+            <LogoSvg size={48} />
+          </Link>
 
-        {/* Desktop nav */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '1.75rem' }}>
-          {nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="hidden md:block"
-              style={{
-                fontSize: '0.875rem', fontWeight: 500,
-                color: 'var(--text-muted)', textDecoration: 'none',
-                transition: 'color 0.2s',
-              }}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        {/* CTA */}
-        <div className="hidden md:flex items-center gap-3">
-          {isLoggedIn ? (
-            <Link
-              href="/dashboard"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
-                fontSize: '0.875rem', fontWeight: 600,
-                color: 'var(--primary-dark)', textDecoration: 'none',
-                background: 'var(--primary-light)',
-                padding: '0.45rem 1rem', borderRadius: '0.625rem',
-                transition: 'opacity 0.2s',
-              }}
-            >
-              <LayoutDashboard size={14} />
-              Мой кабинет
-            </Link>
-          ) : (
-            <>
+          {/* Desktop nav */}
+          <nav style={{ display: 'flex', alignItems: 'center', gap: '1.75rem' }}>
+            {nav.map((item) => (
               <Link
-                href="/auth/login"
+                key={item.href}
+                href={item.href}
+                className="hidden md:block"
                 style={{
                   fontSize: '0.875rem', fontWeight: 500,
                   color: 'var(--text-muted)', textDecoration: 'none',
+                  transition: 'color 0.2s',
                 }}
               >
-                Войти
+                {item.label}
               </Link>
-              <Link href="/quiz" className="btn-primary" style={{ padding: '0.5rem 1.25rem', fontSize: '0.875rem' }}>
-                Пройти тест
+            ))}
+          </nav>
+
+          {/* CTA */}
+          <div className="hidden md:flex items-center gap-3">
+            {isLoggedIn ? (
+              <Link
+                href="/dashboard"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                  fontSize: '0.875rem', fontWeight: 600,
+                  color: 'var(--primary-dark)', textDecoration: 'none',
+                  background: 'var(--primary-light)',
+                  padding: '0.45rem 1rem', borderRadius: '0.625rem',
+                  transition: 'opacity 0.2s',
+                }}
+              >
+                <LayoutDashboard size={14} />
+                Мой кабинет
               </Link>
-            </>
-          )}
+            ) : (
+              <>
+                <Link
+                  href="/auth/login"
+                  style={{
+                    fontSize: '0.875rem', fontWeight: 500,
+                    color: 'var(--text-muted)', textDecoration: 'none',
+                  }}
+                >
+                  Войти
+                </Link>
+                <Link href="/quiz" className="btn-primary" style={{ padding: '0.5rem 1.25rem', fontSize: '0.875rem' }}>
+                  Пройти тест
+                </Link>
+              </>
+            )}
+          </div>
+
+          {/* Mobile burger */}
+          <button
+            onClick={() => setOpen(!open)}
+            aria-label="Меню"
+            className="md:hidden"
+            style={{
+              padding: '0.5rem', background: 'none', border: 'none',
+              cursor: 'pointer', color: 'var(--text)',
+            }}
+          >
+            {open ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </div>
+      </header>
 
-        {/* Mobile burger */}
-        <button
-          onClick={() => setOpen(!open)}
-          aria-label="Меню"
-          className="md:hidden"
-          style={{
-            padding: '0.5rem', background: 'none', border: 'none',
-            cursor: 'pointer', color: 'var(--text)',
-          }}
-        >
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
-      </div>
-
-      {/* Mobile menu */}
+      {/* Mobile menu — separate fixed overlay so header height stays 4rem */}
       {open && (
         <div style={{
+          position: 'fixed',
+          top: '4rem',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 49,
           background: 'var(--bg)',
           borderTop: '1px solid var(--border)',
-          padding: '1rem 1.5rem 1.5rem',
+          overflowY: 'auto',
+          padding: '1rem 1.5rem 2rem',
         }}>
           <nav style={{ display: 'flex', flexDirection: 'column' }}>
             {nav.map((item) => (
@@ -155,6 +165,6 @@ export default function Header() {
           </nav>
         </div>
       )}
-    </header>
+    </>
   )
 }
