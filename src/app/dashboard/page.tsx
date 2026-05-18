@@ -53,10 +53,11 @@ export default async function DashboardPage() {
   }
 
   const sessionTier = (session.user as any).tier as string | undefined
-  // Use DB-computed tier when available; fall back to JWT tier or 'intro' so paid users never see locked state
-  const tier = user
-    ? getUserTier(effectiveRole, effectiveUser.orders)
-    : (sessionTier ?? (effectiveRole === 'user' ? 'intro' : getUserTier(effectiveRole, [])))
+  const dbTier = getUserTier(effectiveRole, effectiveUser.orders)
+  // If DB has no paid orders, fall back to JWT tier; for regular users without either → 'intro'
+  const tier = dbTier !== 'none'
+    ? dbTier
+    : (sessionTier ?? (effectiveRole === 'user' ? 'intro' : 'none'))
   const today = new Date().toISOString().split('T')[0]
   const hasJournalToday = effectiveUser.journalEntries.some(e => e.date === today)
   const completedTaskIds = new Set(effectiveUser.taskCompletions.map(t => t.taskId))

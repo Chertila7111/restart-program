@@ -61,8 +61,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
     )
   }
 
-  const tier = getUserTier(user.role, user.orders)
-  const role = user.role // 'user' | 'psychologist' | 'admin'
+  const dbTier = getUserTier(user.role, user.orders)
+  const sessionTier = (session.user as any).tier as string | undefined
+  // If DB has no paid orders (e.g. Vercel cold-start seed race), fall back to JWT tier
+  // For regular users without either, default to 'intro' — they can only have creds if they paid
+  const tier: Tier = dbTier !== 'none'
+    ? dbTier
+    : (sessionTier as Tier | undefined) ?? (user.role === 'user' ? 'intro' : 'none')
+  const role = user.role
 
   return (
     <DashboardShell

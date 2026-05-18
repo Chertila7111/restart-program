@@ -297,7 +297,7 @@ async function seedTestUser() {
     `)
     await (prisma as any).$executeRawUnsafe(`
       INSERT OR IGNORE INTO "Order" ("id","userId","email","name","product","productName","amount","status","createdAt","updatedAt")
-      VALUES ('order-test-personal', 'test-user-anna', '${email}', 'Анна (тест)', 'personal', 'Персональный', 24990, 'paid', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      VALUES ('order-test-intro', 'test-user-anna', '${email}', 'Анна (тест)', 'intro', 'Вводная встреча', 1490, 'paid', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
     `)
   } catch { /* ignore */ }
 }
