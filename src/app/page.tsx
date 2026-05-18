@@ -274,7 +274,6 @@ export default function Home() {
         <div className="container mx-auto px-6" style={{ position: 'relative', zIndex: 1, width: '100%' }}>
           <div className="grid-hero" style={{
             display: 'grid',
-            gridTemplateColumns: 'minmax(0, 1.1fr) minmax(0, 0.9fr)',
             gap: '4rem',
             alignItems: 'center',
           }}>
@@ -543,7 +542,7 @@ export default function Home() {
           {/* Timeline roadmap */}
           <div style={{ maxWidth: '72rem', margin: '0 auto' }}>
             {/* Desktop: horizontal path */}
-            <div className="grid-roadmap" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0', position: 'relative', marginBottom: '1.5rem' }}>
+            <div className="grid-roadmap" style={{ display: 'grid', position: 'relative', marginBottom: '1.5rem' }}>
               {/* Connecting line behind circles */}
               <div className="roadmap-connector" style={{ position: 'absolute', top: '1.375rem', left: '12.5%', right: '12.5%', height: '2px', background: 'linear-gradient(to right, var(--primary), var(--primary-light) 40%, var(--border) 70%)', zIndex: 0 }} />
 
@@ -633,7 +632,7 @@ export default function Home() {
                 </div>
                 <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Личный кабинет · Снова с собой</span>
               </div>
-              <div className="grid-cabinet" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,2fr)', background: 'white' }}>
+              <div className="grid-cabinet" style={{ display: 'grid', background: 'white' }}>
                 {/* Sidebar */}
                 <div className="cabinet-sidebar" style={{ background: 'var(--bg-soft)', padding: '1.75rem 1.5rem', borderRight: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '1.75rem', paddingBottom: '1.25rem', borderBottom: '1px solid var(--border)' }}>
@@ -780,7 +779,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid-two" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '2rem', alignItems: 'start' }}>
+          <div className="grid-two" style={{ display: 'grid', gap: '2rem', alignItems: 'start' }}>
             {/* Left — quote + cta */}
             <div>
               {/* Big testimonial */}

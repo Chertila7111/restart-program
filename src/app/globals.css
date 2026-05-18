@@ -460,6 +460,12 @@ html, body {
   max-width: 100%;
 }
 
+/* ─── Grid desktop defaults ──────────────────── */
+.grid-hero    { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); }
+.grid-two     { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.grid-roadmap { grid-template-columns: repeat(4, 1fr); gap: 0; }
+.grid-cabinet { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
+
 /* ─── Mobile Responsive ───────────────────────── */
 @media (max-width: 767px) {
   body {
