@@ -30,6 +30,13 @@ function LoginForm() {
     })
 
     if (res?.ok) {
+      // Fetch session to get role and redirect accordingly
+      const sessionRes = await fetch('/api/auth/session')
+      const session = await sessionRes.json()
+      const role = session?.user?.role
+      if (role === 'psychologist') { window.location.href = '/specialist'; return }
+      if (role === 'curator') { window.location.href = '/curator'; return }
+      if (role === 'admin') { window.location.href = '/dashboard'; return }
       window.location.href = callbackUrl
     } else {
       setError('Неверный email или пароль')

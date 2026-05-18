@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { sendWelcomeEmail } from '@/lib/mailer'
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,10 +11,18 @@ export async function POST(req: NextRequest) {
       const orderId = body.object?.metadata?.orderId
 
       if (orderId) {
-        await prisma.order.update({
+        const order = await prisma.order.update({
           where: { id: orderId },
           data: { status: 'paid', paymentId },
         })
+
+        // Send welcome email with access info
+        sendWelcomeEmail({
+          to: order.email,
+          name: order.name,
+          product: order.product,
+          productName: order.productName,
+        }).catch(err => console.error('Email send failed:', err))
       }
     }
 

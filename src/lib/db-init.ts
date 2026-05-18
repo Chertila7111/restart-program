@@ -311,8 +311,12 @@ async function _init() {
     "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
   )`)
 
+  // ── curatorId column on Group ──
+  try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "Group" ADD COLUMN "curatorId" TEXT`) } catch { /* already exists */ }
+
   // ── Seed accounts ──
   await seedDoctor()
+  await seedCurator()
   await seedTestUser()
 }
 
@@ -327,6 +331,22 @@ async function seedTestUser() {
     await (prisma as any).$executeRawUnsafe(`
       INSERT OR IGNORE INTO "Order" ("id","userId","email","name","product","productName","amount","status","createdAt","updatedAt")
       VALUES ('order-test-intro', 'test-user-anna', '${email}', 'Анна (тест)', 'intro', 'Вводная встреча', 1490, 'paid', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    `)
+  } catch { /* ignore */ }
+}
+
+async function seedCurator() {
+  const email = 'curator@snova-s-soboy.ru'
+  const curatorId = 'curator-elena-demo'
+  try {
+    const passwordHash = await bcrypt.hash('Curator2026!', 10)
+    await (prisma as any).$executeRawUnsafe(`
+      INSERT OR IGNORE INTO "User" ("id","email","name","passwordHash","role","createdAt","updatedAt")
+      VALUES ('${curatorId}', '${email}', 'Елена Куратор', '${passwordHash}', 'curator', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    `)
+    // Assign curator to demo group
+    await (prisma as any).$executeRawUnsafe(`
+      UPDATE "Group" SET curatorId = '${curatorId}' WHERE id = 'group-demo-spring-2026' AND (curatorId IS NULL OR curatorId = '')
     `)
   } catch { /* ignore */ }
 }

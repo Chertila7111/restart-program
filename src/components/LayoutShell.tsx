@@ -6,7 +6,7 @@ import Footer from '@/components/Footer'
 
 export default function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const isApp = pathname.startsWith('/dashboard') || pathname.startsWith('/specialist')
+  const isApp = pathname.startsWith('/dashboard') || pathname.startsWith('/specialist') || pathname.startsWith('/curator')
 
   return (
     <>

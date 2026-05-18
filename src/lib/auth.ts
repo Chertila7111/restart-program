@@ -35,8 +35,9 @@ export const authOptions: NextAuthOptions = {
 
         // ── Demo/test accounts (hardcoded, always work) ──
         const demoAccounts: Record<string, { password: string; id: string; name: string; role: string; tier: string }> = {
-          'test@snova-s-soboy.ru':   { password: 'Test2026!',   id: 'test-user-anna',       name: 'Анна (тест)',     role: 'user',          tier: 'intro' },
-          'doctor@snova-s-soboy.ru': { password: 'Doctor2026!', id: 'doctor-maria-sokolova', name: 'Мария Соколова', role: 'psychologist',  tier: 'personal' },
+          'test@snova-s-soboy.ru':    { password: 'Test2026!',    id: 'test-user-anna',        name: 'Анна (тест)',      role: 'user',         tier: 'intro' },
+          'doctor@snova-s-soboy.ru':  { password: 'Doctor2026!',  id: 'doctor-maria-sokolova', name: 'Мария Соколова',  role: 'psychologist', tier: 'personal' },
+          'curator@snova-s-soboy.ru': { password: 'Curator2026!', id: 'curator-elena-demo',    name: 'Елена Куратор',   role: 'curator',      tier: 'personal' },
         }
         const demo = demoAccounts[emailLower]
         if (demo) {
