@@ -18,8 +18,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) redirect('/auth/login?callbackUrl=/dashboard')
 
-  // Admin via env vars — no DB needed
+  // Psychologists have their own portal
   const sessionRole = (session.user as any).role as string | undefined
+  if (sessionRole === 'psychologist') redirect('/specialist')
+
+  // Admin via env vars — no DB needed
   if (sessionRole === 'admin') {
     return (
       <DashboardShell
@@ -40,7 +43,23 @@ export default async function DashboardLayout({ children }: { children: React.Re
     })
   } catch (err) { console.error('[layout] DB error:', err) }
 
-  if (!user) redirect('/auth/login')
+  // DB unavailable or demo user not seeded — fall back to session data
+  if (!user) {
+    const role = sessionRole ?? 'user'
+    const sessionTier = (session.user as any).tier as string | undefined
+    // If tier is in JWT (demo accounts), use it; otherwise default to 'intro'
+    // so users who paid and have creds never see the fully locked state
+    const tier = (sessionTier as Tier | undefined) ?? (role === 'user' ? 'intro' : getUserTier(role, []))
+    return (
+      <DashboardShell
+        user={{ name: session.user.name ?? null, email: session.user.email! }}
+        tier={tier}
+        role={role}
+      >
+        {children}
+      </DashboardShell>
+    )
+  }
 
   const tier = getUserTier(user.role, user.orders)
   const role = user.role // 'user' | 'psychologist' | 'admin'

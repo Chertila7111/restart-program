@@ -34,16 +34,16 @@ export const authOptions: NextAuthOptions = {
         }
 
         // ── Demo/test accounts (hardcoded, always work) ──
-        const demoAccounts: Record<string, { password: string; id: string; name: string; role: string }> = {
-          'test@snova-s-soboy.ru':   { password: 'Test2026!',   id: 'test-user-anna',       name: 'Анна (тест)',     role: 'user' },
-          'doctor@snova-s-soboy.ru': { password: 'Doctor2026!', id: 'doctor-maria-sokolova', name: 'Мария Соколова', role: 'psychologist' },
+        const demoAccounts: Record<string, { password: string; id: string; name: string; role: string; tier: string }> = {
+          'test@snova-s-soboy.ru':   { password: 'Test2026!',   id: 'test-user-anna',       name: 'Анна (тест)',     role: 'user',          tier: 'personal' },
+          'doctor@snova-s-soboy.ru': { password: 'Doctor2026!', id: 'doctor-maria-sokolova', name: 'Мария Соколова', role: 'psychologist',  tier: 'personal' },
         }
         const demo = demoAccounts[emailLower]
         if (demo) {
           if (credentials.password !== demo.password) return null
           // Ensure DB is seeded so dashboard data loads
           try { await ensureDb() } catch { /* non-fatal */ }
-          return { id: demo.id, email: emailLower, name: demo.name, role: demo.role }
+          return { id: demo.id, email: emailLower, name: demo.name, role: demo.role, tier: demo.tier }
         }
 
         // ── Regular users via DB ──
@@ -66,6 +66,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id
         token.role = (user as any).role
+        if ((user as any).tier) token.tier = (user as any).tier
       }
       return token
     },
@@ -73,6 +74,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         (session.user as any).id = token.id as string
         (session.user as any).role = token.role as string
+        if (token.tier) (session.user as any).tier = token.tier as string
       }
       return session
     },
