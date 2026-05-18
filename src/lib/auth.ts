@@ -33,6 +33,19 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
+        // ── Demo/test accounts (hardcoded, always work) ──
+        const demoAccounts: Record<string, { password: string; id: string; name: string; role: string }> = {
+          'test@snova-s-soboy.ru':   { password: 'Test2026!',   id: 'test-user-anna',       name: 'Анна (тест)',     role: 'user' },
+          'doctor@snova-s-soboy.ru': { password: 'Doctor2026!', id: 'doctor-maria-sokolova', name: 'Мария Соколова', role: 'psychologist' },
+        }
+        const demo = demoAccounts[emailLower]
+        if (demo) {
+          if (credentials.password !== demo.password) return null
+          // Ensure DB is seeded so dashboard data loads
+          try { await ensureDb() } catch { /* non-fatal */ }
+          return { id: demo.id, email: emailLower, name: demo.name, role: demo.role }
+        }
+
         // ── Regular users via DB ──
         try {
           await ensureDb()
