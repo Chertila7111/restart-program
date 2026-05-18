@@ -130,12 +130,17 @@ async function _init() {
     "education" TEXT,
     "experience" TEXT,
     "bio" TEXT,
+    "workStyle" TEXT,
+    "quote" TEXT,
     "photoUrl" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "PsychProfile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE
   )`)
   await sql(`CREATE UNIQUE INDEX IF NOT EXISTS "PsychProfile_userId_key" ON "PsychologistProfile"("userId")`)
+  // Add columns to existing tables (silently ignored if column already exists)
+  await sql(`ALTER TABLE "PsychologistProfile" ADD COLUMN "workStyle" TEXT`)
+  await sql(`ALTER TABLE "PsychologistProfile" ADD COLUMN "quote" TEXT`)
 
   await sql(`CREATE TABLE IF NOT EXISTS "TaskCompletion" (
     "id" TEXT NOT NULL PRIMARY KEY,
@@ -198,6 +203,84 @@ async function _init() {
     CONSTRAINT "Booking_slotId_fkey" FOREIGN KEY ("slotId") REFERENCES "AvailableSlot"("id") ON DELETE CASCADE
   )`)
   await sql(`CREATE UNIQUE INDEX IF NOT EXISTS "Booking_slotId_key" ON "Booking"("slotId")`)
+
+  // ── Extended tables ──
+  await sql(`CREATE TABLE IF NOT EXISTS "UserProfile" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "photoUrl" TEXT,
+    "age" TEXT,
+    "city" TEXT,
+    "timezone" TEXT,
+    "phone" TEXT,
+    "telegram" TEXT,
+    "about" TEXT,
+    "situation" TEXT,
+    "mainPain" TEXT,
+    "goals" TEXT,
+    "moodNow" INTEGER,
+    "diaryAccess" TEXT NOT NULL DEFAULT 'private',
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "UserProfile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE
+  )`)
+  await sql(`CREATE UNIQUE INDEX IF NOT EXISTS "UserProfile_userId_key" ON "UserProfile"("userId")`)
+
+  await sql(`CREATE TABLE IF NOT EXISTS "Group" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "title" TEXT NOT NULL,
+    "startDate" DATETIME,
+    "psychologistId" TEXT,
+    "status" TEXT NOT NULL DEFAULT 'recruiting',
+    "currentWeek" INTEGER NOT NULL DEFAULT 1,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`)
+
+  await sql(`CREATE TABLE IF NOT EXISTS "GroupParticipant" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "groupId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'active',
+    "diaryAccessGranted" INTEGER NOT NULL DEFAULT 0,
+    "joinedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "GP_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "Group"("id") ON DELETE CASCADE
+  )`)
+  await sql(`CREATE UNIQUE INDEX IF NOT EXISTS "GP_groupId_userId_key" ON "GroupParticipant"("groupId","userId")`)
+
+  await sql(`CREATE TABLE IF NOT EXISTS "SpecialistNote" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "specialistId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "note" TEXT NOT NULL,
+    "tags" TEXT,
+    "isImportant" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`)
+
+  await sql(`CREATE TABLE IF NOT EXISTS "Recommendation" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "specialistId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "type" TEXT NOT NULL DEFAULT 'session',
+    "summary" TEXT NOT NULL,
+    "focus" TEXT,
+    "exercises" TEXT,
+    "nextStep" TEXT,
+    "visibleToUser" INTEGER NOT NULL DEFAULT 1,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`)
+
+  await sql(`CREATE TABLE IF NOT EXISTS "SpecialistAvailability" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "specialistId" TEXT NOT NULL,
+    "weekday" INTEGER NOT NULL,
+    "startTime" TEXT NOT NULL,
+    "endTime" TEXT NOT NULL,
+    "duration" INTEGER NOT NULL DEFAULT 60,
+    "type" TEXT NOT NULL DEFAULT 'individual',
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "SA_specialistId_fkey" FOREIGN KEY ("specialistId") REFERENCES "User"("id") ON DELETE CASCADE
+  )`)
 
   // ── Seed accounts ──
   await seedDoctor()

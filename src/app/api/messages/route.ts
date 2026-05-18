@@ -16,7 +16,6 @@ export async function GET(req: NextRequest) {
   try {
     await ensureDb()
 
-    // Verify user is a member
     const member = await (prisma as any).conversationMember.findFirst({
       where: { conversationId, userId },
     })
@@ -49,12 +48,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'conversationId and text required' }, { status: 400 })
     }
 
-    // Ensure sender exists in DB (admin might not have a DB record)
-    const emailSafe = ((session.user as any).email ?? '').replace(/'/g, "''")
-    const nameSafe = ((session.user as any).name ?? (session.user as any).email ?? userId).replace(/'/g, "''")
-    const roleSafe = ((session.user as any).role ?? 'user').replace(/'/g, "''")
+    // Ensure sender exists in DB (admin logs in via env vars and may not have a DB record)
     await (prisma as any).$executeRawUnsafe(
-      `INSERT OR IGNORE INTO "User" ("id","email","name","role","createdAt","updatedAt") VALUES ('${userId}', '${emailSafe}', '${nameSafe}', '${roleSafe}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
+      `INSERT OR IGNORE INTO "User" ("id","email","name","role","createdAt","updatedAt") VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
+      userId,
+      session.user.email,
+      session.user.name ?? session.user.email,
+      (session.user as any).role ?? 'user'
     )
 
     // Verify membership
@@ -64,13 +64,14 @@ export async function POST(req: NextRequest) {
     if (!member) return NextResponse.json({ error: 'forbidden' }, { status: 403 })
 
     const msgId = `msg-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
-    const safe = text.trim().replace(/'/g, "''")
 
     await (prisma as any).$executeRawUnsafe(
-      `INSERT INTO "Message" ("id","conversationId","senderId","text","createdAt") VALUES ('${msgId}', '${conversationId}', '${userId}', '${safe}', CURRENT_TIMESTAMP)`
+      `INSERT INTO "Message" ("id","conversationId","senderId","text","createdAt") VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+      msgId, conversationId, userId, text.trim()
     )
     await (prisma as any).$executeRawUnsafe(
-      `UPDATE "Conversation" SET "updatedAt" = CURRENT_TIMESTAMP WHERE "id" = '${conversationId}'`
+      `UPDATE "Conversation" SET "updatedAt" = CURRENT_TIMESTAMP WHERE "id" = ?`,
+      conversationId
     )
 
     const msg = await (prisma as any).message.findUnique({

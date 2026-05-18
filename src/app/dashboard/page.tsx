@@ -41,8 +41,8 @@ export default async function DashboardPage() {
     })
   } catch { /* DB unavailable — use session data only */ }
 
-  // Admin via env or DB role
-  const effectiveRole = sessionRole === 'admin' ? 'admin' : (user?.role ?? 'user')
+  // Admin via env or DB role; for demo/session-only accounts fall back to sessionRole
+  const effectiveRole = sessionRole === 'admin' ? 'admin' : (user?.role ?? sessionRole ?? 'user')
   const effectiveUser = user ?? {
     name: session.user.name ?? null,
     email: session.user.email!,
@@ -52,7 +52,11 @@ export default async function DashboardPage() {
     taskCompletions: [],
   }
 
-  const tier = getUserTier(effectiveRole, effectiveUser.orders)
+  const sessionTier = (session.user as any).tier as string | undefined
+  // Use DB-computed tier when available; fall back to JWT tier or 'intro' so paid users never see locked state
+  const tier = user
+    ? getUserTier(effectiveRole, effectiveUser.orders)
+    : (sessionTier ?? (effectiveRole === 'user' ? 'intro' : getUserTier(effectiveRole, [])))
   const today = new Date().toISOString().split('T')[0]
   const hasJournalToday = effectiveUser.journalEntries.some(e => e.date === today)
   const completedTaskIds = new Set(effectiveUser.taskCompletions.map(t => t.taskId))

@@ -12,7 +12,6 @@ export async function GET() {
     await ensureDb()
     const userId = (session.user as any).id as string
 
-    // Get all conversations this user is a member of
     const members = await (prisma as any).conversationMember.findMany({
       where: { userId },
       include: {
@@ -41,7 +40,6 @@ export async function GET() {
       }
     })
 
-    // Sort by last message time
     convs.sort((a: any, b: any) => {
       const ta = a.lastMessage?.createdAt ?? a.updatedAt
       const tb = b.lastMessage?.createdAt ?? b.updatedAt
@@ -66,18 +64,19 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { targetUserId, subject } = body as { targetUserId?: string; subject?: string }
 
-    // Ensure the current user exists in DB (admin logs in via env vars, no DB record)
-    const emailSafe = (session.user.email ?? '').replace(/'/g, "''")
-    const nameSafe = ((session.user.name ?? session.user.email ?? userId).replace(/'/g, "''"))
+    // Ensure the current user exists in DB (admin logs in via env vars, no DB record by default)
     await (prisma as any).$executeRawUnsafe(
-      `INSERT OR IGNORE INTO "User" ("id","email","name","role","createdAt","updatedAt") VALUES ('${userId}', '${emailSafe}', '${nameSafe}', '${role}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
+      `INSERT OR IGNORE INTO "User" ("id","email","name","role","createdAt","updatedAt") VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
+      userId,
+      session.user.email,
+      session.user.name ?? session.user.email,
+      role ?? 'user'
     )
 
-    // If no target, create a conversation with the doctor
     const doctorId = 'doctor-maria-sokolova'
     const otherUserId = targetUserId ?? doctorId
 
-    // Check if conversation already exists between these two users
+    // Check if a conversation already exists between these two users
     const existing = await (prisma as any).conversationMember.findFirst({
       where: { userId },
       include: {
@@ -97,16 +96,18 @@ export async function POST(req: NextRequest) {
 
     const convId = `conv-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
     const subjectText = subject ?? 'Чат с психологом'
-    const subjectSafe = subjectText.replace(/'/g, "''")
 
     await (prisma as any).$executeRawUnsafe(
-      `INSERT INTO "Conversation" ("id","subject","createdAt","updatedAt") VALUES ('${convId}', '${subjectSafe}', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`
+      `INSERT INTO "Conversation" ("id","subject","createdAt","updatedAt") VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
+      convId, subjectText
     )
     await (prisma as any).$executeRawUnsafe(
-      `INSERT OR IGNORE INTO "ConversationMember" ("id","conversationId","userId") VALUES ('cm-${convId}-u1', '${convId}', '${userId}')`
+      `INSERT OR IGNORE INTO "ConversationMember" ("id","conversationId","userId") VALUES (?, ?, ?)`,
+      `cm-${convId}-u1`, convId, userId
     )
     await (prisma as any).$executeRawUnsafe(
-      `INSERT OR IGNORE INTO "ConversationMember" ("id","conversationId","userId") VALUES ('cm-${convId}-u2', '${convId}', '${otherUserId}')`
+      `INSERT OR IGNORE INTO "ConversationMember" ("id","conversationId","userId") VALUES (?, ?, ?)`,
+      `cm-${convId}-u2`, convId, otherUserId
     )
 
     return NextResponse.json({ id: convId, existing: false })
