@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { headers } from 'next/headers'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import './globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -45,12 +47,14 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const headersList = await headers()
   const pathname = headersList.get('x-pathname') ?? ''
-  const isDashboard = pathname.startsWith('/dashboard')
+  const isDashboard = pathname.startsWith('/dashboard') || pathname.startsWith('/specialist')
+  // Pre-fetch session so SessionProvider pre-populates useSession() with no loading flash
+  const session = await getServerSession(authOptions).catch(() => null)
 
   return (
     <html lang="ru" className={inter.variable}>
       <body className="min-h-screen flex flex-col">
-        <Providers>
+        <Providers session={session}>
           {!isDashboard && <Header />}
           <main className={`flex-1${isDashboard ? '' : ' pt-16'}`}>{children}</main>
           {!isDashboard && <Footer />}
