@@ -59,52 +59,52 @@ export default async function CuratorGroupsPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {groups.map((g: any) => (
-            <div key={g.id} style={{ position: 'relative' }}>
-              <Link href={`/curator/groups/${g.id}`} style={{ textDecoration: 'none', display: 'block' }}>
-              <div className="card" style={{ padding: '1.5rem', cursor: 'pointer' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
-                  <div style={{ flex: 1, minWidth: '12rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
-                      <h3 style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text)', margin: 0 }}>{g.title}</h3>
-                      <span style={{ fontSize: '0.7rem', fontWeight: 700, color: STATUS_COLOR[g.status] || '#6B7280', background: '#F9FAFB', border: `1px solid ${STATUS_COLOR[g.status] || '#6B7280'}`, padding: '0.15rem 0.625rem', borderRadius: '9999px' }}>
-                        {STATUS_LABEL[g.status] || g.status}
-                      </span>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap' }}>
-                      <div>
-                        <div style={{ fontSize: '0.65rem', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.2rem' }}>Прогресс</div>
-                        <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text)' }}>Неделя {g.currentWeek} из 4</div>
+            <div key={g.id} className="card" style={{ padding: '1.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+                {/* Clickable left area */}
+                <Link href={`/curator/groups/${g.id}`} style={{ flex: 1, textDecoration: 'none', display: 'block', minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
+                    <div style={{ flex: 1, minWidth: '10rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+                        <h3 style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text)', margin: 0 }}>{g.title}</h3>
+                        <span style={{ fontSize: '0.7rem', fontWeight: 700, color: STATUS_COLOR[g.status] || '#6B7280', background: '#F9FAFB', border: `1px solid ${STATUS_COLOR[g.status] || '#6B7280'}`, padding: '0.15rem 0.625rem', borderRadius: '9999px' }}>
+                          {STATUS_LABEL[g.status] || g.status}
+                        </span>
                       </div>
-                      <div>
-                        <div style={{ fontSize: '0.65rem', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.2rem' }}>Участников</div>
-                        <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text)' }}>{Number(g.participantCount)}</div>
-                      </div>
-                      {g.psychologistName && (
+                      <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap' }}>
                         <div>
-                          <div style={{ fontSize: '0.65rem', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.2rem' }}>Психолог</div>
-                          <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text)' }}>{g.psychologistName}</div>
+                          <div style={{ fontSize: '0.65rem', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.2rem' }}>Прогресс</div>
+                          <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text)' }}>Неделя {g.currentWeek} из 4</div>
                         </div>
-                      )}
+                        <div>
+                          <div style={{ fontSize: '0.65rem', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.2rem' }}>Участников</div>
+                          <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text)' }}>{Number(g.participantCount)}</div>
+                        </div>
+                        {g.psychologistName && (
+                          <div>
+                            <div style={{ fontSize: '0.65rem', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.2rem' }}>Психолог</div>
+                            <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text)' }}>{g.psychologistName}</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div style={{ width: '6rem', flexShrink: 0 }}>
+                      <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginBottom: '0.375rem', textAlign: 'right' }}>
+                        {Math.round((g.currentWeek / 4) * 100)}%
+                      </div>
+                      <div style={{ height: '6px', background: 'var(--primary-light)', borderRadius: '9999px', overflow: 'hidden' }}>
+                        <div style={{ width: `${(g.currentWeek / 4) * 100}%`, height: '100%', background: '#C28A5E', borderRadius: '9999px' }} />
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.6rem', color: 'var(--text-light)', marginTop: '0.25rem' }}>
+                        <span>Нед 1</span><span>Нед 4</span>
+                      </div>
                     </div>
                   </div>
-
-                  <div style={{ width: '8rem', flexShrink: 0 }}>
-                    <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginBottom: '0.375rem', textAlign: 'right' }}>
-                      {Math.round((g.currentWeek / 4) * 100)}%
-                    </div>
-                    <div style={{ height: '6px', background: 'var(--primary-light)', borderRadius: '9999px', overflow: 'hidden' }}>
-                      <div style={{ width: `${(g.currentWeek / 4) * 100}%`, height: '100%', background: '#C28A5E', borderRadius: '9999px' }} />
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.6rem', color: 'var(--text-light)', marginTop: '0.25rem' }}>
-                      <span>Нед 1</span><span>Нед 4</span>
-                    </div>
-                  </div>
+                </Link>
+                {/* Delete button — outside the Link, no overlap */}
+                <div style={{ flexShrink: 0, alignSelf: 'flex-start' }}>
+                  <DeleteGroupButton groupId={g.id} groupTitle={g.title} />
                 </div>
-              </div>
-              </Link>
-              <div style={{ position: 'absolute', top: '1rem', right: '1rem' }}>
-                <DeleteGroupButton groupId={g.id} groupTitle={g.title} />
               </div>
             </div>
           ))}

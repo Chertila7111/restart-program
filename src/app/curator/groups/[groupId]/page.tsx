@@ -51,6 +51,10 @@ export default function GroupDetailPage() {
   const [searchResults, setSearchResults] = useState<any[]>([])
   const [searchLoading, setSearchLoading] = useState(false)
   const [actionLoading, setActionLoading] = useState('')
+  const [showPsychologistPanel, setShowPsychologistPanel] = useState(false)
+  const [psychologistSearchQ, setPsychologistSearchQ] = useState('')
+  const [psychologistResults, setPsychologistResults] = useState<any[]>([])
+  const [psychologistSearchLoading, setPsychologistSearchLoading] = useState(false)
 
   // New meeting form
   const [mForm, setMForm] = useState({
@@ -89,6 +93,18 @@ export default function GroupDetailPage() {
     return () => { if (searchTimer.current) clearTimeout(searchTimer.current) }
   }, [searchQ, showAddMember, groupId])
 
+  useEffect(() => {
+    if (!showPsychologistPanel) { setPsychologistResults([]); return }
+    const timer = setTimeout(async () => {
+      setPsychologistSearchLoading(true)
+      try {
+        const r = await fetch(`/api/curator/users?role=psychologist&q=${encodeURIComponent(psychologistSearchQ)}`)
+        if (r.ok) setPsychologistResults(await r.json())
+      } finally { setPsychologistSearchLoading(false) }
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [psychologistSearchQ, showPsychologistPanel])
+
   async function patch(body: object): Promise<boolean> {
     const r = await fetch(`/api/curator/groups/${groupId}`, {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
@@ -123,6 +139,17 @@ export default function GroupDetailPage() {
     setActionLoading('week')
     const ok = await patch({ action: 'setWeek', week })
     if (ok) setGroup((g: any) => ({ ...g, currentWeek: week }))
+    setActionLoading('')
+  }
+
+  async function assignPsychologist(psychologistId: string | null) {
+    setActionLoading('psychologist')
+    const ok = await patch({ action: 'setPsychologist', psychologistId })
+    if (ok) {
+      await load()
+      setShowPsychologistPanel(false)
+      setPsychologistSearchQ('')
+    }
     setActionLoading('')
   }
 
@@ -197,9 +224,6 @@ export default function GroupDetailPage() {
               {currentStatus.label}
             </span>
           </div>
-          {group.psychologistName && (
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Психолог: {group.psychologistName}</div>
-          )}
         </div>
 
         {/* Status change */}
@@ -227,7 +251,7 @@ export default function GroupDetailPage() {
         </div>
 
         {/* Week control */}
-        <div>
+        <div style={{ marginBottom: '1.25rem' }}>
           <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.5rem' }}>Текущая неделя</div>
           <div style={{ display: 'flex', gap: '0.625rem', alignItems: 'center' }}>
             <button
@@ -244,6 +268,79 @@ export default function GroupDetailPage() {
               style={{ width: '2rem', height: '2rem', borderRadius: '50%', border: '1.5px solid var(--border)', background: 'none', cursor: 'pointer', fontSize: '1.1rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >+</button>
           </div>
+        </div>
+
+        {/* Psychologist */}
+        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.25rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.625rem' }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text)' }}>Психолог группы</div>
+            <button
+              onClick={() => { setShowPsychologistPanel(v => !v); setPsychologistSearchQ('') }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.35rem 0.75rem', borderRadius: '0.5rem', border: `1.5px solid ${showPsychologistPanel ? 'var(--primary)' : 'var(--border)'}`, background: showPsychologistPanel ? 'var(--primary-light)' : 'var(--bg)', fontSize: '0.75rem', fontWeight: 600, color: showPsychologistPanel ? 'var(--primary-dark)' : 'var(--text)', cursor: 'pointer' }}
+            >
+              {group.psychologistId ? 'Изменить' : 'Назначить'}
+            </button>
+          </div>
+
+          {group.psychologistName ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+              <div style={{ width: '2rem', height: '2rem', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, color: 'white', flexShrink: 0 }}>
+                {group.psychologistName[0].toUpperCase()}
+              </div>
+              <span style={{ fontWeight: 600, fontSize: '0.875rem', color: 'var(--text)', flex: 1 }}>{group.psychologistName}</span>
+              <button
+                onClick={() => assignPsychologist(null)}
+                disabled={actionLoading === 'psychologist'}
+                style={{ fontSize: '0.72rem', color: '#B91C1C', background: '#FEE2E2', border: 'none', borderRadius: '0.5rem', padding: '0.25rem 0.625rem', cursor: 'pointer', fontWeight: 600 }}
+              >
+                Открепить
+              </button>
+            </div>
+          ) : (
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Не назначен</div>
+          )}
+
+          {showPsychologistPanel && (
+            <div style={{ marginTop: '0.75rem', padding: '0.875rem', background: 'var(--bg-sage)', borderRadius: '0.875rem', border: '1px solid var(--primary-light)' }}>
+              <div style={{ position: 'relative', marginBottom: '0.5rem' }}>
+                <Search size={13} style={{ position: 'absolute', left: '0.625rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
+                <input
+                  type="text"
+                  placeholder="Поиск психолога..."
+                  value={psychologistSearchQ}
+                  onChange={e => setPsychologistSearchQ(e.target.value)}
+                  autoFocus
+                  style={{ paddingLeft: '1.875rem', fontSize: '0.875rem', borderRadius: '0.625rem', border: '1.5px solid var(--border)', padding: '0.5rem 0.75rem 0.5rem 1.875rem', width: '100%', outline: 'none', background: 'white', boxSizing: 'border-box' as const }}
+                />
+              </div>
+              {psychologistSearchLoading ? (
+                <div style={{ textAlign: 'center', padding: '0.5rem', color: 'var(--text-muted)', fontSize: '0.8rem' }}>Поиск...</div>
+              ) : psychologistResults.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '0.5rem', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                  {psychologistSearchQ ? 'Не найдено' : 'Начните вводить имя или email'}
+                </div>
+              ) : (
+                psychologistResults.map((p: any) => (
+                  <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', padding: '0.5rem 0.625rem', borderRadius: '0.625rem', background: 'white', marginBottom: '0.375rem' }}>
+                    <div style={{ width: '2rem', height: '2rem', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, color: 'white', flexShrink: 0 }}>
+                      {(p.name || p.email)[0].toUpperCase()}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 600, fontSize: '0.8rem', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name || p.email}</div>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{p.email}</div>
+                    </div>
+                    <button
+                      onClick={() => assignPsychologist(p.id)}
+                      disabled={actionLoading === 'psychologist'}
+                      style={{ padding: '0.3rem 0.75rem', borderRadius: '0.5rem', border: 'none', background: 'var(--primary)', color: 'white', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}
+                    >
+                      {actionLoading === 'psychologist' ? '...' : 'Назначить'}
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
       </div>
 

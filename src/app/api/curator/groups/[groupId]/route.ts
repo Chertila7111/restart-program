@@ -119,6 +119,15 @@ export async function PATCH(
       return NextResponse.json({ ok: true })
     }
 
+    if (action === 'setPsychologist') {
+      const { psychologistId } = body as { psychologistId: string | null }
+      await (prisma as any).$executeRawUnsafe(
+        `UPDATE "Group" SET psychologistId = ? WHERE id = ?`,
+        psychologistId || null, groupId
+      )
+      return NextResponse.json({ ok: true })
+    }
+
     return NextResponse.json({ error: 'unknown action' }, { status: 400 })
   } catch (err: any) {
     return NextResponse.json({ error: err?.message ?? 'unknown' }, { status: 500 })

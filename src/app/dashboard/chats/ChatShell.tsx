@@ -219,11 +219,11 @@ export function ChatShell({
     }}>
       {/* ── Conversation list ── */}
       <div style={{
-        width: '17rem', flexShrink: 0, borderRight: '1px solid var(--border)',
+        width: '21rem', flexShrink: 0, borderRight: '1px solid var(--border)',
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
       }}>
         {/* Search + new chat */}
-        <div style={{ padding: '0.875rem', borderBottom: '1px solid var(--border)', display: 'flex', gap: '0.5rem' }}>
+        <div style={{ padding: '1rem 1.125rem', borderBottom: '1px solid var(--border)', display: 'flex', gap: '0.5rem' }}>
           <div style={{ flex: 1, position: 'relative' }}>
             <Search size={13} style={{ position: 'absolute', left: '0.625rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
             <input
@@ -280,7 +280,7 @@ export function ChatShell({
                   onClick={() => setActiveId(conv.id)}
                   style={{
                     width: '100%', textAlign: 'left', border: 'none', cursor: 'pointer',
-                    padding: '0.875rem 1rem', display: 'flex', gap: '0.75rem', alignItems: 'center',
+                    padding: '1rem 1.125rem', display: 'flex', gap: '0.875rem', alignItems: 'center',
                     background: isActive ? 'var(--bg-sage)' : 'transparent',
                     borderBottom: '1px solid var(--border)',
                     transition: 'background 0.1s',
@@ -321,7 +321,7 @@ export function ChatShell({
       {activeConv ? (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
           {/* Header */}
-          <div style={{ padding: '0.875rem 1.25rem', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
+          <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '0.875rem', flexShrink: 0 }}>
             {(() => {
               const other = activeConv.participants.find(p => p.id !== userId) ?? activeConv.participants[0]
               return (
@@ -346,7 +346,7 @@ export function ChatShell({
           </div>
 
           {/* Messages */}
-          <div ref={listRef} style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', minHeight: 0 }}>
+          <div ref={listRef} style={{ flex: 1, overflowY: 'auto', padding: '1.5rem 1.75rem', display: 'flex', flexDirection: 'column', gap: '1rem', minHeight: 0 }}>
             {msgLoading && messages.length === 0 ? (
               <div style={{ textAlign: 'center', color: 'var(--text-light)', fontSize: '0.8rem', padding: '2rem' }}>Загрузка…</div>
             ) : messages.length === 0 ? (
@@ -367,11 +367,11 @@ export function ChatShell({
                         </div>
                       )}
                       <div style={{
-                        padding: '0.625rem 0.875rem',
-                        borderRadius: isMe ? '1rem 1rem 0.25rem 1rem' : '1rem 1rem 1rem 0.25rem',
+                        padding: '0.75rem 1.125rem',
+                        borderRadius: isMe ? '1.25rem 1.25rem 0.35rem 1.25rem' : '1.25rem 1.25rem 1.25rem 0.35rem',
                         background: isMe ? 'var(--primary)' : 'var(--bg-soft)',
                         color: isMe ? 'white' : 'var(--text)',
-                        fontSize: '0.875rem', lineHeight: 1.55,
+                        fontSize: '0.925rem', lineHeight: 1.6,
                       }}>
                         {msg.text}
                       </div>
@@ -386,7 +386,7 @@ export function ChatShell({
           </div>
 
           {/* Input */}
-          <div style={{ padding: '0.75rem 1rem', borderTop: '1px solid var(--border)', display: 'flex', gap: '0.625rem', flexShrink: 0 }}>
+          <div style={{ padding: '1rem 1.25rem', borderTop: '1px solid var(--border)', display: 'flex', gap: '0.75rem', flexShrink: 0 }}>
             <input
               ref={inputRef}
               type="text"
@@ -395,19 +395,19 @@ export function ChatShell({
               onKeyDown={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), send())}
               placeholder="Написать сообщение..."
               disabled={sending}
-              style={{ flex: 1, padding: '0.625rem 0.875rem', borderRadius: '0.875rem', border: '1.5px solid var(--border)', fontSize: '0.875rem', outline: 'none' }}
+              style={{ flex: 1, padding: '0.75rem 1.125rem', borderRadius: '1.125rem', border: '1.5px solid var(--border)', fontSize: '0.925rem', outline: 'none' }}
             />
             <button
               onClick={send}
               disabled={!text.trim() || sending}
               style={{
-                width: '2.5rem', height: '2.5rem', borderRadius: '50%', border: 'none',
+                width: '2.75rem', height: '2.75rem', borderRadius: '50%', border: 'none',
                 background: text.trim() && !sending ? 'var(--primary)' : 'var(--border)',
                 cursor: text.trim() && !sending ? 'pointer' : 'not-allowed',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background 0.15s',
               }}
             >
-              <Send size={15} style={{ color: 'white' }} />
+              <Send size={16} style={{ color: 'white' }} />
             </button>
           </div>
         </div>
