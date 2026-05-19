@@ -45,11 +45,13 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   icons: {
     icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', type: 'image/x-icon' },
       { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
       { url: '/icon-512.png', type: 'image/png', sizes: '512x512' },
     ],
     apple: [{ url: '/icon-192.png', sizes: '192x192', type: 'image/png' }],
-    shortcut: '/icon-192.png',
+    shortcut: '/favicon.ico',
   },
   appleWebApp: { capable: true, statusBarStyle: 'default', title: 'Снова с собой' },
   other: { 'mobile-web-app-capable': 'yes' },
@@ -61,9 +63,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="ru" className={inter.variable}>
       <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
         <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
-        <link rel="icon" href="/icon-512.png" type="image/png" sizes="512x512" />
-        <link rel="shortcut icon" href="/icon-192.png" />
         <link rel="apple-touch-icon" href="/icon-192.png" sizes="192x192" />
         <meta name="theme-color" content="#4E7B5E" />
         <script type="text/javascript" dangerouslySetInnerHTML={{ __html: `
