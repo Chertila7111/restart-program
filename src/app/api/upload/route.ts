@@ -1,6 +1,8 @@
 import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 import { authOptions } from '@/lib/auth'
+import { writeFile, mkdir } from 'fs/promises'
+import { join } from 'path'
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions)
@@ -11,7 +13,6 @@ export async function POST(req: Request) {
     const file = formData.get('file') as File | null
     if (!file) return NextResponse.json({ error: 'No file' }, { status: 400 })
 
-    // 5 MB limit
     if (file.size > 5 * 1024 * 1024) {
       return NextResponse.json({ error: 'Файл слишком большой (максимум 5 МБ)' }, { status: 413 })
     }
@@ -22,11 +23,19 @@ export async function POST(req: Request) {
     }
 
     const bytes = await file.arrayBuffer()
-    const base64 = Buffer.from(bytes).toString('base64')
-    const dataUrl = `data:${file.type};base64,${base64}`
+    const buffer = Buffer.from(bytes)
 
-    return NextResponse.json({ url: dataUrl })
-  } catch {
+    const ext = file.type === 'image/jpeg' ? 'jpg' : file.type.split('/')[1]
+    const userId = ((session.user as any).id ?? 'user').replace(/[^a-z0-9]/gi, '')
+    const filename = `${userId}-${Date.now()}.${ext}`
+
+    const uploadDir = join(process.cwd(), 'public', 'uploads')
+    await mkdir(uploadDir, { recursive: true })
+    await writeFile(join(uploadDir, filename), buffer)
+
+    return NextResponse.json({ url: `/uploads/${filename}` })
+  } catch (err: any) {
+    console.error('[upload]', err)
     return NextResponse.json({ error: 'Ошибка загрузки' }, { status: 500 })
   }
 }
