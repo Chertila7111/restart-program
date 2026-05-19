@@ -116,7 +116,7 @@ function SuccessContent() {
 
         <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-light)', marginTop: '1.25rem', lineHeight: 1.6 }}>
           Вопросы? Напишите нам на{' '}
-          <a href="mailto:hello@snova-s-soboy.ru" style={{ color: 'var(--primary)' }}>hello@snova-s-soboy.ru</a>
+          <a href="mailto:snovassoboi@yandex.com" style={{ color: 'var(--primary)' }}>snovassoboi@yandex.com</a>
         </p>
       </div>
     </div>

@@ -97,7 +97,7 @@ export default function OfferPage() {
             <li>После первой встречи, в течение 7 дней — полный возврат при обоснованных претензиях к качеству</li>
             <li>После второй встречи и далее — возврат пропорционально неоказанным услугам</li>
           </ul>
-          <p>Заявление на возврат направлять на: support@snova-s-soboy.ru</p>
+          <p>Заявление на возврат направлять на: snovassoboi@yandex.com</p>
 
           <h2>8. Форс-мажор</h2>
           <p>
@@ -116,7 +116,7 @@ export default function OfferPage() {
             ИНН: [номер]<br />
             Расчётный счёт: [номер]<br />
             Банк: [наименование]<br />
-            Email: legal@snova-s-soboy.ru<br />
+            Email: snovassoboi@yandex.com<br />
             Телефон: [номер]
           </p>
         </div>

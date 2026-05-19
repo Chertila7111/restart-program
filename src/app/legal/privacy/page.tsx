@@ -85,7 +85,7 @@ export default function PrivacyPage() {
             <li>Ограничить обработку данных</li>
             <li>Отозвать согласие на обработку</li>
           </ul>
-          <p>Для реализации прав направьте запрос на: privacy@snova-s-soboy.ru. Мы ответим в течение 30 дней.</p>
+          <p>Для реализации прав направьте запрос на: snovassoboi@yandex.com. Мы ответим в течение 30 дней.</p>
 
           <h2>10. Хранение данных</h2>
           <p>
@@ -100,7 +100,7 @@ export default function PrivacyPage() {
           <h2>12. Контакты</h2>
           <p>
             По вопросам обработки персональных данных:<br />
-            Email: privacy@snova-s-soboy.ru<br />
+            Email: snovassoboi@yandex.com<br />
             ИП [Наименование], ОГРНИП: [номер]
           </p>
         </div>

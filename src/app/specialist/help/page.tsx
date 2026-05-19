@@ -29,8 +29,8 @@ export default function SpecialistHelpPage() {
           <Mail size={18} style={{ color: 'var(--primary)', flexShrink: 0 }} />
           <div>
             <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text)', marginBottom: '0.15rem' }}>Служба поддержки</div>
-            <a href="mailto:hello@snova-s-soboy.ru" style={{ fontSize: '0.825rem', color: 'var(--primary)', textDecoration: 'none' }}>
-              hello@snova-s-soboy.ru
+            <a href="mailto:snovassoboi@yandex.com" style={{ fontSize: '0.825rem', color: 'var(--primary)', textDecoration: 'none' }}>
+              snovassoboi@yandex.com
             </a>
           </div>
         </div>

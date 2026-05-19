@@ -9,11 +9,11 @@ export function OrganizationSchema() {
       'Программа восстановления и нового старта после расставания. Психолог, группа поддержки и практический план.',
     contactPoint: {
       '@type': 'ContactPoint',
-      email: 'hello@snova-s-soboy.ru',
+      email: 'snovassoboi@yandex.com',
       contactType: 'customer service',
       availableLanguage: 'Russian',
     },
-    sameAs: ['https://t.me/snova_s_soboy'],
+    sameAs: [],
   }
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
 }

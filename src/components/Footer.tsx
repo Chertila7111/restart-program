@@ -76,10 +76,10 @@ export default function Footer() {
 
             <div style={{ marginTop: '1.5rem' }}>
               <a
-                href="mailto:hello@snova-s-soboy.ru"
+                href="mailto:snovassoboi@yandex.com"
                 style={{ fontSize: '0.875rem', color: '#8A9E88', textDecoration: 'none' }}
               >
-                hello@snova-s-soboy.ru
+                snovassoboi@yandex.com
               </a>
               <p style={{ fontSize: '0.75rem', color: '#5A6E58', marginTop: '0.5rem', lineHeight: 1.6 }}>
                 Юридические реквизиты будут опубликованы при запуске сервиса

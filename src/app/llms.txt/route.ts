@@ -69,8 +69,7 @@ ${BLOG_POSTS.map((p) => `- [${p.title}](${baseUrl}/blog/${p.slug}) — ${p.excer
 
 ## Контакты
 
-- Email: hello@restart-program.ru
-- Telegram: @restart_support
+- Email: snovassoboi@yandex.com
 - Сайт: ${baseUrl}
 
 ## Юридические документы

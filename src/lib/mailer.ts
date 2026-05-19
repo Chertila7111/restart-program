@@ -22,7 +22,7 @@ function header() {
 function footer() {
   return `<div style="border-top:1px solid #E5EBE3;padding-top:1rem;margin-top:1rem">
   <p style="color:#9CA3AF;font-size:0.75rem;line-height:1.6;margin:0">
-    Вопросы — пишите на <a href="mailto:hello@snova-s-soboy.ru" style="color:#4E7B5E">hello@snova-s-soboy.ru</a>.<br>
+    Вопросы — пишите на <a href="mailto:snovassoboi@yandex.com" style="color:#4E7B5E">snovassoboi@yandex.com</a>.<br>
     Программа не является медицинской услугой. Участие 18+.
   </p>
 </div></div></div></body></html>`
