@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Send, Plus, MessageCircle, Search, User, X } from 'lucide-react'
+import { Send, Plus, MessageCircle, Search, User, X, Users } from 'lucide-react'
 
 type Participant = { id: string; name: string | null; email: string; role: string }
 type Conversation = {
@@ -40,7 +40,12 @@ function ConvTitle(conv: Conversation, myId: string) {
   return conv.subject ?? others.map(o => o.name ?? o.email.split('@')[0]).join(', ')
 }
 
-export function ChatShell({ userId, userName, userRole }: { userId: string; userName: string; userRole: string }) {
+export function ChatShell({
+  userId, userName, userRole, initialUserId, initialName,
+}: {
+  userId: string; userName: string; userRole: string
+  initialUserId?: string; initialName?: string
+}) {
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [activeId, setActiveId] = useState<string | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
@@ -56,6 +61,12 @@ export function ChatShell({ userId, userName, userRole }: { userId: string; user
   const listRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const autoOpenedRef = useRef(false)
+
+  const isCurator = userRole === 'curator'
+  const pickerApiUrl = isCurator ? '/api/curator/chat-users' : '/api/specialists'
+  const pickerTitle = isCurator ? 'Написать участнику' : 'Написать специалисту'
+  const emptyCtaLabel = isCurator ? 'Написать участнику' : 'Написать специалисту'
 
   const loadConversations = useCallback(async () => {
     try {
@@ -108,14 +119,14 @@ export function ChatShell({ userId, userName, userRole }: { userId: string; user
     if (specialists.length > 0) return
     setSpecsLoading(true)
     try {
-      const res = await fetch('/api/specialists')
+      const res = await fetch(pickerApiUrl)
       if (res.ok) setSpecialists(await res.json())
     } finally {
       setSpecsLoading(false)
     }
   }
 
-  async function startChatWith(targetUserId: string, targetName: string) {
+  const startChatWith = useCallback(async (targetUserId: string, targetName: string) => {
     setShowPicker(false)
     setCreatingConv(true)
     try {
@@ -132,7 +143,19 @@ export function ChatShell({ userId, userName, userRole }: { userId: string; user
     } finally {
       setCreatingConv(false)
     }
-  }
+  }, [loadConversations])
+
+  // Auto-open chat when initialUserId is provided (e.g. from ?with= query param)
+  useEffect(() => {
+    if (!initialUserId || autoOpenedRef.current || loading) return
+    autoOpenedRef.current = true
+    const existing = conversations.find(c => c.participants.some(p => p.id === initialUserId))
+    if (existing) {
+      setActiveId(existing.id)
+    } else {
+      startChatWith(initialUserId, initialName ?? 'Участник')
+    }
+  }, [initialUserId, initialName, loading, conversations, startChatWith])
 
   async function send() {
     const trimmed = text.trim()
@@ -214,7 +237,7 @@ export function ChatShell({ userId, userName, userRole }: { userId: string; user
               <MessageCircle size={28} style={{ color: 'var(--border)', marginBottom: '0.75rem' }} />
               <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1rem', lineHeight: 1.5 }}>
                 {conversations.length === 0
-                  ? 'У вас пока нет переписок.\nНажмите + чтобы начать чат с психологом.'
+                  ? `У вас пока нет переписок.\nНажмите + чтобы начать чат.`
                   : 'Ничего не найдено'}
               </div>
               {conversations.length === 0 && (
@@ -223,7 +246,7 @@ export function ChatShell({ userId, userName, userRole }: { userId: string; user
                   disabled={creatingConv}
                   style={{ fontSize: '0.78rem', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '0.625rem', padding: '0.5rem 1rem', cursor: 'pointer', fontWeight: 600 }}
                 >
-                  Написать специалисту
+                  {emptyCtaLabel}
                 </button>
               )}
             </div>
@@ -396,7 +419,7 @@ export function ChatShell({ userId, userName, userRole }: { userId: string; user
             boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-              <h3 style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text)' }}>Написать специалисту</h3>
+              <h3 style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text)' }}>{pickerTitle}</h3>
               <button onClick={() => setShowPicker(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.25rem' }}>
                 <X size={18} />
               </button>
@@ -410,7 +433,7 @@ export function ChatShell({ userId, userName, userRole }: { userId: string; user
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
                 {specialists.map(s => {
                   const initial = ((s.name ?? s.email)[0] ?? '?').toUpperCase()
-                  const roleLabel = s.role === 'psychologist' ? 'Психолог' : 'Куратор'
+                  const roleLabel = s.role === 'psychologist' ? 'Психолог' : s.role === 'curator' ? 'Куратор' : 'Участник'
                   return (
                     <button
                       key={s.id}

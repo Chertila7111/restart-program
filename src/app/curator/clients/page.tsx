@@ -110,9 +110,9 @@ export default async function CuratorClientsPage() {
 
                     {/* Name + email + group */}
                     <div style={{ flex: 1, minWidth: '10rem' }}>
-                      <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text)', marginBottom: '0.1rem' }}>
+                      <Link href={`/curator/clients/${c.id}`} style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text)', textDecoration: 'none', display: 'block', marginBottom: '0.1rem' }}>
                         {c.name || '—'}
-                      </div>
+                      </Link>
                       <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>{c.email}</div>
                       {c.groupTitle && (
                         <div style={{ fontSize: '0.72rem', color: 'var(--text-light)' }}>
@@ -145,7 +145,7 @@ export default async function CuratorClientsPage() {
                       <Calendar size={12} style={{ color: 'var(--primary)' }} />
                       <span>Созвонов: <strong style={{ color: 'var(--text)' }}>{c.bookingCount}</strong></span>
                     </div>
-                    <Link href="/curator/chats" style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', color: '#C28A5E', fontWeight: 600, textDecoration: 'none' }}>
+                    <Link href={`/curator/chats?with=${c.id}&name=${encodeURIComponent(c.name || c.email)}`} style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', color: '#C28A5E', fontWeight: 600, textDecoration: 'none' }}>
                       <MessageCircle size={13} /> Написать
                     </Link>
                   </div>

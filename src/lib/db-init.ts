@@ -395,14 +395,12 @@ async function seedDoctor() {
         'Добро пожаловать! Я Мария — психолог программы «Снова с собой». Здесь вы можете задать вопросы по программе, записаться на индивидуальную встречу или просто написать, если нужна поддержка. Отвечаю в будни с 10:00 до 19:00 МСК.',
         CURRENT_TIMESTAMP)
     `)
-    // Demo group with Anna as participant
-    await (prisma as any).$executeRawUnsafe(`
-      INSERT OR IGNORE INTO "Group" ("id","title","psychologistId","status","currentWeek","createdAt")
-      VALUES ('group-demo-spring-2026', 'Группа «Снова с собой» — Весна 2026', '${doctorId}', 'active', 2, CURRENT_TIMESTAMP)
-    `)
-    await (prisma as any).$executeRawUnsafe(`
-      INSERT OR IGNORE INTO "GroupParticipant" ("id","groupId","userId","status","joinedAt")
-      VALUES ('gp-anna-demo', 'group-demo-spring-2026', 'test-user-anna', 'active', CURRENT_TIMESTAMP)
-    `)
+    // Remove the stale demo group if it still exists
+    await (prisma as any).$executeRawUnsafe(
+      `DELETE FROM "GroupParticipant" WHERE groupId = 'group-demo-spring-2026'`
+    ).catch(() => {})
+    await (prisma as any).$executeRawUnsafe(
+      `DELETE FROM "Group" WHERE id = 'group-demo-spring-2026'`
+    ).catch(() => {})
   } catch { /* ignore */ }
 }
