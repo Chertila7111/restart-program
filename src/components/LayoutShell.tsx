@@ -11,7 +11,7 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
   return (
     <>
       {!isApp && <Header />}
-      <main className={`flex-1${isApp ? '' : ' pt-16'}`}>{children}</main>
+      <main className="flex-1" style={{ paddingTop: isApp ? undefined : '4rem' }}>{children}</main>
       {!isApp && <Footer />}
     </>
   )

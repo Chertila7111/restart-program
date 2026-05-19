@@ -438,12 +438,28 @@ input[type="checkbox"] {
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 100;
+    z-index: 200;
     background: white;
     border-top: 1px solid var(--border);
     justify-content: space-around;
-    padding: 0.35rem 0;
-    padding-bottom: env(safe-area-inset-bottom, 0.35rem);
+    padding: 0;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  /* Large tap targets for mobile nav */
+  .dashboard-mobile-nav a {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    min-height: 52px;
+    padding: 0.5rem 0.25rem;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    text-decoration: none;
   }
 
   .dashboard-content {
@@ -556,5 +572,15 @@ body {
     -webkit-line-clamp: 2 !important;
     -webkit-box-orient: vertical !important;
     overflow: hidden !important;
+  }
+
+  /* Package cards → full width on mobile */
+  .pkg-cards {
+    flex-direction: column !important;
+  }
+
+  .pkg-card {
+    width: 100% !important;
+    min-width: unset !important;
   }
 }

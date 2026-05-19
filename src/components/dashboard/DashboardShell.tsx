@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect } from 'react'
 import { signOut } from 'next-auth/react'
 import {
   LayoutDashboard, BookOpen, PenLine, CheckSquare,
@@ -84,6 +85,13 @@ function navId(href: string): string {
 
 export function DashboardShell({ user, tier, role = 'user', children }: Props) {
   const pathname = usePathname()
+
+  useEffect(() => {
+    const ping = () => fetch('/api/user/ping', { method: 'POST' }).catch(() => {})
+    ping()
+    const id = setInterval(ping, 3 * 60 * 1000)
+    return () => clearInterval(id)
+  }, [])
 
   const isActive = (href: string) =>
     href === '/dashboard' ? pathname === '/dashboard' : pathname.startsWith(href)
@@ -222,8 +230,8 @@ export function DashboardShell({ user, tier, role = 'user', children }: Props) {
           const active = isActive(item.href)
           const Icon = item.icon
           return (
-            <Link key={item.href} href={item.href} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem', padding: '0.5rem 0.75rem', textDecoration: 'none', color: active ? 'var(--primary)' : 'var(--text-light)', fontSize: '0.6rem', fontWeight: active ? 700 : 400 }}>
-              <Icon size={18} />
+            <Link key={item.href} href={item.href} style={{ color: active ? 'var(--primary)' : 'var(--text-light)', fontSize: '0.62rem', fontWeight: active ? 700 : 400 }}>
+              <Icon size={20} />
               {item.label}
             </Link>
           )

@@ -1,12 +1,15 @@
 import Link from 'next/link'
 import { FAQ_ITEMS } from '@/lib/dashboard-data'
 import { HelpFaq } from './HelpFaq'
+import { PwaInstall } from './PwaInstall'
 
 export default function HelpPage() {
   return (
     <div style={{ maxWidth: '44rem' }}>
       <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text)', marginBottom: '0.375rem' }}>Помощь</h1>
       <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Частые вопросы и способы связаться с нами</p>
+
+      <PwaInstall />
 
       <HelpFaq items={FAQ_ITEMS} />
 
@@ -15,8 +18,8 @@ export default function HelpPage() {
           <span style={{ fontSize: '1.5rem', flexShrink: 0 }}>✉️</span>
           <div>
             <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text)', marginBottom: '0.2rem' }}>Написать нам</div>
-            <a href="mailto:support@snova-s-soboy.ru" style={{ fontSize: '0.825rem', color: 'var(--primary)', textDecoration: 'none', fontWeight: 500 }}>
-              support@snova-s-soboy.ru
+            <a href="mailto:snovassoboi@yandex.com" style={{ fontSize: '0.825rem', color: 'var(--primary)', textDecoration: 'none', fontWeight: 500 }}>
+              snovassoboi@yandex.com
             </a>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>Отвечаем в течение суток</div>
           </div>

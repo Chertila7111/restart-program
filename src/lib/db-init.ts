@@ -314,6 +314,22 @@ async function _init() {
   // ── curatorId column on Group ──
   try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "Group" ADD COLUMN "curatorId" TEXT`) } catch { /* already exists */ }
 
+  // ── lastSeenAt on User ──
+  try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN "lastSeenAt" DATETIME`) } catch { /* already exists */ }
+
+  // ── Notifications for curators ──
+  await sql(`CREATE TABLE IF NOT EXISTS "Notification" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "type" TEXT NOT NULL DEFAULT 'info',
+    "title" TEXT NOT NULL,
+    "body" TEXT,
+    "relatedId" TEXT,
+    "read" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "Notif_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE
+  )`)
+
   // ── Seed accounts ──
   await seedDoctor()
   await seedCurator()

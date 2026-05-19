@@ -193,7 +193,6 @@ export default function Home() {
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
-        paddingTop: '4rem',
         position: 'relative',
         overflow: 'hidden',
       }}>
@@ -936,13 +935,13 @@ export default function Home() {
                   Смотреть пакеты →
                 </Link>
               </div>
-              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'stretch' }}>
+              <div className="pkg-cards" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'stretch' }}>
                 {[
                   { name: 'Personal Start', price: '19 990 ₽', sessions: '4 встречи', highlight: false },
                   { name: 'Personal Balance', price: '29 990 ₽', sessions: '6 встреч', highlight: true },
                   { name: 'Personal Deep', price: '39 990 ₽', sessions: '8 встреч', highlight: false },
                 ].map(pkg => (
-                  <div key={pkg.name} style={{
+                  <div key={pkg.name} className="pkg-card" style={{
                     padding: '0.875rem 1.125rem',
                     background: pkg.highlight ? 'var(--primary-light)' : 'white',
                     border: pkg.highlight ? '1.5px solid var(--primary)' : '1.5px solid var(--border)',
