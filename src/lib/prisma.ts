@@ -1,30 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 declare const globalThis: any
 
+function resolveDbUrl(): string {
+  let raw = process.env.DATABASE_URL ?? ''
+  // Turbopack can inline an unresolved env var as the string 'undefined'
+  if (!raw || raw === 'undefined') {
+    raw = process.env.NODE_ENV === 'production'
+      ? 'file:/var/www/restart-app/data/restart.db'
+      : 'file:./data/restart.db'
+  }
+  // Normalise: ensure it starts with a recognised scheme
+  if (!raw.startsWith('file:') && !raw.startsWith('libsql://') && !raw.startsWith('http')) {
+    raw = `file:${raw}`
+  }
+  return raw
+}
+
 function createClient(): any {
   // All requires inside try-catch so any import failure is caught at module level
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { PrismaClient } = require('@prisma/client')
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { PrismaLibSql } = require('@prisma/adapter-libsql')
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const libsqlPkg = require('@libsql/client')
-  let rawUrl = process.env.DATABASE_URL ?? ''
-  // Turbopack can inline env vars as the string 'undefined' — treat it as missing
-  if (!rawUrl || rawUrl === 'undefined') {
-    rawUrl = process.env.NODE_ENV === 'production'
-      ? 'file:/var/www/restart-app/data/restart.db'
-      : 'file:./data/restart.db'
-  }
-  // Vercel serverless has a read-only filesystem except /tmp — remap relative paths
-  if (rawUrl.startsWith('file:./') && process.env.NODE_ENV === 'production') {
-    rawUrl = 'file:/var/www/restart-app/data/restart.db'
-  }
-  const url = (rawUrl.startsWith('file:') || rawUrl.startsWith('libsql://') || rawUrl.startsWith('http'))
-    ? rawUrl
-    : `file:${rawUrl}`
-  const libsql = libsqlPkg.createClient({ url })
-  const adapter = new PrismaLibSql(libsql)
+
+  const url = resolveDbUrl()
+  // PrismaLibSql v7.x is a factory — pass { url } directly, not a pre-created client
+  const adapter = new PrismaLibSql({ url })
   return new PrismaClient({ adapter })
 }
 
