@@ -16,18 +16,21 @@ export default async function MeetingPage() {
   const today = new Date().toISOString().split('T')[0]
   const tier = (session.user as any).tier ?? 'intro'
 
-  // Get next scheduled meeting from DB for this user's tier
+  // Get all upcoming scheduled meetings for this user's tier
   const rows = (await (prisma as any).$queryRawUnsafe(`
     SELECT id, title, description, date, time, duration, meetingLink, doctorId
     FROM "Meeting"
-    WHERE status = 'scheduled' AND date >= ? AND targetTiers LIKE ?
-    ORDER BY date ASC, time ASC LIMIT 1
+    WHERE status = 'scheduled' AND date >= ?
+      AND (targetTiers IS NULL OR targetTiers = '' OR targetTiers LIKE ? OR targetTiers LIKE '%"all"%')
+    ORDER BY date ASC, time ASC
+    LIMIT 10
   `, today, `%"${tier}"%`).catch(() => [])) as {
     id: string; title: string; description: string; date: string; time: string
     duration: string; meetingLink: string | null; doctorId: string | null
   }[]
 
   const upcoming = rows[0] ?? null
+  const allMeetings = rows
 
   if (!upcoming) {
     return (
@@ -35,12 +38,28 @@ export default async function MeetingPage() {
         <Link href="/dashboard" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.825rem', color: 'var(--text-muted)', textDecoration: 'none', marginBottom: '1.5rem' }}>
           <ArrowLeft size={14} /> Назад
         </Link>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text)', marginBottom: '0.375rem' }}>Ваша встреча</h1>
+        <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '0.875rem' }}>Расписание вводной встречи</p>
         <div className="card" style={{ padding: '2.5rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>📅</div>
-          <h2 style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--text)', marginBottom: '0.75rem' }}>Встреча ещё не назначена</h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: 1.6 }}>
-            Куратор добавит встречу — она появится здесь автоматически. Обычно расписание публикуется за 3–5 дней.
+          <Calendar size={40} style={{ color: 'var(--text-light)', margin: '0 auto 1rem' }} />
+          <h2 style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--text)', marginBottom: '0.75rem' }}>Дата встречи ещё не назначена</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: 1.7, maxWidth: '26rem', margin: '0 auto 1.5rem' }}>
+            Расписание публикуется за 3–5 дней до встречи. Вы получите уведомление, как только куратор добавит дату.
           </p>
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link
+              href="/dashboard/calendar"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', padding: '0.625rem 1.25rem', borderRadius: '0.75rem', background: 'var(--primary)', color: 'white', fontWeight: 700, fontSize: '0.875rem', textDecoration: 'none' }}
+            >
+              <Calendar size={14} /> Записаться на индивидуальную сессию
+            </Link>
+            <Link
+              href="/dashboard/chats"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', padding: '0.625rem 1.25rem', borderRadius: '0.75rem', border: '1.5px solid var(--border)', color: 'var(--text)', fontWeight: 600, fontSize: '0.875rem', textDecoration: 'none' }}
+            >
+              Написать куратору
+            </Link>
+          </div>
         </div>
       </div>
     )
@@ -171,7 +190,7 @@ export default async function MeetingPage() {
 
       {/* Doctor card */}
       {doctor && (
-        <div className="card" style={{ padding: '1.5rem' }}>
+        <div className="card" style={{ padding: '1.5rem', marginBottom: '1.25rem' }}>
           <h3 style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text)', marginBottom: '1rem' }}>
             Ведущий психолог
           </h3>
@@ -196,6 +215,52 @@ export default async function MeetingPage() {
                 <div style={{ fontSize: '0.825rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>{doctor.bio}</div>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* All upcoming meetings schedule */}
+      {allMeetings.length > 1 && (
+        <div className="card" style={{ padding: '1.5rem' }}>
+          <h3 style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text)', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Calendar size={15} style={{ color: '#C28A5E' }} />
+            Все встречи программы ({allMeetings.length})
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {allMeetings.map((m, i) => {
+              const mDate = new Date(`${m.date}T${m.time}:00+03:00`)
+              const isFirst = i === 0
+              return (
+                <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: '0.875rem', padding: '0.75rem', borderRadius: '0.75rem', background: isFirst ? 'var(--bg-sage)' : 'var(--bg-soft)', border: isFirst ? '1px solid var(--primary-light)' : 'none' }}>
+                  <div style={{ width: '2.75rem', flexShrink: 0, textAlign: 'center', background: isFirst ? 'var(--primary)' : 'var(--border)', borderRadius: '0.5rem', padding: '0.3rem 0' }}>
+                    <div style={{ fontSize: '0.55rem', fontWeight: 700, color: isFirst ? 'rgba(255,255,255,0.7)' : 'var(--text-light)', textTransform: 'uppercase' }}>
+                      {mDate.toLocaleDateString('ru-RU', { month: 'short' })}
+                    </div>
+                    <div style={{ fontSize: '1.1rem', fontWeight: 800, color: isFirst ? 'white' : 'var(--text)', lineHeight: 1 }}>
+                      {mDate.getDate()}
+                    </div>
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {m.title}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      {m.time} МСК · {m.duration}
+                    </div>
+                  </div>
+                  {isFirst && (
+                    <span style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--primary)', background: 'var(--primary-light)', padding: '0.15rem 0.5rem', borderRadius: '9999px', flexShrink: 0 }}>
+                      Ближайшая
+                    </span>
+                  )}
+                  {m.meetingLink && (
+                    <a href={m.meetingLink} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', flexShrink: 0 }}>
+                      <Video size={14} />
+                    </a>
+                  )}
+                </div>
+              )
+            })}
           </div>
         </div>
       )}

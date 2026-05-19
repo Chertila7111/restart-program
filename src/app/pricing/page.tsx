@@ -82,7 +82,7 @@ const individualPlans = [
     id: 'personal-balance',
     name: 'Personal Balance',
     price: 29990,
-    sessions: 6,
+    sessions: 6 as number,
     badge: 'Чаще всего выбирают' as string | null,
     highlight: true,
     desc: 'Для тех, кто хочет пройти восстановление глубже и без группы.',
@@ -129,19 +129,19 @@ const careerFeatures = [
 
 function ChapterLabel({ num, title }: { num: string; title: string }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2.5rem' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2.5rem', flexWrap: 'wrap' }}>
       <span style={{
         fontSize: '0.68rem', fontWeight: 800, color: 'var(--primary)',
         background: 'var(--primary-light)', padding: '0.3rem 0.875rem',
         borderRadius: '9999px', letterSpacing: '0.1em', flexShrink: 0,
-        textTransform: 'uppercase',
+        textTransform: 'uppercase', whiteSpace: 'nowrap',
       }}>
         {num}
       </span>
-      <h2 style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.4rem)', fontWeight: 800, color: 'var(--text)', margin: 0, whiteSpace: 'nowrap' }}>
+      <h2 style={{ fontSize: 'clamp(1.1rem, 2.5vw, 1.35rem)', fontWeight: 800, color: 'var(--text)', margin: 0 }}>
         {title}
       </h2>
-      <div style={{ flex: 1, height: '1px', background: 'var(--border)', minWidth: '1rem' }} />
+      <div style={{ flex: 1, height: '1px', background: 'var(--border)', minWidth: '2rem' }} />
     </div>
   )
 }
@@ -377,7 +377,7 @@ export default function PricingPage() {
                   <h3 style={{ fontWeight: 800, fontSize: '1.15rem', color: '#1C2B23', marginBottom: '0.2rem' }}>
                     {plan.name}
                   </h3>
-                  <p style={{ fontSize: '0.78rem', color: 'var(--text-light)' }}>{plan.sessions} встречи · один на один</p>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-light)' }}>{plan.sessions} {plan.sessions === 4 ? 'встречи' : 'встреч'} · один на один</p>
                 </div>
 
                 <div style={{ marginBottom: '1rem' }}>
@@ -487,7 +487,7 @@ export default function PricingPage() {
       {/* ── Шаг 05: FAQ ── */}
       <section className="section" style={{ background: 'var(--bg)' }}>
         <div className="container mx-auto px-6" style={{ maxWidth: '64rem' }}>
-          <ChapterLabel num="05" title="Вопросы об оплате" />
+          <ChapterLabel num="шаг 05" title="Вопросы об оплате" />
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1rem' }}>
             {[

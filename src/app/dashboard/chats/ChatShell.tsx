@@ -75,6 +75,7 @@ export function ChatShell({
   const listRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const convPollRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const autoOpenedRef = useRef(false)
 
   const isCurator = userRole === 'curator'
@@ -116,6 +117,10 @@ export function ChatShell({
 
   useEffect(() => {
     loadConversations()
+    convPollRef.current = setInterval(() => loadConversations(), 8000)
+    return () => {
+      if (convPollRef.current) clearInterval(convPollRef.current)
+    }
   }, [loadConversations])
 
   useEffect(() => {
