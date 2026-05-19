@@ -27,7 +27,8 @@ function fmtDate(d: string | null) {
   return new Date(d).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
-export default async function CuratorClientProfilePage({ params }: { params: { userId: string } }) {
+export default async function CuratorClientProfilePage({ params }: { params: Promise<{ userId: string }> }) {
+  const { userId } = await params
   const session = await getServerSession(authOptions)
   const curatorId = (session?.user as any)?.id as string
   const role = (session?.user as any)?.role as string
@@ -53,7 +54,7 @@ export default async function CuratorClientProfilePage({ params }: { params: { u
       ) b ON b.userId = u.id
       LEFT JOIN "UserProfile" up ON up.userId = u.id
       WHERE u.id = ? LIMIT 1
-    `, params.userId)
+    `, userId)
 
     if (!Array.isArray(users) || users.length === 0) return notFound()
     client = users[0]
@@ -64,7 +65,7 @@ export default async function CuratorClientProfilePage({ params }: { params: { u
       JOIN "Group" g ON g.id = gp.groupId
       WHERE gp.userId = ? AND (? = 'admin' OR g.curatorId = ?) AND gp.status = 'active'
       LIMIT 1
-    `, params.userId, role, curatorId)
+    `, userId, role, curatorId)
 
     if (!Array.isArray(groupCheck) || groupCheck.length === 0) return notFound()
     groupInfo = groupCheck[0]
@@ -100,7 +101,7 @@ export default async function CuratorClientProfilePage({ params }: { params: { u
           </div>
         </div>
         <Link
-          href={`/curator/chats?with=${client.id}&name=${encodeURIComponent(client.name || client.email)}`}
+          href={`/curator/chats?with=${userId}&name=${encodeURIComponent(client.name || client.email)}`}
           style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 1rem', borderRadius: '0.75rem', background: '#FEF3C7', color: '#92400E', fontWeight: 600, fontSize: '0.825rem', textDecoration: 'none', flexShrink: 0 }}
         >
           <MessageCircle size={14} /> Написать

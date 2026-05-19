@@ -6,14 +6,14 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { groupId: string } }
+  { params }: { params: Promise<{ groupId: string }> }
 ) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
 
   const role = (session.user as any).role as string
   const curatorId = (session.user as any).id as string
-  const { groupId } = params
+  const { groupId } = await params
 
   try {
     await ensureDb()
@@ -50,14 +50,14 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { groupId: string } }
+  { params }: { params: Promise<{ groupId: string }> }
 ) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
 
   const role = (session.user as any).role as string
   const curatorId = (session.user as any).id as string
-  const { groupId } = params
+  const { groupId } = await params
 
   try {
     await ensureDb()

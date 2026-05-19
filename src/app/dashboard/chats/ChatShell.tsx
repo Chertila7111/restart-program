@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Send, Plus, MessageCircle, Search, User, X, Users } from 'lucide-react'
 
-type Participant = { id: string; name: string | null; email: string; role: string }
+type Participant = { id: string; name: string | null; email: string; role: string; lastSeenAt?: string | null }
 type Conversation = {
   id: string
   subject: string | null
@@ -18,6 +18,19 @@ type Message = {
   sender: { id: string; name: string | null; email: string; role: string }
 }
 type Specialist = { id: string; name: string | null; email: string; role: string; speciality: string | null; bio: string | null }
+
+function lastSeenLabel(iso: string | null | undefined): string {
+  if (!iso) return 'Не заходил(а)'
+  const diff = Date.now() - new Date(iso).getTime()
+  const min = Math.floor(diff / 60000)
+  if (min < 2) return 'Онлайн'
+  if (min < 60) return `Был(а) ${min} мин назад`
+  const h = Math.floor(min / 60)
+  if (h < 24) return `Был(а) ${h} ч назад`
+  const d = Math.floor(h / 24)
+  if (d === 1) return 'Был(а) вчера'
+  return `Был(а) ${d} дн назад`
+}
 
 function timeLabel(iso: string) {
   const d = new Date(iso)
@@ -317,9 +330,9 @@ export function ChatShell({
                     <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text)' }}>
                       {ConvTitle(activeConv, userId)}
                     </div>
-                    {other?.role === 'psychologist' && (
-                      <div style={{ fontSize: '0.72rem', color: 'var(--primary)', fontWeight: 600 }}>Психолог · отвечает пн–пт 10–19 МСК</div>
-                    )}
+                    <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                      {lastSeenLabel(other?.lastSeenAt)}
+                    </div>
                   </div>
                 </>
               )

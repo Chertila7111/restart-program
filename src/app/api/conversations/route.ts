@@ -12,33 +12,52 @@ export async function GET() {
     await ensureDb()
     const userId = (session.user as any).id as string
 
-    const members = await (prisma as any).conversationMember.findMany({
-      where: { userId },
-      include: {
-        conversation: {
-          include: {
-            members: { include: { user: { select: { id: true, name: true, email: true, role: true } } } },
-            messages: { orderBy: { createdAt: 'desc' }, take: 1 },
-          },
-        },
-      },
-    })
+    // All conversations this user belongs to, with every member's info
+    const rows = await (prisma as any).$queryRawUnsafe(`
+      SELECT c.id, c.subject, c.updatedAt,
+             u.id as pId, u.name as pName, u.email as pEmail, u.role as pRole, u.lastSeenAt as pLastSeen
+      FROM "Conversation" c
+      JOIN "ConversationMember" cm ON cm.conversationId = c.id
+      JOIN "User" u ON u.id = cm.userId
+      WHERE c.id IN (SELECT conversationId FROM "ConversationMember" WHERE userId = ?)
+      ORDER BY c.updatedAt DESC, c.id, u.id
+    `, userId)
 
-    const convs = members.map((m: any) => {
-      const conv = m.conversation
-      const lastMsg = conv.messages[0] ?? null
-      const otherMembers = conv.members
-        .filter((cm: any) => cm.userId !== userId)
-        .map((cm: any) => cm.user)
+    // Last message per conversation
+    const lastMsgRows = await (prisma as any).$queryRawUnsafe(`
+      SELECT m.conversationId, m.text, m.createdAt
+      FROM "Message" m
+      INNER JOIN (
+        SELECT conversationId, MAX(createdAt) as mc
+        FROM "Message"
+        WHERE conversationId IN (SELECT conversationId FROM "ConversationMember" WHERE userId = ?)
+        GROUP BY conversationId
+      ) latest ON m.conversationId = latest.conversationId AND m.createdAt = latest.mc
+      GROUP BY m.conversationId
+    `, userId)
 
-      return {
-        id: conv.id,
-        subject: conv.subject,
-        lastMessage: lastMsg ? { text: lastMsg.text, createdAt: lastMsg.createdAt } : null,
-        updatedAt: conv.updatedAt,
-        participants: otherMembers,
+    const lastMsgMap: Record<string, { text: string; createdAt: string }> = {}
+    for (const r of (Array.isArray(lastMsgRows) ? lastMsgRows : [])) {
+      lastMsgMap[r.conversationId] = { text: r.text, createdAt: r.createdAt }
+    }
+
+    // Group rows by conversation
+    const convMap: Record<string, any> = {}
+    for (const r of (Array.isArray(rows) ? rows : [])) {
+      if (!convMap[r.id]) {
+        convMap[r.id] = { id: r.id, subject: r.subject, updatedAt: r.updatedAt, participants: [] }
       }
-    })
+      if (r.pId !== userId) {
+        convMap[r.id].participants.push({
+          id: r.pId, name: r.pName, email: r.pEmail, role: r.pRole, lastSeenAt: r.pLastSeen ?? null,
+        })
+      }
+    }
+
+    const convs = Object.values(convMap).map((c: any) => ({
+      ...c,
+      lastMessage: lastMsgMap[c.id] ?? null,
+    }))
 
     convs.sort((a: any, b: any) => {
       const ta = a.lastMessage?.createdAt ?? a.updatedAt
