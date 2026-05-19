@@ -24,9 +24,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) redirect('/auth/login?callbackUrl=/dashboard')
 
-  // Psychologists have their own portal
+  // Specialists and curators have their own portals
   const sessionRole = (session.user as any).role as string | undefined
   if (sessionRole === 'psychologist') redirect('/specialist')
+  if (sessionRole === 'curator') redirect('/curator')
 
   // Hardcoded tier for demo accounts — bypasses JWT cookie state and DB seed state
   const emailKey = session.user.email.toLowerCase()
