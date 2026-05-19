@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     await mkdir(uploadDir, { recursive: true })
     await writeFile(join(uploadDir, filename), buffer)
 
-    return NextResponse.json({ url: `/uploads/${filename}` })
+    return NextResponse.json({ url: `/api/uploads/${filename}` })
   } catch (err: any) {
     console.error('[upload]', err)
     return NextResponse.json({ error: 'Ошибка загрузки' }, { status: 500 })
