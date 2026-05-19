@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { signOut } from 'next-auth/react'
 import {
   LayoutDashboard, Users, Calendar, User,
@@ -41,6 +42,18 @@ export function SpecialistShell({ user, children }: Props) {
   const isActive = (href: string) =>
     href === '/specialist' ? pathname === '/specialist' : pathname.startsWith(href)
 
+  const [photoUrl, setPhotoUrl] = useState('')
+  useEffect(() => {
+    fetch('/api/specialist/profile')
+      .then(r => r.json())
+      .then(d => {
+        let url: string = d.profile?.photoUrl ?? ''
+        if (url.startsWith('/uploads/')) url = '/api/uploads/' + url.slice('/uploads/'.length)
+        setPhotoUrl(url)
+      })
+      .catch(() => {})
+  }, [])
+
   return (
     <div className="dashboard-layout">
       {/* ── Sidebar ── */}
@@ -57,7 +70,10 @@ export function SpecialistShell({ user, children }: Props) {
         <Link href="/specialist/profile" style={{ display: 'block', padding: '1rem', borderBottom: '1px solid var(--border)', textDecoration: 'none' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
             <div style={{ width: '2.25rem', height: '2.25rem', borderRadius: '50%', background: '#3D6249', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '0.8rem', fontWeight: 700, color: 'white', overflow: 'hidden' }}>
-              {initials(user.name, user.email)}
+              {photoUrl
+                ? <img src={photoUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : initials(user.name, user.email)
+              }
             </div>
             <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{ fontWeight: 600, fontSize: '0.825rem', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

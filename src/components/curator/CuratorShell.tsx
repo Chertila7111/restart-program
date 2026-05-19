@@ -24,6 +24,21 @@ function initials(name: string | null, email: string) {
   return email[0].toUpperCase()
 }
 
+function useProfilePhoto(apiUrl: string) {
+  const [photoUrl, setPhotoUrl] = useState('')
+  useEffect(() => {
+    fetch(apiUrl)
+      .then(r => r.json())
+      .then(d => {
+        let url: string = d.profile?.photoUrl ?? ''
+        if (url.startsWith('/uploads/')) url = '/api/uploads/' + url.slice('/uploads/'.length)
+        setPhotoUrl(url)
+      })
+      .catch(() => {})
+  }, [apiUrl])
+  return photoUrl
+}
+
 function NotificationBell() {
   const [count, setCount] = useState(0)
   const [open, setOpen] = useState(false)
@@ -95,6 +110,7 @@ export function CuratorShell({ user, children }: Props) {
   const pathname = usePathname()
   const isActive = (href: string) =>
     href === '/curator' ? pathname === '/curator' : pathname.startsWith(href)
+  const photoUrl = useProfilePhoto('/api/curator/profile')
 
   return (
     <div className="dashboard-layout">
@@ -113,8 +129,11 @@ export function CuratorShell({ user, children }: Props) {
 
         <div style={{ padding: '1rem', borderBottom: '1px solid var(--border)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-            <div style={{ width: '2.25rem', height: '2.25rem', borderRadius: '50%', background: '#C28A5E', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '0.8rem', fontWeight: 700, color: 'white' }}>
-              {initials(user.name, user.email)}
+            <div style={{ width: '2.25rem', height: '2.25rem', borderRadius: '50%', background: '#C28A5E', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '0.8rem', fontWeight: 700, color: 'white', overflow: 'hidden' }}>
+              {photoUrl
+                ? <img src={photoUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : initials(user.name, user.email)
+              }
             </div>
             <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{ fontWeight: 600, fontSize: '0.825rem', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
