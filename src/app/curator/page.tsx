@@ -40,9 +40,10 @@ export default async function CuratorHomePage() {
 
     const unread = await (prisma as any).$queryRawUnsafe(`
       SELECT COUNT(*) as cnt FROM "Message" m
-      JOIN "Conversation" c ON c.id = m.conversationId
-      WHERE (c.userId = ? OR c.specialistId = ?) AND m.senderId != ? AND m.read = 0
-    `, curatorId, curatorId, curatorId)
+      JOIN "ConversationMember" cm ON cm.conversationId = m.conversationId AND cm.userId = ?
+      WHERE m.senderId != ?
+        AND m.createdAt > datetime('now', '-7 days')
+    `, curatorId, curatorId)
     unreadCount = Array.isArray(unread) && unread[0] ? Number(unread[0].cnt) : 0
   } catch { /* DB not ready */ }
 

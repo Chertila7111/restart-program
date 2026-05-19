@@ -52,6 +52,34 @@ export async function GET(req: NextRequest) {
   }
 }
 
+export async function DELETE(req: NextRequest) {
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.email) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+
+  const userId = (session.user as any).id as string
+  const { searchParams } = new URL(req.url)
+  const messageId = searchParams.get('id')
+
+  if (!messageId) return NextResponse.json({ error: 'id required' }, { status: 400 })
+
+  try {
+    await ensureDb()
+
+    const msgs = await (prisma as any).$queryRawUnsafe(
+      `SELECT id FROM "Message" WHERE id = ? AND senderId = ? LIMIT 1`,
+      messageId, userId
+    )
+    if (!Array.isArray(msgs) || msgs.length === 0) {
+      return NextResponse.json({ error: 'not found or forbidden' }, { status: 403 })
+    }
+
+    await (prisma as any).$executeRawUnsafe(`DELETE FROM "Message" WHERE id = ?`, messageId)
+    return NextResponse.json({ ok: true })
+  } catch (err: any) {
+    return NextResponse.json({ error: err?.message ?? 'unknown' }, { status: 500 })
+  }
+}
+
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Send, Plus, MessageCircle, Search, User, X, Users } from 'lucide-react'
+import { Send, Plus, MessageCircle, Search, User, X, Users, Trash2 } from 'lucide-react'
 
 type Participant = { id: string; name: string | null; email: string; role: string; lastSeenAt?: string | null }
 type Conversation = {
@@ -71,6 +71,7 @@ export function ChatShell({
   const [showPicker, setShowPicker] = useState(false)
   const [specialists, setSpecialists] = useState<Specialist[]>([])
   const [specsLoading, setSpecsLoading] = useState(false)
+  const [hoveredMsgId, setHoveredMsgId] = useState<string | null>(null)
   const listRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -176,6 +177,13 @@ export function ChatShell({
       startChatWith(initialUserId, initialName ?? 'Участник')
     }
   }, [initialUserId, initialName, loading, conversations, startChatWith])
+
+  async function deleteMessage(msgId: string) {
+    setMessages(prev => prev.filter(m => m.id !== msgId))
+    try {
+      await fetch(`/api/messages?id=${msgId}`, { method: 'DELETE' })
+    } catch { /* optimistic — ignore */ }
+  }
 
   async function send() {
     const trimmed = text.trim()
@@ -358,8 +366,31 @@ export function ChatShell({
             ) : (
               messages.map(msg => {
                 const isMe = msg.sender.id === userId
+                const isHovered = hoveredMsgId === msg.id
                 return (
-                  <div key={msg.id} style={{ display: 'flex', justifyContent: isMe ? 'flex-end' : 'flex-start' }}>
+                  <div
+                    key={msg.id}
+                    style={{ display: 'flex', justifyContent: isMe ? 'flex-end' : 'flex-start', alignItems: 'flex-end', gap: '0.375rem' }}
+                    onMouseEnter={() => setHoveredMsgId(msg.id)}
+                    onMouseLeave={() => setHoveredMsgId(null)}
+                  >
+                    {isMe && (
+                      <button
+                        onClick={() => deleteMessage(msg.id)}
+                        title="Удалить сообщение"
+                        style={{
+                          visibility: isHovered ? 'visible' : 'hidden',
+                          background: 'none', border: 'none', cursor: 'pointer',
+                          color: 'var(--text-light)', padding: '0.25rem',
+                          display: 'flex', alignItems: 'center', flexShrink: 0,
+                          transition: 'color 0.1s',
+                        }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#B91C1C' }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-light)' }}
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    )}
                     <div style={{ maxWidth: '72%' }}>
                       {!isMe && (
                         <div style={{ fontSize: '0.68rem', color: 'var(--text-light)', marginBottom: '0.25rem', fontWeight: 600 }}>

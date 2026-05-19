@@ -37,14 +37,13 @@ export async function POST(req: NextRequest) {
     if (!startAt) return NextResponse.json({ error: 'startAt required' }, { status: 400 })
 
     const slotId = `slot-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
-    // admin uses doctor account; psychologist uses their own id
     const doctorId = role === 'psychologist' ? userId : 'doctor-maria-sokolova'
     const dur = durationMin ?? 45
-    const noteSafe = (note ?? '').replace(/'/g, "''")
     const startDate = new Date(startAt).toISOString()
 
     await (prisma as any).$executeRawUnsafe(
-      `INSERT INTO "AvailableSlot" ("id","doctorId","startAt","durationMin","isBooked","note","createdAt") VALUES ('${slotId}', '${doctorId}', '${startDate}', ${dur}, 0, '${noteSafe}', CURRENT_TIMESTAMP)`
+      `INSERT INTO "AvailableSlot" ("id","doctorId","startAt","durationMin","isBooked","note","createdAt") VALUES (?, ?, ?, ?, 0, ?, CURRENT_TIMESTAMP)`,
+      slotId, doctorId, startDate, dur, note ?? ''
     )
 
     const slot = await (prisma as any).availableSlot.findUnique({ where: { id: slotId } })

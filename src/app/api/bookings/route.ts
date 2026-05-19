@@ -48,13 +48,14 @@ export async function POST(req: NextRequest) {
     if (existing) return NextResponse.json({ error: 'already booked' }, { status: 409 })
 
     const bookingId = `booking-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
-    const notesSafe = (notes ?? '').replace(/'/g, "''")
 
     await (prisma as any).$executeRawUnsafe(
-      `INSERT INTO "Booking" ("id","userId","slotId","type","status","notes","createdAt") VALUES ('${bookingId}', '${userId}', '${slotId}', 'individual', 'confirmed', '${notesSafe}', CURRENT_TIMESTAMP)`
+      `INSERT INTO "Booking" ("id","userId","slotId","type","status","notes","createdAt") VALUES (?, ?, ?, 'individual', 'confirmed', ?, CURRENT_TIMESTAMP)`,
+      bookingId, userId, slotId, notes ?? ''
     )
     await (prisma as any).$executeRawUnsafe(
-      `UPDATE "AvailableSlot" SET "isBooked" = 1 WHERE "id" = '${slotId}'`
+      `UPDATE "AvailableSlot" SET "isBooked" = 1 WHERE "id" = ?`,
+      slotId
     )
 
     const booking = await (prisma as any).booking.findUnique({
