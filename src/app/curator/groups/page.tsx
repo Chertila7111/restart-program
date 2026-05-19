@@ -5,6 +5,7 @@ import { ensureDb } from '@/lib/db-init'
 import Link from 'next/link'
 import { Users2 } from 'lucide-react'
 import { CreateGroupButton } from '@/components/curator/CreateGroupButton'
+import { DeleteGroupButton } from '@/components/curator/DeleteGroupButton'
 
 const STATUS_LABEL: Record<string, string> = {
   recruiting: 'Набор', active: 'Активна', completed: 'Завершена',
@@ -58,7 +59,8 @@ export default async function CuratorGroupsPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {groups.map((g: any) => (
-            <Link key={g.id} href={`/curator/groups/${g.id}`} style={{ textDecoration: 'none' }}>
+            <div key={g.id} style={{ position: 'relative' }}>
+              <Link href={`/curator/groups/${g.id}`} style={{ textDecoration: 'none', display: 'block' }}>
               <div className="card" style={{ padding: '1.5rem', cursor: 'pointer' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
                   <div style={{ flex: 1, minWidth: '12rem' }}>
@@ -100,7 +102,11 @@ export default async function CuratorGroupsPage() {
                   </div>
                 </div>
               </div>
-            </Link>
+              </Link>
+              <div style={{ position: 'absolute', top: '1rem', right: '1rem' }}>
+                <DeleteGroupButton groupId={g.id} groupTitle={g.title} />
+              </div>
+            </div>
           ))}
         </div>
       )}

@@ -124,3 +124,35 @@ export async function PATCH(
     return NextResponse.json({ error: err?.message ?? 'unknown' }, { status: 500 })
   }
 }
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ groupId: string }> }
+) {
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.email) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+
+  const role = (session.user as any).role as string
+  const curatorId = (session.user as any).id as string
+  const { groupId } = await params
+
+  try {
+    await ensureDb()
+
+    const groups = await (prisma as any).$queryRawUnsafe(`
+      SELECT id FROM "Group" WHERE id = ? AND (? = 'admin' OR curatorId = ?)
+    `, groupId, role, curatorId)
+
+    if (!Array.isArray(groups) || groups.length === 0) {
+      return NextResponse.json({ error: 'not found' }, { status: 404 })
+    }
+
+    await (prisma as any).$executeRawUnsafe(`DELETE FROM "Meeting" WHERE groupId = ?`, groupId)
+    await (prisma as any).$executeRawUnsafe(`DELETE FROM "GroupParticipant" WHERE groupId = ?`, groupId)
+    await (prisma as any).$executeRawUnsafe(`DELETE FROM "Group" WHERE id = ?`, groupId)
+
+    return NextResponse.json({ ok: true })
+  } catch (err: any) {
+    return NextResponse.json({ error: err?.message ?? 'unknown' }, { status: 500 })
+  }
+}

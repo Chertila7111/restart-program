@@ -16,16 +16,35 @@ export async function GET(req: NextRequest) {
   try {
     await ensureDb()
 
-    const member = await (prisma as any).conversationMember.findFirst({
-      where: { conversationId, userId },
-    })
-    if (!member) return NextResponse.json({ error: 'forbidden' }, { status: 403 })
+    // ConversationMember is not in Prisma schema — use raw SQL
+    const members = await (prisma as any).$queryRawUnsafe(
+      `SELECT id FROM "ConversationMember" WHERE "conversationId" = ? AND "userId" = ? LIMIT 1`,
+      conversationId, userId
+    )
+    if (!Array.isArray(members) || members.length === 0) {
+      return NextResponse.json({ error: 'forbidden' }, { status: 403 })
+    }
 
-    const messages = await (prisma as any).message.findMany({
-      where: { conversationId },
-      orderBy: { createdAt: 'asc' },
-      include: { sender: { select: { id: true, name: true, email: true, role: true } } },
-    })
+    // Message is not in Prisma schema — use raw SQL
+    const rows = await (prisma as any).$queryRawUnsafe(`
+      SELECT m.id, m.text, m."conversationId", m."senderId", m."createdAt",
+             u.id   AS sender_id,
+             u.name AS sender_name,
+             u.email AS sender_email,
+             u.role  AS sender_role
+      FROM "Message" m
+      JOIN "User" u ON u.id = m."senderId"
+      WHERE m."conversationId" = ?
+      ORDER BY m."createdAt" ASC
+    `, conversationId)
+
+    const messages = (Array.isArray(rows) ? rows : []).map((m: any) => ({
+      id: m.id,
+      text: m.text,
+      conversationId: m.conversationId,
+      createdAt: m.createdAt,
+      sender: { id: m.sender_id, name: m.sender_name, email: m.sender_email, role: m.sender_role },
+    }))
 
     return NextResponse.json(messages)
   } catch (err: any) {
@@ -57,11 +76,14 @@ export async function POST(req: NextRequest) {
       (session.user as any).role ?? 'user'
     )
 
-    // Verify membership
-    const member = await (prisma as any).conversationMember.findFirst({
-      where: { conversationId, userId },
-    })
-    if (!member) return NextResponse.json({ error: 'forbidden' }, { status: 403 })
+    // Verify membership — ConversationMember not in Prisma schema
+    const members = await (prisma as any).$queryRawUnsafe(
+      `SELECT id FROM "ConversationMember" WHERE "conversationId" = ? AND "userId" = ? LIMIT 1`,
+      conversationId, userId
+    )
+    if (!Array.isArray(members) || members.length === 0) {
+      return NextResponse.json({ error: 'forbidden' }, { status: 403 })
+    }
 
     const msgId = `msg-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
 
@@ -74,12 +96,30 @@ export async function POST(req: NextRequest) {
       conversationId
     )
 
-    const msg = await (prisma as any).message.findUnique({
-      where: { id: msgId },
-      include: { sender: { select: { id: true, name: true, email: true, role: true } } },
-    })
+    // Fetch the created message — Message not in Prisma schema
+    const rows = await (prisma as any).$queryRawUnsafe(`
+      SELECT m.id, m.text, m."conversationId", m."senderId", m."createdAt",
+             u.id   AS sender_id,
+             u.name AS sender_name,
+             u.email AS sender_email,
+             u.role  AS sender_role
+      FROM "Message" m
+      JOIN "User" u ON u.id = m."senderId"
+      WHERE m.id = ?
+    `, msgId)
 
-    return NextResponse.json(msg)
+    if (!Array.isArray(rows) || rows.length === 0) {
+      return NextResponse.json({ error: 'message not found after insert' }, { status: 500 })
+    }
+
+    const m = rows[0]
+    return NextResponse.json({
+      id: m.id,
+      text: m.text,
+      conversationId: m.conversationId,
+      createdAt: m.createdAt,
+      sender: { id: m.sender_id, name: m.sender_name, email: m.sender_email, role: m.sender_role },
+    })
   } catch (err: any) {
     return NextResponse.json({ error: err?.message ?? 'unknown' }, { status: 500 })
   }

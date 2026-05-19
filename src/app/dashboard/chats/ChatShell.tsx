@@ -93,16 +93,23 @@ export function ChatShell({
     }
   }, [])
 
-  const loadMessages = useCallback(async (convId: string) => {
-    setMsgLoading(true)
+  const loadMessages = useCallback(async (convId: string, showSpinner = false) => {
+    if (showSpinner) setMsgLoading(true)
     try {
       const res = await fetch(`/api/messages?conversationId=${convId}`)
       if (res.ok) {
         const data = await res.json()
-        setMessages(data)
+        setMessages(prev => {
+          // Skip re-render if nothing changed
+          if (
+            prev.length === data.length &&
+            prev[prev.length - 1]?.id === data[data.length - 1]?.id
+          ) return prev
+          return data
+        })
       }
     } finally {
-      setMsgLoading(false)
+      if (showSpinner) setMsgLoading(false)
     }
   }, [])
 
@@ -112,9 +119,9 @@ export function ChatShell({
 
   useEffect(() => {
     if (activeId) {
-      loadMessages(activeId)
+      loadMessages(activeId, true)
       if (pollRef.current) clearInterval(pollRef.current)
-      pollRef.current = setInterval(() => loadMessages(activeId), 4000)
+      pollRef.current = setInterval(() => loadMessages(activeId, false), 4000)
     }
     return () => {
       if (pollRef.current) clearInterval(pollRef.current)
@@ -174,7 +181,6 @@ export function ChatShell({
     const trimmed = text.trim()
     if (!trimmed || !activeId || sending) return
     setSending(true)
-    setText('')
     try {
       const res = await fetch('/api/messages', {
         method: 'POST',
@@ -183,8 +189,8 @@ export function ChatShell({
       })
       if (res.ok) {
         const msg = await res.json()
+        setText('')
         setMessages(prev => [...prev, msg])
-        // Update last message in conv list
         setConversations(prev => prev.map(c =>
           c.id === activeId
             ? { ...c, lastMessage: { text: trimmed, createdAt: new Date().toISOString() } }
