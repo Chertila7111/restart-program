@@ -915,7 +915,7 @@ export default function Home() {
           </div>
 
           {/* Individual packages teaser */}
-          <div style={{
+          <div className="pkg-teaser" style={{
             maxWidth: '62rem', margin: '2.5rem auto 0',
             background: 'var(--bg-soft)', borderRadius: '1.5rem',
             border: '1.5px solid var(--border)', padding: '2rem 2.5rem',
@@ -935,7 +935,7 @@ export default function Home() {
                   Смотреть пакеты →
                 </Link>
               </div>
-              <div className="pkg-cards" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'stretch' }}>
+              <div className="pkg-cards" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'stretch', flexShrink: 0 }}>
                 {[
                   { name: 'Personal Start', price: '19 990 ₽', sessions: '4 встречи', highlight: false },
                   { name: 'Personal Balance', price: '29 990 ₽', sessions: '6 встреч', highlight: true },

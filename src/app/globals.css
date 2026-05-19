@@ -577,10 +577,17 @@ body {
   /* Package cards → full width on mobile */
   .pkg-cards {
     flex-direction: column !important;
+    width: 100% !important;
   }
 
   .pkg-card {
     width: 100% !important;
     min-width: unset !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Pricing individual packages teaser — reduce padding on mobile */
+  .pkg-teaser {
+    padding: 1.25rem !important;
   }
 }
