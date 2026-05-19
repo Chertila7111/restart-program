@@ -27,7 +27,7 @@ const USER_NAV: NavItem[] = [
   { href: '/dashboard/program',      label: 'Программа',  icon: BookOpen,         access: ['base','plus','personal'] },
   { href: '/dashboard/journal',      label: 'Дневник',    icon: PenLine,          access: ['base','plus','personal'] },
   { href: '/dashboard/tasks',        label: 'Задания',    icon: CheckSquare,      access: ['base','plus','personal'] },
-  { href: '/dashboard/calendar',     label: 'Календарь',  icon: Calendar,         access: ['base','plus','personal'] },
+  { href: '/dashboard/calendar',     label: 'Календарь',  icon: Calendar,         access: ['intro','base','plus','personal'] },
   { href: '/dashboard/chats',        label: 'Чаты',       icon: MessageCircle,    access: ['intro','base','plus','personal'] },
   { href: '/dashboard/recordings',   label: 'Записи',     icon: Video,            access: ['base','plus','personal'] },
   { href: '/dashboard/psychologist', label: 'Мой психолог', icon: User,           access: ['intro','base','plus','personal'] },
