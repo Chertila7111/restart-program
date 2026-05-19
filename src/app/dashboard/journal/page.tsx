@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import { PenLine, Zap, BarChart2, Calendar } from 'lucide-react'
+import { PenLine, Zap, BarChart2, Calendar, Lock } from 'lucide-react'
 
 type Entry = {
   id: string
@@ -76,6 +76,14 @@ export default async function JournalPage() {
 
   return (
     <div style={{ maxWidth: '48rem' }}>
+      {/* Privacy notice */}
+      <div style={{ display: 'flex', gap: '0.625rem', alignItems: 'flex-start', background: '#F0FDF4', border: '1.5px solid #86EFAC', borderRadius: '0.875rem', padding: '0.875rem 1.125rem', marginBottom: '1.25rem' }}>
+        <Lock size={15} style={{ color: '#16A34A', flexShrink: 0, marginTop: '0.1rem' }} />
+        <div style={{ fontSize: '0.8rem', color: '#166534', lineHeight: 1.65 }}>
+          <strong>Ваш дневник видите только вы.</strong> Психолог увидит записи только если вы откроете доступ или отправите конкретную запись. Куратор личный дневник не видит. Вы можете изменить настройки приватности в любой момент.
+        </div>
+      </div>
+
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', marginBottom: '1.75rem', flexWrap: 'wrap' }}>
         <div>

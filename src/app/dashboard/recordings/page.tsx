@@ -1,4 +1,4 @@
-import { Video, Clock, Lock } from 'lucide-react'
+import { Video, Clock, Lock, ShieldCheck } from 'lucide-react'
 import { PROGRAM_MEETINGS } from '@/lib/dashboard-data'
 
 export default function RecordingsPage() {
@@ -7,7 +7,20 @@ export default function RecordingsPage() {
   return (
     <div style={{ maxWidth: '44rem' }}>
       <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text)', marginBottom: '0.375rem' }}>Записи встреч</h1>
-      <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Записи появляются в течение суток после встречи</p>
+      <p style={{ color: 'var(--text-muted)', marginBottom: '1.25rem' }}>Записи появляются в течение суток после встречи</p>
+
+      {/* Safety notice */}
+      <div style={{
+        display: 'flex', gap: '0.75rem', alignItems: 'flex-start',
+        background: '#F0FDF4', border: '1.5px solid #86EFAC',
+        borderRadius: '0.875rem', padding: '1rem 1.25rem', marginBottom: '1.75rem',
+      }}>
+        <ShieldCheck size={18} style={{ color: '#16A34A', flexShrink: 0, marginTop: '0.1rem' }} />
+        <div style={{ fontSize: '0.825rem', color: '#166534', lineHeight: 1.7 }}>
+          <strong>Записи доступны только для основных материалов встречи.</strong> Личные обсуждения участников не записываются или вырезаются из записи для безопасности.<br />
+          Записи доступны только участникам группы. Не скачивайте, не пересылайте и не публикуйте материалы. Доступ ограничен по времени.
+        </div>
+      </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
         {PROGRAM_MEETINGS.map((meeting) => {
@@ -37,6 +50,9 @@ export default function RecordingsPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                     <Clock size={12} />
                     {meeting.duration}
+                    <span style={{ marginLeft: '0.375rem', color: 'var(--text-light)', fontSize: '0.72rem' }}>
+                      · только материалы встречи
+                    </span>
                   </div>
                 </div>
                 {isAvailable ? (

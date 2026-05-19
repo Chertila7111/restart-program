@@ -12,6 +12,7 @@ export default function RegisterPage() {
   const router = useRouter()
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', confirm: '' })
   const [consent, setConsent] = useState(false)
+  const [consentSensitive, setConsentSensitive] = useState(false)
   const [showPass, setShowPass] = useState(false)
 
   const formatPhone = (raw: string) => {
@@ -131,13 +132,27 @@ export default function RegisterPage() {
             </span>
           </label>
 
+          {/* Separate consent for sensitive data */}
+          <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.625rem', cursor: 'pointer', padding: '0.875rem', borderRadius: '0.75rem', background: 'var(--bg-soft)', border: `1.5px solid ${consentSensitive ? 'var(--primary)' : 'var(--border)'}`, transition: 'border-color 0.15s' }}>
+            <input
+              type="checkbox"
+              required
+              checked={consentSensitive}
+              onChange={e => setConsentSensitive(e.target.checked)}
+              style={{ marginTop: '0.1rem' }}
+            />
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
+              Я даю согласие на обработку данных, которые указываю в анкете, дневнике состояния, заданиях и сообщениях, включая сведения о моём эмоциональном состоянии, целях участия и ситуации, с которой обращаюсь
+            </span>
+          </label>
+
           {error && (
             <div style={{ color: '#B91C1C', fontSize: '0.875rem', background: '#FEF2F2', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #FCA5A5' }}>
               {error}
             </div>
           )}
 
-          <button type="submit" className="btn-primary" disabled={status === 'loading' || !consent} style={{ marginTop: '0.5rem', opacity: consent ? 1 : 0.6 }}>
+          <button type="submit" className="btn-primary" disabled={status === 'loading' || !consent || !consentSensitive} style={{ marginTop: '0.5rem', opacity: consent && consentSensitive ? 1 : 0.6 }}>
             {status === 'loading' ? 'Создаём аккаунт...' : 'Создать аккаунт →'}
           </button>
 

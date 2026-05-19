@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { CheckCircle, ArrowLeft } from 'lucide-react'
+import { CheckCircle, ArrowLeft, Phone } from 'lucide-react'
 import { LogoSvg } from '@/components/LogoSvg'
 
 // ── Step definitions ──────────────────────────────────────────────────────────
@@ -14,6 +14,7 @@ type StepId =
   | 'divorce_kids' | 'divorce_hard'
   | 'other_when' | 'other_hard'
   | 'psych'
+  | 'crisis'
 
 type QuizStep = {
   id: StepId
@@ -127,7 +128,7 @@ const allSteps: Record<StepId, QuizStep> = {
     ],
   },
 
-  // ── PSYCH (common last) ──────────────────────────────────────────────────
+  // ── PSYCH (common) ───────────────────────────────────────────────────────
   psych: {
     id: 'psych',
     question: 'Работали ли вы раньше с психологом?',
@@ -139,9 +140,21 @@ const allSteps: Record<StepId, QuizStep> = {
       { id: 'no_unsure', text: 'Нет, и пока немного страшно' },
     ],
   },
+
+  // ── CRISIS CHECK (last before result) ────────────────────────────────────
+  crisis: {
+    id: 'crisis',
+    question: 'Есть ли сейчас ощущение, что вы можете причинить себе вред или не справиться с собой?',
+    hint: 'Это обязательный вопрос для вашей безопасности. Ответьте честно — здесь нет правильного ответа',
+    options: [
+      { id: 'no',     text: 'Нет, такого ощущения нет' },
+      { id: 'unsure', text: 'Не уверен(а)' },
+      { id: 'yes',    text: 'Да, такие мысли есть' },
+    ],
+  },
 }
 
-function getNextStep(stepId: StepId, answerId: string): StepId | 'result' {
+function getNextStep(stepId: StepId, answerId: string): StepId | 'result' | 'crisis_screen' {
   if (stepId === 'situation') {
     if (answerId === 'fresh')   return 'fresh_when'
     if (answerId === 'months')  return 'months_when'
@@ -153,6 +166,11 @@ function getNextStep(stepId: StepId, answerId: string): StepId | 'result' {
   if (stepId === 'divorce_kids') return 'divorce_hard'
   if (stepId === 'other_when')   return 'other_hard'
   if (stepId === 'fresh_hard' || stepId === 'months_block' || stepId === 'divorce_hard' || stepId === 'other_hard') return 'psych'
+  if (stepId === 'psych') return 'crisis'
+  if (stepId === 'crisis') {
+    if (answerId === 'yes' || answerId === 'unsure') return 'crisis_screen'
+    return 'result'
+  }
   return 'result'
 }
 
@@ -217,11 +235,13 @@ export default function QuizPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [selected, setSelected] = useState<string | null>(null)
   const [isResult, setIsResult] = useState(false)
+  const [isCrisisScreen, setIsCrisisScreen] = useState(false)
+  const [crisisAcknowledged, setCrisisAcknowledged] = useState(false)
 
   const currentStepId = history[history.length - 1]
   const currentStep = allSteps[currentStepId]
-  const stepIndex = history.length - 1 // 0..3
-  const totalSteps = 4
+  const stepIndex = history.length - 1
+  const totalSteps = 5 // situation → branch_q2 → branch_q3 → psych → crisis
 
   const handleNext = () => {
     if (!selected) return
@@ -231,8 +251,10 @@ export default function QuizPage() {
     setSelected(null)
     if (next === 'result') {
       setIsResult(true)
+    } else if (next === 'crisis_screen') {
+      setIsCrisisScreen(true)
     } else {
-      setHistory([...history, next])
+      setHistory([...history, next as StepId])
     }
   }
 
@@ -248,6 +270,8 @@ export default function QuizPage() {
     setAnswers({})
     setSelected(null)
     setIsResult(false)
+    setIsCrisisScreen(false)
+    setCrisisAcknowledged(false)
   }
 
   // Result values
@@ -258,6 +282,82 @@ export default function QuizPage() {
   const mainText = situationTexts[situation]?.[category] ?? 'То, через что вы сейчас проходите — это серьёзно. На вводной встрече можно разобраться, какая поддержка подойдёт именно вам.'
   const bullets = hardestBullets[category] ?? hardestBullets.thoughts
   const psychNote = psychNotes[answers['psych'] ?? ''] ?? ''
+
+  // ── Crisis Screen ─────────────────────────────────────────────────────────
+  if (isCrisisScreen) {
+    return (
+      <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingTop: '4rem' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'rgba(250,247,243,0.95)', backdropFilter: 'blur(20px)', borderBottom: '1px solid var(--border)', height: '4rem', display: 'flex', alignItems: 'center' }}>
+          <div className="container mx-auto px-6" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Link href="/" style={{ display: 'inline-block', textDecoration: 'none' }}>
+              <LogoSvg size={40} />
+            </Link>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Важная информация</span>
+          </div>
+        </div>
+
+        <div style={{ maxWidth: '38rem', margin: '0 auto', padding: '3rem 1.5rem 5rem' }}>
+          <div style={{ background: '#FEF2F2', border: '2px solid #FCA5A5', borderRadius: '1.5rem', padding: '2rem', marginBottom: '1.5rem' }}>
+            <div style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>🆘</div>
+            <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#7F1D1D', marginBottom: '1rem', lineHeight: 1.4 }}>
+              Сейчас важнее срочная поддержка, а не групповая программа
+            </h1>
+            <p style={{ color: '#991B1B', lineHeight: 1.8, marginBottom: '1rem', fontSize: '0.95rem' }}>
+              Пожалуйста, обратитесь в экстренные службы — по номеру <strong>112</strong> или к ближайшему врачу/кризисному специалисту.
+            </p>
+            <p style={{ color: '#B91C1C', lineHeight: 1.75, fontSize: '0.875rem', marginBottom: '1.25rem' }}>
+              «Снова с собой» не является кризисной службой и не заменяет медицинскую помощь.
+            </p>
+            <div style={{ background: 'white', borderRadius: '1rem', padding: '1rem 1.25rem', border: '1px solid #FCA5A5' }}>
+              <div style={{ fontWeight: 700, fontSize: '0.875rem', color: '#7F1D1D', marginBottom: '0.5rem' }}>Куда обратиться прямо сейчас:</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', color: '#991B1B' }}>
+                  <Phone size={14} />
+                  <strong>112</strong> — единая экстренная служба
+                </div>
+                <div style={{ fontSize: '0.875rem', color: '#991B1B' }}>
+                  <strong>8-800-2000-122</strong> — телефон доверия (бесплатно, круглосуточно)
+                </div>
+                <div style={{ fontSize: '0.875rem', color: '#991B1B' }}>
+                  Ближайший врач-психиатр или психотерапевт
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ background: 'white', border: '1.5px solid var(--border)', borderRadius: '1.25rem', padding: '1.5rem', marginBottom: '1.5rem' }}>
+            <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={crisisAcknowledged}
+                onChange={e => setCrisisAcknowledged(e.target.checked)}
+                style={{ marginTop: '0.2rem', flexShrink: 0 }}
+              />
+              <span style={{ fontSize: '0.875rem', color: 'var(--text)', lineHeight: 1.7 }}>
+                Я понимаю, что сейчас мне важнее обратиться за профессиональной экстренной помощью. Программа «Снова с собой» не является кризисной службой.
+              </span>
+            </label>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <button
+              onClick={reset}
+              disabled={!crisisAcknowledged}
+              style={{ width: '100%', padding: '0.875rem', borderRadius: '0.875rem', border: 'none', background: crisisAcknowledged ? 'var(--primary)' : 'var(--border)', color: 'white', fontWeight: 700, fontSize: '0.95rem', cursor: crisisAcknowledged ? 'pointer' : 'not-allowed', transition: 'background 0.2s' }}
+            >
+              Я понимаю — пройти тест заново
+            </button>
+            <Link
+              href="/contacts"
+              style={{ display: 'block', textAlign: 'center', fontSize: '0.875rem', color: 'var(--primary)', textDecoration: 'none', fontWeight: 500 }}
+            >
+              Написать нам →
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingTop: '4rem' }}>
@@ -309,6 +409,13 @@ export default function QuizPage() {
               </button>
             )}
 
+            {/* Crisis question gets special styling */}
+            {currentStepId === 'crisis' && (
+              <div style={{ background: '#FFF7ED', border: '1.5px solid #FED7AA', borderRadius: '0.875rem', padding: '0.875rem 1.25rem', marginBottom: '1.5rem', fontSize: '0.825rem', color: '#92400E', lineHeight: 1.65 }}>
+                Это важный вопрос для вашей безопасности. Ответьте честно — результат используется только для вашей пользы и никуда не передаётся.
+              </div>
+            )}
+
             <h1 style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 800, color: 'var(--text)', marginBottom: '0.625rem', lineHeight: 1.3 }}>
               {currentStep.question}
             </h1>
@@ -319,6 +426,7 @@ export default function QuizPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '2rem' }}>
               {currentStep.options.map((option) => {
                 const isActive = selected === option.id
+                const isDanger = currentStepId === 'crisis' && (option.id === 'yes' || option.id === 'unsure')
                 return (
                   <button
                     key={option.id}
@@ -326,22 +434,28 @@ export default function QuizPage() {
                     style={{
                       width: '100%', textAlign: 'left',
                       padding: '1.25rem 1.5rem', borderRadius: '1rem',
-                      border: isActive ? '2px solid var(--primary)' : '2px solid var(--border)',
-                      background: isActive ? 'var(--bg-sage)' : 'white',
+                      border: isActive
+                        ? `2px solid ${isDanger ? '#F97316' : 'var(--primary)'}`
+                        : '2px solid var(--border)',
+                      background: isActive
+                        ? (isDanger ? '#FFF7ED' : 'var(--bg-sage)')
+                        : 'white',
                       cursor: 'pointer', transition: 'all 0.2s ease',
                       display: 'flex', alignItems: 'center', gap: '1rem',
                     }}
                   >
                     <div style={{
                       width: '1.375rem', height: '1.375rem', borderRadius: '50%', flexShrink: 0,
-                      border: isActive ? '2px solid var(--primary)' : '2px solid var(--border)',
-                      background: isActive ? 'var(--primary)' : 'transparent',
+                      border: isActive
+                        ? `2px solid ${isDanger ? '#F97316' : 'var(--primary)'}`
+                        : '2px solid var(--border)',
+                      background: isActive ? (isDanger ? '#F97316' : 'var(--primary)') : 'transparent',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       transition: 'all 0.2s ease',
                     }}>
                       {isActive && <div style={{ width: '0.5rem', height: '0.5rem', borderRadius: '50%', background: 'white' }} />}
                     </div>
-                    <span style={{ fontSize: '0.975rem', color: isActive ? 'var(--primary-dark)' : 'var(--text)', fontWeight: isActive ? 600 : 400, lineHeight: 1.4 }}>
+                    <span style={{ fontSize: '0.975rem', color: isActive ? (isDanger ? '#9A3412' : 'var(--primary-dark)') : 'var(--text)', fontWeight: isActive ? 600 : 400, lineHeight: 1.4 }}>
                       {option.text}
                     </span>
                   </button>
@@ -355,7 +469,7 @@ export default function QuizPage() {
               className="btn-primary"
               style={{ width: '100%', opacity: selected ? 1 : 0.45, cursor: selected ? 'pointer' : 'not-allowed', fontSize: '1rem', padding: '0.875rem' }}
             >
-              {stepIndex === totalSteps - 1 ? 'Получить рекомендацию →' : 'Продолжить →'}
+              {currentStepId === 'crisis' ? 'Получить рекомендацию →' : stepIndex === totalSteps - 1 ? 'Получить рекомендацию →' : 'Продолжить →'}
             </button>
 
             <p style={{ textAlign: 'center', fontSize: '0.78rem', color: 'var(--text-light)', marginTop: '1rem' }}>
@@ -428,7 +542,7 @@ export default function QuizPage() {
             </div>
 
             <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center', lineHeight: 1.7, marginBottom: '1.5rem' }}>
-              Если после вводной встречи формат не подойдёт — вернём деньги.
+              Программа помогает постепенно вернуть опору: через встречи, задания, дневник состояния и поддержку группы. Результат зависит от ситуации и вовлечённости.
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center' }}>
