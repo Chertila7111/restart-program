@@ -56,12 +56,10 @@ export async function PATCH(req: NextRequest) {
       INSERT INTO "UserProfile" ("id","userId","about","photoUrl","createdAt","updatedAt")
       VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
       ON CONFLICT ("userId") DO UPDATE SET
-        about = CASE WHEN ? IS NOT NULL THEN ? ELSE "UserProfile"."about" END,
-        photoUrl = CASE WHEN ? IS NOT NULL THEN ? ELSE "UserProfile"."photoUrl" END,
+        about    = COALESCE(excluded.about,    about),
+        photoUrl = COALESCE(excluded.photoUrl, photoUrl),
         updatedAt = CURRENT_TIMESTAMP
-    `, profileId, userId, bio ?? null, photoUrl ?? null,
-       bio ?? null, bio ?? null,
-       photoUrl ?? null, photoUrl ?? null)
+    `, profileId, userId, bio ?? null, photoUrl ?? null)
 
     return NextResponse.json({ ok: true })
   } catch (err: any) {

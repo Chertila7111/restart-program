@@ -354,15 +354,22 @@ async function seedTestUser() {
 async function seedCurator() {
   const email = 'curator@snova-s-soboy.ru'
   const curatorId = 'curator-elena-demo'
+  const doctorId = 'doctor-maria-sokolova'
+  const groupId = 'group-seed-spring-2026'
   try {
     const passwordHash = await bcrypt.hash('Curator2026!', 10)
     await (prisma as any).$executeRawUnsafe(`
       INSERT OR IGNORE INTO "User" ("id","email","name","passwordHash","role","createdAt","updatedAt")
       VALUES ('${curatorId}', '${email}', 'Елена Куратор', '${passwordHash}', 'curator', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
     `)
-    // Assign curator to demo group
+    // Create a seed group and add the test user so the curator cabinet has something to show
     await (prisma as any).$executeRawUnsafe(`
-      UPDATE "Group" SET curatorId = '${curatorId}' WHERE id = 'group-demo-spring-2026' AND (curatorId IS NULL OR curatorId = '')
+      INSERT OR IGNORE INTO "Group" ("id","title","psychologistId","status","currentWeek","curatorId","createdAt")
+      VALUES ('${groupId}', 'Группа — Весна 2026', '${doctorId}', 'active', 1, '${curatorId}', CURRENT_TIMESTAMP)
+    `)
+    await (prisma as any).$executeRawUnsafe(`
+      INSERT OR IGNORE INTO "GroupParticipant" ("id","groupId","userId","status","joinedAt")
+      VALUES ('gp-seed-anna-001', '${groupId}', 'test-user-anna', 'active', CURRENT_TIMESTAMP)
     `)
   } catch { /* ignore */ }
 }

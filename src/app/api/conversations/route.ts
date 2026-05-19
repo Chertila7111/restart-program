@@ -76,22 +76,23 @@ export async function POST(req: NextRequest) {
     const doctorId = 'doctor-maria-sokolova'
     const otherUserId = targetUserId ?? doctorId
 
-    // Check if a conversation already exists between these two users
-    const existing = await (prisma as any).conversationMember.findFirst({
-      where: { userId },
-      include: {
-        conversation: {
-          include: { members: { where: { userId: otherUserId } } },
-        },
-      },
-    })
+    // Check if a conversation already exists between these two users (raw SQL — ConversationMember is not in Prisma schema)
+    const existingRows = await (prisma as any).$queryRawUnsafe(`
+      SELECT cm1.conversationId FROM "ConversationMember" cm1
+      WHERE cm1.userId = ?
+        AND EXISTS (
+          SELECT 1 FROM "ConversationMember" cm2
+          WHERE cm2.conversationId = cm1.conversationId AND cm2.userId = ?
+        )
+      LIMIT 1
+    `, userId, otherUserId)
 
-    const existingConv = existing?.conversation?.members?.length > 0
-      ? existing.conversation
+    const existingConvId = Array.isArray(existingRows) && existingRows[0]
+      ? existingRows[0].conversationId
       : null
 
-    if (existingConv) {
-      return NextResponse.json({ id: existingConv.id, existing: true })
+    if (existingConvId) {
+      return NextResponse.json({ id: existingConvId, existing: true })
     }
 
     const convId = `conv-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
