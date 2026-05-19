@@ -9,10 +9,16 @@ function createClient(): any {
   const { PrismaLibSql } = require('@prisma/adapter-libsql')
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const libsqlPkg = require('@libsql/client')
-  let rawUrl = process.env.DATABASE_URL ?? 'file:/tmp/restart.db'
+  let rawUrl = process.env.DATABASE_URL ?? ''
+  // Turbopack can inline env vars as the string 'undefined' — treat it as missing
+  if (!rawUrl || rawUrl === 'undefined') {
+    rawUrl = process.env.NODE_ENV === 'production'
+      ? 'file:/var/www/restart-app/data/restart.db'
+      : 'file:./data/restart.db'
+  }
   // Vercel serverless has a read-only filesystem except /tmp — remap relative paths
   if (rawUrl.startsWith('file:./') && process.env.NODE_ENV === 'production') {
-    rawUrl = 'file:/tmp/restart.db'
+    rawUrl = 'file:/var/www/restart-app/data/restart.db'
   }
   const url = (rawUrl.startsWith('file:') || rawUrl.startsWith('libsql://') || rawUrl.startsWith('http'))
     ? rawUrl
