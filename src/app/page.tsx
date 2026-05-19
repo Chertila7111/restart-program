@@ -188,11 +188,10 @@ export default function Home() {
       <FaqSchema items={faqSchemaItems} />
 
       {/* ═══ 1. HERO ════════════════════════════════════════ */}
-      <section style={{
+      <section className="hero-section" style={{
         background: 'var(--bg)',
         minHeight: '100vh',
         display: 'flex',
-        alignItems: 'center',
         position: 'relative',
         overflow: 'hidden',
       }}>
@@ -284,6 +283,7 @@ export default function Home() {
                 background: 'var(--primary-light)',
                 fontSize: '0.78rem', fontWeight: 600, color: 'var(--primary-dark)',
                 letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '2.5rem',
+                maxWidth: '100%', flexWrap: 'wrap',
               }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--primary)', display: 'inline-block' }} />
                 Набор в новую группу открыт
@@ -834,7 +834,7 @@ export default function Home() {
               Расставание часто бьёт не только по эмоциям, но и по работе, деньгам, режиму и ощущению будущего. Поэтому внутри программы есть дополнительный карьерный трек — он не обязательный, и начинать стоит тогда, когда будете готовы.
             </p>
 
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', padding: '0.6rem 1.25rem', background: 'var(--primary-light)', borderRadius: '9999px', fontSize: '0.9rem', fontWeight: 600, color: 'var(--primary-dark)', marginBottom: '2.5rem' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', padding: '0.6rem 1.25rem', background: 'var(--primary-light)', borderRadius: '1rem', fontSize: '0.9rem', fontWeight: 600, color: 'var(--primary-dark)', marginBottom: '2.5rem', maxWidth: '100%', whiteSpace: 'normal', wordBreak: 'break-word' }}>
               Участники программы получают −50% на карьерный трек
             </div>
 

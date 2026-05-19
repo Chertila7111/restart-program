@@ -468,6 +468,11 @@ input[type="checkbox"] {
   }
 }
 
+/* ─── Hero section responsive alignment ──────── */
+.hero-section {
+  align-items: center;
+}
+
 /* ─── Prevent horizontal scroll globally ─────── */
 /* overflow-x: clip on html breaks position:fixed on mobile WebKit — apply to body only */
 html {
@@ -589,5 +594,12 @@ body {
   /* Pricing individual packages teaser — reduce padding on mobile */
   .pkg-teaser {
     padding: 1.25rem !important;
+  }
+
+  /* Hero: switch to top-aligned on mobile with header clearance */
+  .hero-section {
+    align-items: flex-start !important;
+    padding-top: 5.5rem !important;
+    padding-bottom: 3rem !important;
   }
 }

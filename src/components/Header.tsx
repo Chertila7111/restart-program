@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Menu, X, LayoutDashboard } from 'lucide-react'
 import { useSession } from 'next-auth/react'
+import { usePathname } from 'next/navigation'
 import { LogoSvg } from './LogoSvg'
 
 const nav = [
@@ -19,6 +20,9 @@ export default function Header() {
   const [open, setOpen] = useState(false)
   const { data: session } = useSession()
   const isLoggedIn = !!session?.user
+  const pathname = usePathname()
+
+  useEffect(() => { setOpen(false) }, [pathname])
 
   return (
     <>
@@ -115,7 +119,7 @@ export default function Header() {
           left: 0,
           right: 0,
           bottom: 0,
-          zIndex: 49,
+          zIndex: 100,
           background: 'var(--bg)',
           borderTop: '1px solid var(--border)',
           overflowY: 'auto',
