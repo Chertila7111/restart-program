@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { signOut } from 'next-auth/react'
-import { LayoutDashboard, Users, Users2, MessageCircle, LogOut, ArrowLeft, Bell, UserCircle } from 'lucide-react'
+import { LayoutDashboard, Users, Users2, MessageCircle, LogOut, ArrowLeft, Bell, UserCircle, Calendar } from 'lucide-react'
 import { LogoSvg } from '@/components/LogoSvg'
 
 type NavItem = { href: string; label: string; icon: React.ElementType }
@@ -13,8 +13,9 @@ const NAV: NavItem[] = [
   { href: '/curator',         label: 'Главная',   icon: LayoutDashboard },
   { href: '/curator/clients', label: 'Участники', icon: Users },
   { href: '/curator/groups',  label: 'Группы',    icon: Users2 },
-  { href: '/curator/chats',   label: 'Чаты',      icon: MessageCircle },
-  { href: '/curator/profile', label: 'Профиль',   icon: UserCircle },
+  { href: '/curator/chats',    label: 'Чаты',      icon: MessageCircle },
+  { href: '/curator/calendar', label: 'Календарь', icon: Calendar },
+  { href: '/curator/profile',  label: 'Профиль',   icon: UserCircle },
 ]
 
 type Props = { user: { name: string | null; email: string }; children: React.ReactNode }

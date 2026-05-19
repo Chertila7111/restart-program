@@ -317,6 +317,12 @@ async function _init() {
   // ── lastSeenAt on User ──
   try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN "lastSeenAt" DATETIME`) } catch { /* already exists */ }
 
+  // ── Extend Meeting for group/individual context ──
+  try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "Meeting" ADD COLUMN "groupId" TEXT`) } catch {}
+  try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "Meeting" ADD COLUMN "participantId" TEXT`) } catch {}
+  try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "Meeting" ADD COLUMN "curatorId" TEXT`) } catch {}
+  try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "Meeting" ADD COLUMN "recordingUrl" TEXT`) } catch {}
+
   // ── Notifications for curators ──
   await sql(`CREATE TABLE IF NOT EXISTS "Notification" (
     "id" TEXT NOT NULL PRIMARY KEY,
