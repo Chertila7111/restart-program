@@ -15,18 +15,22 @@ export default async function MeetingPage() {
 
   const today = new Date().toISOString().split('T')[0]
   const tier = (session.user as any).tier ?? 'intro'
+  const userId = (session.user as any).id as string
 
-  // Get all upcoming scheduled meetings for this user's tier
+  // Get all upcoming scheduled meetings: by tier OR by group membership
   const rows = (await (prisma as any).$queryRawUnsafe(`
-    SELECT id, title, description, date, time, duration, meetingLink, doctorId
+    SELECT id, title, description, date, time, duration, meetingLink, doctorId, groupId
     FROM "Meeting"
     WHERE status = 'scheduled' AND date >= ?
-      AND (targetTiers IS NULL OR targetTiers = '' OR targetTiers LIKE ? OR targetTiers LIKE '%"all"%')
+      AND (
+        targetTiers LIKE ? OR targetTiers LIKE '%"all"%' OR targetTiers IS NULL OR targetTiers = ''
+        OR groupId IN (SELECT groupId FROM "GroupParticipant" WHERE userId = ?)
+      )
     ORDER BY date ASC, time ASC
     LIMIT 10
-  `, today, `%"${tier}"%`).catch(() => [])) as {
+  `, today, `%"${tier}"%`, userId).catch(() => [])) as {
     id: string; title: string; description: string; date: string; time: string
-    duration: string; meetingLink: string | null; doctorId: string | null
+    duration: string; meetingLink: string | null; doctorId: string | null; groupId: string | null
   }[]
 
   const upcoming = rows[0] ?? null
@@ -65,14 +69,26 @@ export default async function MeetingPage() {
     )
   }
 
-  // Get doctor info
-  const doctorProfile = upcoming.doctorId ? (await (prisma as any).$queryRawUnsafe(`
-    SELECT u.name, pp.speciality, pp.experience, pp.bio, pp.photoUrl
-    FROM "PsychologistProfile" pp
-    JOIN "User" u ON u.id = pp.userId
-    WHERE pp.userId = ?
-    LIMIT 1
-  `, upcoming.doctorId).catch(() => [])) as any[] : []
+  // Get doctor info — from doctorId or from group's psychologist
+  let doctorProfile: any[] = []
+  if (upcoming.doctorId) {
+    doctorProfile = (await (prisma as any).$queryRawUnsafe(`
+      SELECT u.name, pp.speciality, pp.experience, pp.bio, pp.photoUrl
+      FROM "PsychologistProfile" pp
+      JOIN "User" u ON u.id = pp.userId
+      WHERE pp.userId = ?
+      LIMIT 1
+    `, upcoming.doctorId).catch(() => [])) as any[]
+  } else if (upcoming.groupId) {
+    doctorProfile = (await (prisma as any).$queryRawUnsafe(`
+      SELECT u.name, pp.speciality, pp.experience, pp.bio, pp.photoUrl
+      FROM "Group" g
+      JOIN "User" u ON u.id = g.psychologistId
+      LEFT JOIN "PsychologistProfile" pp ON pp.userId = g.psychologistId
+      WHERE g.id = ? AND g.psychologistId IS NOT NULL
+      LIMIT 1
+    `, upcoming.groupId).catch(() => [])) as any[]
+  }
   const doctor = doctorProfile[0] ?? null
   const meetingLink = upcoming.meetingLink ?? ''
 

@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { authOptions } from '@/lib/auth'
 import { ensureDb } from '@/lib/db-init'
 import { prisma } from '@/lib/prisma'
+import webpush from 'web-push'
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions)
@@ -141,13 +142,50 @@ export async function POST(req: NextRequest) {
     }
 
     const m = rows[0]
-    return NextResponse.json({
+    const result = {
       id: m.id,
       text: m.text,
       conversationId: m.conversationId,
       createdAt: m.createdAt,
       sender: { id: m.sender_id, name: m.sender_name, email: m.sender_email, role: m.sender_role },
-    })
+    }
+
+    // Send push to other conversation members (non-blocking)
+    ;(async () => {
+      try {
+        if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) return
+        webpush.setVapidDetails(
+          process.env.VAPID_EMAIL || 'mailto:support@snova-s-soboy.ru',
+          process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+          process.env.VAPID_PRIVATE_KEY
+        )
+        const subs = (await (prisma as any).$queryRawUnsafe(`
+          SELECT ps.endpoint, ps.p256dh, ps.auth
+          FROM "PushSubscription" ps
+          WHERE ps.userId IN (
+            SELECT userId FROM "ConversationMember"
+            WHERE conversationId = ? AND userId != ?
+          )
+        `, conversationId, userId)) as { endpoint: string; p256dh: string; auth: string }[]
+
+        const senderName = session.user.name ?? session.user.email ?? 'Собеседник'
+        const body = text.trim().length > 80 ? text.trim().slice(0, 77) + '…' : text.trim()
+        const payload = JSON.stringify({
+          title: `Новое сообщение от ${senderName}`,
+          body,
+          tag: `chat-${conversationId}`,
+          url: '/dashboard/chats',
+        })
+        for (const sub of subs) {
+          webpush.sendNotification(
+            { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+            payload
+          ).catch(() => {})
+        }
+      } catch {}
+    })()
+
+    return NextResponse.json(result)
   } catch (err: any) {
     return NextResponse.json({ error: err?.message ?? 'unknown' }, { status: 500 })
   }

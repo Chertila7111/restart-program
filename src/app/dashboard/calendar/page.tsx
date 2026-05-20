@@ -53,10 +53,13 @@ export default async function CalendarPage() {
       SELECT id, title, date, time, duration, meetingLink
       FROM "Meeting"
       WHERE status = 'scheduled' AND date >= ?
-        AND (targetTiers IS NULL OR targetTiers = '' OR targetTiers LIKE ? OR targetTiers LIKE '%"all"%')
+        AND (
+          targetTiers LIKE ? OR targetTiers LIKE '%"all"%' OR targetTiers IS NULL OR targetTiers = ''
+          OR groupId IN (SELECT groupId FROM "GroupParticipant" WHERE userId = ?)
+        )
       ORDER BY date ASC, time ASC
       LIMIT 10
-    `, today, `%"${tier}"%`).catch(() => [])) as typeof meetings
+    `, today, `%"${tier}"%`, userId).catch(() => [])) as typeof meetings
   } catch (err) {
     console.error('[calendar] DB error:', err)
   }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Send, Plus, MessageCircle, Search, User, X, Users, Trash2 } from 'lucide-react'
+import { Send, Plus, MessageCircle, Search, User, X, Users, Trash2, Bell } from 'lucide-react'
 
 type Participant = { id: string; name: string | null; email: string; role: string; lastSeenAt?: string | null }
 type Conversation = {
@@ -72,11 +72,88 @@ export function ChatShell({
   const [specialists, setSpecialists] = useState<Specialist[]>([])
   const [specsLoading, setSpecsLoading] = useState(false)
   const [hoveredMsgId, setHoveredMsgId] = useState<string | null>(null)
+  const [lastReadMap, setLastReadMap] = useState<Record<string, string>>({})
+  const [pushGranted, setPushGranted] = useState(false)
+  const [showPushBanner, setShowPushBanner] = useState(false)
   const listRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const convPollRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const autoOpenedRef = useRef(false)
+  const lrmInitRef = useRef(false)
+
+  // Load lastReadMap from localStorage once
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('chat_last_read')
+      if (stored) setLastReadMap(JSON.parse(stored))
+    } catch {}
+    // Push permission state
+    if (typeof Notification !== 'undefined') {
+      if (Notification.permission === 'granted') {
+        setPushGranted(true)
+      } else if (Notification.permission === 'default' && !localStorage.getItem('push_asked')) {
+        setShowPushBanner(true)
+      }
+    }
+  }, [])
+
+  // On first conversation load, mark existing messages as "read" (no false unread on first visit)
+  useEffect(() => {
+    if (!loading && conversations.length > 0 && !lrmInitRef.current) {
+      lrmInitRef.current = true
+      setLastReadMap(prev => {
+        const updated = { ...prev }
+        for (const conv of conversations) {
+          if (!updated[conv.id] && conv.lastMessage) {
+            updated[conv.id] = conv.lastMessage.createdAt
+          }
+        }
+        try { localStorage.setItem('chat_last_read', JSON.stringify(updated)) } catch {}
+        return updated
+      })
+    }
+  }, [loading, conversations])
+
+  function markAsRead(convId: string) {
+    const ts = new Date().toISOString()
+    setLastReadMap(prev => {
+      const updated = { ...prev, [convId]: ts }
+      try { localStorage.setItem('chat_last_read', JSON.stringify(updated)) } catch {}
+      return updated
+    })
+  }
+
+  async function subscribePush() {
+    if (typeof Notification === 'undefined') return
+    const permission = await Notification.requestPermission()
+    localStorage.setItem('push_asked', 'true')
+    setShowPushBanner(false)
+    if (permission !== 'granted') return
+    setPushGranted(true)
+    try {
+      const reg = await navigator.serviceWorker.ready
+      const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+      if (!vapidKey) return
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: vapidKey,
+      })
+      const key = sub.getKey('p256dh')
+      const auth = sub.getKey('auth')
+      await fetch('/api/push/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          endpoint: sub.endpoint,
+          keys: {
+            p256dh: key ? btoa(String.fromCharCode(...new Uint8Array(key))) : '',
+            auth: auth ? btoa(String.fromCharCode(...new Uint8Array(auth))) : '',
+          },
+        }),
+      })
+    } catch (e) { console.error('push subscribe:', e) }
+  }
 
   const isCurator = userRole === 'curator'
   const pickerApiUrl = isCurator ? '/api/curator/chat-users' : '/api/specialists'
@@ -225,6 +302,34 @@ export function ChatShell({
   })
 
   return (
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+      {/* Push permission banner */}
+      {showPushBanner && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '0.875rem',
+          padding: '0.75rem 1.25rem', marginBottom: '0.75rem',
+          background: 'var(--bg-sage)', borderRadius: '0.875rem',
+          border: '1px solid var(--primary-light)', flexShrink: 0,
+        }}>
+          <Bell size={16} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+          <div style={{ flex: 1, fontSize: '0.82rem', color: 'var(--text)' }}>
+            <strong>Уведомления о новых сообщениях</strong>
+            <span style={{ color: 'var(--text-muted)' }}> — получайте их даже когда вкладка закрыта</span>
+          </div>
+          <button
+            onClick={subscribePush}
+            style={{ background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '0.625rem', padding: '0.375rem 0.875rem', fontWeight: 700, fontSize: '0.78rem', cursor: 'pointer', flexShrink: 0 }}
+          >
+            Включить
+          </button>
+          <button
+            onClick={() => { localStorage.setItem('push_asked', 'dismissed'); setShowPushBanner(false) }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.25rem', flexShrink: 0 }}
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
     <div style={{
       flex: 1, display: 'flex', overflow: 'hidden',
       border: '1px solid var(--border)', borderRadius: '1.25rem',
@@ -246,6 +351,19 @@ export function ChatShell({
               style={{ width: '100%', paddingLeft: '1.875rem', paddingRight: '0.5rem', paddingTop: '0.4rem', paddingBottom: '0.4rem', fontSize: '0.8rem', borderRadius: '0.625rem', border: '1.5px solid var(--border)' }}
             />
           </div>
+          {!pushGranted && typeof Notification !== 'undefined' && Notification.permission !== 'granted' && (
+            <button
+              onClick={subscribePush}
+              title="Включить уведомления"
+              style={{
+                width: '2rem', height: '2rem', borderRadius: '0.625rem', border: 'none',
+                background: 'var(--bg-soft)', color: 'var(--text-muted)', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              }}
+            >
+              <Bell size={13} />
+            </button>
+          )}
           <button
             onClick={openPicker}
             disabled={creatingConv}
@@ -287,10 +405,12 @@ export function ChatShell({
               const isActive = conv.id === activeId
               const title = ConvTitle(conv, userId)
               const other = conv.participants.find(p => p.id !== userId) ?? conv.participants[0]
+              const isUnread = !isActive && conv.lastMessage &&
+                (!lastReadMap[conv.id] || new Date(conv.lastMessage.createdAt) > new Date(lastReadMap[conv.id]))
               return (
                 <button
                   key={conv.id}
-                  onClick={() => setActiveId(conv.id)}
+                  onClick={() => { setActiveId(conv.id); markAsRead(conv.id) }}
                   style={{
                     width: '100%', textAlign: 'left', border: 'none', cursor: 'pointer',
                     padding: '1rem 1.125rem', display: 'flex', gap: '0.875rem', alignItems: 'center',
@@ -310,16 +430,21 @@ export function ChatShell({
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                      <span style={{ fontWeight: isActive ? 700 : 600, fontSize: '0.82rem', color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '8rem' }}>
+                      <span style={{ fontWeight: isActive || isUnread ? 700 : 600, fontSize: '0.82rem', color: isUnread ? 'var(--text)' : 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '8rem' }}>
                         {title}
                       </span>
-                      {conv.lastMessage && (
-                        <span style={{ fontSize: '0.65rem', color: 'var(--text-light)', flexShrink: 0, marginLeft: '0.25rem' }}>
-                          {timeLabel(conv.lastMessage.createdAt)}
-                        </span>
-                      )}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', flexShrink: 0, marginLeft: '0.25rem' }}>
+                        {conv.lastMessage && (
+                          <span style={{ fontSize: '0.65rem', color: 'var(--text-light)' }}>
+                            {timeLabel(conv.lastMessage.createdAt)}
+                          </span>
+                        )}
+                        {isUnread && (
+                          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)', flexShrink: 0, display: 'inline-block' }} />
+                        )}
+                      </div>
                     </div>
-                    <div style={{ fontSize: '0.74rem', color: 'var(--text-light)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '0.1rem' }}>
+                    <div style={{ fontSize: '0.74rem', color: isUnread ? 'var(--text-muted)' : 'var(--text-light)', fontWeight: isUnread ? 600 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginTop: '0.1rem' }}>
                       {conv.lastMessage?.text ?? (conv.subject ?? 'Нет сообщений')}
                     </div>
                   </div>
@@ -462,7 +587,7 @@ export function ChatShell({
       {showPicker && (
         <div
           style={{
-            position: 'fixed', inset: 0, zIndex: 9000,
+            position: 'fixed', inset: 0, zIndex: 9100,
             background: 'rgba(28,43,35,0.55)', backdropFilter: 'blur(2px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem',
           }}
@@ -530,6 +655,7 @@ export function ChatShell({
           </div>
         </div>
       )}
+    </div>
     </div>
   )
 }
