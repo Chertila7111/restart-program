@@ -316,6 +316,8 @@ async function _init() {
 
   // ── lastSeenAt on User ──
   try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN "lastSeenAt" DATETIME`) } catch { /* already exists */ }
+  // ── tier on User ──
+  try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN "tier" TEXT NOT NULL DEFAULT 'none'`) } catch { /* already exists */ }
 
   // ── Extend Meeting for group/individual context ──
   try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "Meeting" ADD COLUMN "groupId" TEXT`) } catch {}

@@ -15,6 +15,7 @@ model User {
   passwordHash  String?
   image         String?
   role          String    @default("user")
+  tier          String    @default("none")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

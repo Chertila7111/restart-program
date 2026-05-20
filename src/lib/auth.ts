@@ -33,18 +33,19 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        // ── Demo/test accounts (hardcoded, always work) ──
-        const demoAccounts: Record<string, { password: string; id: string; name: string; role: string; tier: string }> = {
-          'test@snova-s-soboy.ru':    { password: 'Test2026!',    id: 'test-user-anna',        name: 'Анна (тест)',      role: 'user',         tier: 'intro' },
-          'doctor@snova-s-soboy.ru':  { password: 'Doctor2026!',  id: 'doctor-maria-sokolova', name: 'Мария Соколова',  role: 'psychologist', tier: 'personal' },
-          'curator@snova-s-soboy.ru': { password: 'Curator2026!', id: 'curator-elena-demo',    name: 'Елена Куратор',   role: 'curator',      tier: 'personal' },
-        }
-        const demo = demoAccounts[emailLower]
-        if (demo) {
-          if (credentials.password !== demo.password) return null
-          // Ensure DB is seeded so dashboard data loads
-          try { await ensureDb() } catch { /* non-fatal */ }
-          return { id: demo.id, email: emailLower, name: demo.name, role: demo.role, tier: demo.tier }
+        // ── Demo/test accounts (only in dev or when ENABLE_DEMO=true) ──
+        if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_DEMO === 'true') {
+          const demoAccounts: Record<string, { password: string; id: string; name: string; role: string; tier: string }> = {
+            'test@snova-s-soboy.ru':    { password: 'Test2026!',    id: 'test-user-anna',        name: 'Анна (тест)',      role: 'user',         tier: 'intro' },
+            'doctor@snova-s-soboy.ru':  { password: 'Doctor2026!',  id: 'doctor-maria-sokolova', name: 'Мария Соколова',  role: 'psychologist', tier: 'personal' },
+            'curator@snova-s-soboy.ru': { password: 'Curator2026!', id: 'curator-elena-demo',    name: 'Елена Куратор',   role: 'curator',      tier: 'personal' },
+          }
+          const demo = demoAccounts[emailLower]
+          if (demo) {
+            if (credentials.password !== demo.password) return null
+            try { await ensureDb() } catch { /* non-fatal */ }
+            return { id: demo.id, email: emailLower, name: demo.name, role: demo.role, tier: demo.tier }
+          }
         }
 
         // ── Regular users via DB ──
@@ -54,9 +55,8 @@ export const authOptions: NextAuthOptions = {
           if (!user || !user.passwordHash) return null
           const valid = await bcrypt.compare(credentials.password, user.passwordHash)
           if (!valid) return null
-          return { id: user.id, email: user.email, name: user.name, role: user.role }
+          return { id: user.id, email: user.email, name: user.name, role: user.role, tier: (user as any).tier ?? 'none' }
         } catch {
-          // DB unavailable — only admin env-var login works
           return null
         }
       },
@@ -69,17 +69,14 @@ export const authOptions: NextAuthOptions = {
         token.role = (user as any).role
         if ((user as any).tier) token.tier = (user as any).tier
       }
-      // Backfill tier for existing sessions created before this field was added.
-      // jwt callback runs on every getServerSession call, so this takes effect immediately
-      // without requiring the user to log out.
+      // Backfill tier from DB for sessions that pre-date the tier field
       if (!token.tier && token.id) {
-        const demoTierMap: Record<string, string> = {
-          'test-user-anna':       'intro',
-          'doctor-maria-sokolova': 'personal',
-        }
-        if (demoTierMap[token.id as string]) {
-          token.tier = demoTierMap[token.id as string]
-        }
+        try {
+          const rows = await (prisma as any).$queryRawUnsafe(
+            `SELECT tier FROM "User" WHERE id = ? LIMIT 1`, token.id
+          ) as { tier: string }[]
+          if (rows[0]?.tier) token.tier = rows[0].tier
+        } catch {}
       }
       return token
     },

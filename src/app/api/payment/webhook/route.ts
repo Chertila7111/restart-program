@@ -54,6 +54,32 @@ async function notifyCurators(userId: string, userName: string, productName: str
   }
 }
 
+// Product → tier mapping
+const PRODUCT_TIER: Record<string, string> = {
+  intro: 'intro',
+  base: 'base',
+  plus: 'plus',
+  personal: 'personal',
+}
+
+async function verifyPaymentWithYooKassa(paymentId: string): Promise<boolean> {
+  const shopId = process.env.YOOKASSA_SHOP_ID
+  const secretKey = process.env.YOOKASSA_SECRET_KEY
+  if (!shopId || !secretKey) return true // dev fallback: trust webhook without keys
+  try {
+    const res = await fetch(`https://api.yookassa.ru/v3/payments/${paymentId}`, {
+      headers: {
+        Authorization: `Basic ${Buffer.from(`${shopId}:${secretKey}`).toString('base64')}`,
+      },
+    })
+    if (!res.ok) return false
+    const data = await res.json()
+    return data.status === 'succeeded'
+  } catch {
+    return false
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
@@ -61,6 +87,17 @@ export async function POST(req: NextRequest) {
     if (body.event === 'payment.succeeded') {
       const paymentId = body.object?.id
       const orderId = body.object?.metadata?.orderId
+
+      if (!paymentId || !orderId) {
+        return NextResponse.json({ ok: true }) // ignore malformed
+      }
+
+      // Re-verify payment status directly with YooKassa — prevents fake webhooks
+      const verified = await verifyPaymentWithYooKassa(paymentId)
+      if (!verified) {
+        console.warn('[webhook] Payment verification failed for', paymentId)
+        return NextResponse.json({ error: 'Payment not verified' }, { status: 400 })
+      }
 
       if (orderId) {
         await ensureDb()
@@ -73,6 +110,7 @@ export async function POST(req: NextRequest) {
         let userId = order.userId ?? null
         let tempPassword: string | null = null
         const existing = await prisma.user.findUnique({ where: { email: order.email } })
+        const newTier = PRODUCT_TIER[order.product] ?? null
 
         if (!existing) {
           tempPassword = genPassword()
@@ -87,20 +125,42 @@ export async function POST(req: NextRequest) {
           })
           userId = newUser.id
           await prisma.order.update({ where: { id: orderId }, data: { userId: newUser.id } })
+          // Set tier on new user
+          if (newTier) {
+            await (prisma as any).$executeRawUnsafe(
+              `UPDATE "User" SET tier = ? WHERE id = ?`, newTier, userId
+            )
+          }
         } else {
           userId = existing.id
           if (!order.userId) {
             await prisma.order.update({ where: { id: orderId }, data: { userId: existing.id } }).catch(() => {})
           }
+          // Upgrade tier if new tier is higher
+          const tierRank: Record<string, number> = { none: 0, intro: 1, base: 2, plus: 3, personal: 4 }
+          const existingTier = (existing as any).tier ?? 'none'
+          if (newTier && (tierRank[newTier] ?? 0) > (tierRank[existingTier] ?? 0)) {
+            await (prisma as any).$executeRawUnsafe(
+              `UPDATE "User" SET tier = ? WHERE id = ?`, newTier, userId
+            )
+          }
         }
 
-        sendWelcomeEmail({
+        const emailResult = await sendWelcomeEmail({
           to: order.email,
           name: order.name,
           product: order.product,
           productName: order.productName,
           tempPassword: tempPassword ?? undefined,
-        }).catch(err => console.error('Email send failed:', err))
+        }).catch(async (err) => {
+          console.error('[webhook] Email send failed for', order.email, err)
+          // Mark so admin sees email wasn't sent
+          await prisma.order.update({ where: { id: orderId }, data: { status: 'paid_email_failed' } }).catch(() => {})
+          return null
+        })
+        if (!emailResult) {
+          console.error('[webhook] Welcome email not delivered for', order.email)
+        }
 
         // Notify curators
         if (userId) {

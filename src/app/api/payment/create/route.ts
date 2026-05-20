@@ -4,6 +4,10 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { getProduct } from '@/lib/products'
 
+// In-memory rate limit: email → last request timestamp
+const rateLimitMap = new Map<string, number>()
+const RATE_LIMIT_MS = 60_000 // 1 min between order attempts per email
+
 export async function POST(req: NextRequest) {
   try {
     const { productId, name, email, phone } = await req.json()
@@ -11,6 +15,15 @@ export async function POST(req: NextRequest) {
     if (!productId || !email || !name) {
       return NextResponse.json({ error: 'Заполните все поля' }, { status: 400 })
     }
+
+    const emailLower = (email as string).toLowerCase().trim()
+
+    // Rate limit: 1 order attempt per email per minute
+    const lastAttempt = rateLimitMap.get(emailLower) ?? 0
+    if (Date.now() - lastAttempt < RATE_LIMIT_MS) {
+      return NextResponse.json({ error: 'Пожалуйста, подождите перед повторной попыткой' }, { status: 429 })
+    }
+    rateLimitMap.set(emailLower, Date.now())
 
     const product = getProduct(productId)
     if (!product) {
@@ -20,11 +33,40 @@ export async function POST(req: NextRequest) {
     const session = await getServerSession(authOptions)
     const userId = (session?.user as any)?.id || null
 
+    // Deduplication: return existing pending order for same email+product (within 10 min)
+    const existing = await prisma.order.findFirst({
+      where: {
+        email: emailLower,
+        product: productId,
+        status: 'pending',
+        createdAt: { gte: new Date(Date.now() - 10 * 60 * 1000) },
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+    if (existing?.paymentId) {
+      // Re-fetch payment URL from YooKassa if keys available
+      const shopId = process.env.YOOKASSA_SHOP_ID
+      const secretKey = process.env.YOOKASSA_SECRET_KEY
+      if (shopId && secretKey) {
+        try {
+          const ykRes = await fetch(`https://api.yookassa.ru/v3/payments/${existing.paymentId}`, {
+            headers: { Authorization: `Basic ${Buffer.from(`${shopId}:${secretKey}`).toString('base64')}` },
+          })
+          if (ykRes.ok) {
+            const ykData = await ykRes.json()
+            if (ykData.status === 'pending' && ykData.confirmation?.confirmation_url) {
+              return NextResponse.json({ paymentUrl: ykData.confirmation.confirmation_url, orderId: existing.id })
+            }
+          }
+        } catch {}
+      }
+    }
+
     // Create order in DB
     const order = await prisma.order.create({
       data: {
         userId,
-        email,
+        email: emailLower,
         name,
         phone: phone || null,
         product: productId,

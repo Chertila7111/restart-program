@@ -236,7 +236,6 @@ export default function QuizPage() {
   const [selected, setSelected] = useState<string | null>(null)
   const [isResult, setIsResult] = useState(false)
   const [isCrisisScreen, setIsCrisisScreen] = useState(false)
-  const [crisisAcknowledged, setCrisisAcknowledged] = useState(false)
 
   const currentStepId = history[history.length - 1]
   const currentStep = allSteps[currentStepId]
@@ -271,7 +270,6 @@ export default function QuizPage() {
     setSelected(null)
     setIsResult(false)
     setIsCrisisScreen(false)
-    setCrisisAcknowledged(false)
   }
 
   // Result values
@@ -325,33 +323,22 @@ export default function QuizPage() {
             </div>
           </div>
 
-          <div style={{ background: 'white', border: '1.5px solid var(--border)', borderRadius: '1.25rem', padding: '1.5rem', marginBottom: '1.5rem' }}>
-            <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                checked={crisisAcknowledged}
-                onChange={e => setCrisisAcknowledged(e.target.checked)}
-                style={{ marginTop: '0.2rem', flexShrink: 0 }}
-              />
-              <span style={{ fontSize: '0.875rem', color: 'var(--text)', lineHeight: 1.7 }}>
-                Я понимаю, что сейчас мне важнее обратиться за профессиональной экстренной помощью. Программа «Снова с собой» не является кризисной службой.
-              </span>
-            </label>
+          <div style={{ background: 'white', border: '1.5px solid #FCA5A5', borderRadius: '1.25rem', padding: '1.25rem', marginBottom: '1.5rem', fontSize: '0.875rem', color: '#7F1D1D', lineHeight: 1.7 }}>
+            Программа «Снова с собой» предназначена для людей, переживающих расставание, но не находящихся в кризисном состоянии. Сейчас вам важнее получить профессиональную экстренную поддержку.
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <button
-              onClick={reset}
-              disabled={!crisisAcknowledged}
-              style={{ width: '100%', padding: '0.875rem', borderRadius: '0.875rem', border: 'none', background: crisisAcknowledged ? 'var(--primary)' : 'var(--border)', color: 'white', fontWeight: 700, fontSize: '0.95rem', cursor: crisisAcknowledged ? 'pointer' : 'not-allowed', transition: 'background 0.2s' }}
-            >
-              Я понимаю — пройти тест заново
-            </button>
             <Link
               href="/contacts"
-              style={{ display: 'block', textAlign: 'center', fontSize: '0.875rem', color: 'var(--primary)', textDecoration: 'none', fontWeight: 500 }}
+              style={{ display: 'block', textAlign: 'center', width: '100%', padding: '0.875rem', borderRadius: '0.875rem', background: '#7F1D1D', color: 'white', fontWeight: 700, fontSize: '0.95rem', textDecoration: 'none' }}
             >
-              Написать нам →
+              Написать нам — мы поможем найти поддержку
+            </Link>
+            <Link
+              href="/"
+              style={{ display: 'block', textAlign: 'center', fontSize: '0.875rem', color: 'var(--text-muted)', textDecoration: 'none' }}
+            >
+              ← На главную
             </Link>
           </div>
         </div>
