@@ -1,10 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Calendar, Clock, CheckCircle, X, Plus } from 'lucide-react'
+import { Calendar, Clock, CheckCircle, X, Plus, Users, Video } from 'lucide-react'
+import Link from 'next/link'
 
 type Slot = { id: string; startAt: string; durationMin: number; note: string | null; doctor: { name: string | null } }
 type Booking = { id: string; slotId: string; status: string; slot: { startAt: string; durationMin: number } }
+type Meeting = { id: string; title: string; date: string; time: string; duration: string; meetingLink: string | null }
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' })
@@ -17,10 +19,12 @@ export function CalendarUI({
   slots: initial,
   bookings: initialBookings,
   userRole,
+  meetings = [],
 }: {
   slots: Slot[]
   bookings: Booking[]
   userRole: string
+  meetings?: Meeting[]
 }) {
   const [slots, setSlots] = useState<Slot[]>(initial)
   const [bookings, setBookings] = useState<Booking[]>(initialBookings)
@@ -101,6 +105,48 @@ export function CalendarUI({
 
   return (
     <div>
+      {/* Scheduled group meetings */}
+      {meetings.length > 0 && (
+        <div style={{ marginBottom: '2rem' }}>
+          <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.875rem' }}>Запланированные встречи</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {meetings.map((m, i) => {
+              const mDate = new Date(`${m.date}T${m.time}:00+03:00`)
+              const isFirst = i === 0
+              const isPast = mDate < new Date()
+              return (
+                <div key={m.id} className="card" style={{ padding: '1.25rem 1.5rem', display: 'flex', gap: '1.25rem', alignItems: 'center', borderLeft: isFirst ? '4px solid var(--primary)' : '4px solid var(--border)' }}>
+                  <div style={{ width: '3.25rem', flexShrink: 0, textAlign: 'center', background: isFirst ? 'var(--bg-sage)' : 'var(--bg-soft)', borderRadius: '0.875rem', padding: '0.5rem 0.375rem' }}>
+                    <div style={{ fontSize: '0.6rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      {mDate.toLocaleDateString('ru-RU', { month: 'short' })}
+                    </div>
+                    <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text)', lineHeight: 1 }}>
+                      {mDate.getDate()}
+                    </div>
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text)', marginBottom: '0.25rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {m.title}
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.875rem', fontSize: '0.8rem', color: 'var(--text-muted)', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Clock size={12} /> {m.time} МСК · {m.duration}</span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Users size={12} /> Групповая встреча</span>
+                    </div>
+                  </div>
+                  <div style={{ flexShrink: 0, display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    {isFirst && !isPast && (
+                      <Link href="/dashboard/meeting" style={{ background: 'var(--primary)', color: 'white', borderRadius: '0.625rem', padding: '0.45rem 0.875rem', fontWeight: 700, fontSize: '0.78rem', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                        <Video size={12} /> Подробнее
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
       {/* My bookings */}
       {bookings.length > 0 && (
         <div style={{ marginBottom: '2rem' }}>
