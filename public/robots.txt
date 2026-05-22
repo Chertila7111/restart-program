@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /cabinet
+Disallow: /checkout/
+Disallow: /api/
+Disallow: /auth/
+Disallow: /dashboard/
+Disallow: /specialist/
+Disallow: /curator/
+
+Sitemap: https://snova-s-soboy.ru/sitemap.xml
+Host: https://snova-s-soboy.ru
