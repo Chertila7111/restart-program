@@ -44,8 +44,8 @@ export default function Footer() {
             <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
               {[
                 { href: '/blog', label: 'Блог' },
-                { href: '/blog/kak-perezhit-rasstoanie-7-shagov', label: 'Как пережить расставание' },
-                { href: '/blog/kak-zabyt-byvshego-rukovodstvo', label: 'Как перестать думать о бывшем' },
+                { href: '/blog/kak-perezhit-rasstavanie', label: 'Как пережить расставание' },
+                { href: '/for-friends', label: 'Страница для близких' },
                 { href: '/contacts', label: 'Контакты' },
               ].map((l) => (
                 <li key={l.href}>
@@ -103,7 +103,8 @@ export default function Footer() {
           </p>
           <p style={{ fontSize: '0.8rem', color: '#4A5E48', maxWidth: '50rem', lineHeight: 1.8 }}>
             Программа не является медицинской услугой и не заменяет психотерапию или медицинскую помощь.
-            Если вам нужна кризисная или медицинская поддержка — обратитесь к специалисту.
+            Если вам нужна кризисная или медицинская поддержка — обратитесь к специалисту или позвоните на телефон доверия:{' '}
+            <span style={{ color: '#6A8E78', fontWeight: 600 }}>8-800-2000-122</span> (бесплатно, круглосуточно).
             Участие в программе — для лиц 18 лет и старше. 18+
           </p>
           <p style={{ fontSize: '0.75rem', color: '#3E4E3C', maxWidth: '50rem', lineHeight: 1.7 }}>

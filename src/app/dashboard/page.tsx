@@ -8,6 +8,7 @@ import { ArrowRight, BookOpen, CheckSquare, PenLine, Calendar, Sparkles, Clock, 
 import { PROGRAM_TASKS } from '@/lib/dashboard-data'
 import { LogoSvg } from '@/components/LogoSvg'
 import RecommendedArticles from '@/components/RecommendedArticles'
+import ShareLink from '@/components/ShareLink'
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -228,6 +229,14 @@ export default async function DashboardPage() {
           })}
         </div>
         <RecommendedArticles />
+
+        {/* Referral */}
+        <div className="card" style={{ padding: '1.25rem', marginBottom: '0.75rem' }}>
+          <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text)', marginBottom: '0.25rem' }}>Порекомендовать программу</div>
+          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.875rem' }}>Знаете кого-то, кому сейчас тяжело после расставания? Отправьте ссылку на тест.</div>
+          <ShareLink url="https://snova-s-soboy.ru/quiz" label="Ссылка на тест" />
+        </div>
+
         <div style={{ marginTop: '0.5rem', textAlign: 'center' }}>
           <Link href="/pricing" style={{ color: 'var(--primary)', fontWeight: 600, fontSize: '0.875rem', textDecoration: 'none' }}>Смотреть все тарифы →</Link>
         </div>

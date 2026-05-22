@@ -87,6 +87,80 @@ export async function sendPasswordResetEmail({ to, resetUrl }: { to: string; res
   })
 }
 
+const CATEGORY_TEXT: Record<string, string> = {
+  thoughts: 'Остановить навязчивые мысли и желание написать бывшему/бывшей',
+  anxiety:  'Справиться с тревогой, пустотой и физическим дискомфортом',
+  future:   'Вернуть ощущение будущего и найти первые точки опоры',
+  work:     'Восстановить рабочий ритм и обычную жизнь',
+}
+
+export async function sendQuizResultEmail({
+  to, name, category, situation,
+  articleTitles,
+}: {
+  to: string; name: string; category: string; situation: string
+  articleTitles: string[]
+}) {
+  if (!process.env.RESEND_API_KEY) { console.warn('[mailer] RESEND_API_KEY not set, skipping'); return }
+
+  const focus = CATEGORY_TEXT[category] ?? 'Найти опору и постепенно двигаться вперёд'
+  const articleRows = articleTitles.map(t =>
+    `<li style="margin-bottom:0.5rem;font-size:0.875rem;color:#4A5E48;line-height:1.6">${t}</li>`
+  ).join('')
+
+  await getResend().emails.send({
+    from: FROM,
+    to,
+    subject: 'Ваш результат теста — Снова с собой',
+    html: header() + `
+    <h1 style="font-size:1.2rem;font-weight:800;color:#1C2B23;margin:0 0 0.75rem">Ваш результат сохранён, ${name?.split(' ')[0] || 'друг'}</h1>
+    <p style="color:#4A5E48;line-height:1.7;margin:0 0 1.25rem">
+      Судя по ответам, сейчас вам важнее всего: <strong>${focus}</strong>.
+    </p>
+    <div style="background:#F0F7F2;border-radius:0.75rem;padding:1.25rem;margin-bottom:1.5rem">
+      <div style="font-size:0.75rem;font-weight:700;color:#4E7B5E;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.75rem">Что можно прочитать сейчас</div>
+      <ul style="margin:0;padding-left:1.25rem">${articleRows}</ul>
+    </div>
+    <p style="color:#6B7280;font-size:0.875rem;line-height:1.7;margin:0 0 1.25rem">
+      Вводная встреча — 90 минут в небольшой группе с психологом. Можно просто слушать. Стоимость засчитывается при покупке программы.
+    </p>
+    <a href="${SITE}/checkout?product=intro" style="display:block;text-align:center;background:#4E7B5E;color:white;text-decoration:none;padding:0.875rem 2rem;border-radius:0.75rem;font-weight:700;font-size:1rem;margin-bottom:1.25rem">
+      Записаться на вводную встречу — 1 490 ₽ →
+    </a>` + footer(),
+  })
+}
+
+export async function sendIntroPrepEmail({ to, name }: { to: string; name: string }) {
+  if (!process.env.RESEND_API_KEY) { console.warn('[mailer] RESEND_API_KEY not set, skipping'); return }
+
+  await getResend().emails.send({
+    from: FROM,
+    to,
+    subject: 'Как подготовиться к вводной встрече — Снова с собой',
+    html: header() + `
+    <h1 style="font-size:1.2rem;font-weight:800;color:#1C2B23;margin:0 0 0.75rem">Встреча совсем скоро, ${name?.split(' ')[0] || 'друг'}</h1>
+    <p style="color:#4A5E48;line-height:1.7;margin:0 0 1.25rem">Вот несколько вещей, которые помогут провести встречу с пользой:</p>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.5rem">
+      ${[
+        ['Найдите тихое место', 'Встреча онлайн — наушники приветствуются, камера по желанию.'],
+        ['Ничего готовить не нужно', 'Можно просто прийти и слушать. Не обязательно говорить о себе.'],
+        ['Вопросы для размышления', 'Что сейчас тяжелее всего? Какой поддержки не хватает? Есть ли вопрос к психологу?'],
+        ['Журнал состояния', 'В личном кабинете уже доступен дневник — попробуйте сделать первую запись.'],
+      ].map(([title, text]) => `
+        <div style="background:#F0F7F2;border-radius:0.75rem;padding:1rem 1.25rem">
+          <div style="font-weight:700;color:#1C2B23;font-size:0.875rem;margin-bottom:0.25rem">${title}</div>
+          <div style="color:#6B7280;font-size:0.825rem;line-height:1.6">${text}</div>
+        </div>`).join('')}
+    </div>
+    <a href="${SITE}/dashboard" style="display:block;text-align:center;background:#4E7B5E;color:white;text-decoration:none;padding:0.875rem 2rem;border-radius:0.75rem;font-weight:700;font-size:1rem;margin-bottom:1rem">
+      Перейти в личный кабинет →
+    </a>
+    <a href="${SITE}/dashboard/firstweek" style="display:block;text-align:center;color:#4E7B5E;text-decoration:none;font-size:0.875rem;margin-bottom:1.25rem">
+      План первых 7 дней →
+    </a>` + footer(),
+  })
+}
+
 export async function sendContactEmail({ name, email, message }: { name: string; email: string; message: string }) {
   if (!process.env.RESEND_API_KEY) { console.warn('[mailer] RESEND_API_KEY not set, skipping'); return }
 

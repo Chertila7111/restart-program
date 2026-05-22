@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { sendWelcomeEmail } from '@/lib/mailer'
+import { sendWelcomeEmail, sendIntroPrepEmail } from '@/lib/mailer'
 import { ensureDb } from '@/lib/db-init'
 import bcrypt from 'bcryptjs'
 import { randomBytes } from 'crypto'
@@ -102,6 +102,11 @@ export async function POST(req: NextRequest) {
       if (orderId) {
         await ensureDb()
 
+        // Idempotency guard: if already processed, skip (prevents duplicate emails on YooKassa retries)
+        const existingOrder = await prisma.order.findUnique({ where: { id: orderId } })
+        if (!existingOrder) return NextResponse.json({ ok: true })
+        if (existingOrder.status !== 'pending') return NextResponse.json({ ok: true })
+
         const order = await prisma.order.update({
           where: { id: orderId },
           data: { status: 'paid', paymentId },
@@ -111,6 +116,15 @@ export async function POST(req: NextRequest) {
         let tempPassword: string | null = null
         const existing = await prisma.user.findUnique({ where: { email: order.email } })
         const newTier = PRODUCT_TIER[order.product] ?? null
+
+        // Map tier → journey status
+        const TIER_STATUS: Record<string, string> = {
+          intro: 'intro_paid',
+          base: 'waiting_group',
+          plus: 'waiting_group',
+          personal: 'waiting_group',
+        }
+        const newStatus = newTier ? (TIER_STATUS[newTier] ?? null) : null
 
         if (!existing) {
           tempPassword = genPassword()
@@ -125,10 +139,11 @@ export async function POST(req: NextRequest) {
           })
           userId = newUser.id
           await prisma.order.update({ where: { id: orderId }, data: { userId: newUser.id } })
-          // Set tier on new user
+          // Set tier + status on new user
           if (newTier) {
             await (prisma as any).$executeRawUnsafe(
-              `UPDATE "User" SET tier = ? WHERE id = ?`, newTier, userId
+              `UPDATE "User" SET tier = ?, status = ? WHERE id = ?`,
+              newTier, newStatus ?? 'lead', userId
             )
           }
         } else {
@@ -136,12 +151,24 @@ export async function POST(req: NextRequest) {
           if (!order.userId) {
             await prisma.order.update({ where: { id: orderId }, data: { userId: existing.id } }).catch(() => {})
           }
-          // Upgrade tier if new tier is higher
+          // Status ranks — journey only advances, never regresses
+          // in_group (5) must not be overwritten by waiting_group (4) on tier upgrade
+          const STATUS_RANK: Record<string, number> = {
+            lead: 0, intro_paid: 1, intro_scheduled: 2, intro_completed: 3,
+            waiting_group: 4, in_group: 5, individual: 5, completed: 6,
+          }
           const tierRank: Record<string, number> = { none: 0, intro: 1, base: 2, plus: 3, personal: 4 }
-          const existingTier = (existing as any).tier ?? 'none'
+          const existingTier    = (existing as any).tier   ?? 'none'
+          const currentStatus   = (existing as any).status ?? 'lead'
+
           if (newTier && (tierRank[newTier] ?? 0) > (tierRank[existingTier] ?? 0)) {
+            // Only advance status — never push it backwards
+            const currentRank = STATUS_RANK[currentStatus] ?? 0
+            const newRank     = STATUS_RANK[newStatus ?? 'lead'] ?? 0
+            const statusToSet = newRank > currentRank ? newStatus : currentStatus
             await (prisma as any).$executeRawUnsafe(
-              `UPDATE "User" SET tier = ? WHERE id = ?`, newTier, userId
+              `UPDATE "User" SET tier = ?, status = ? WHERE id = ?`,
+              newTier, statusToSet ?? currentStatus, userId
             )
           }
         }
@@ -153,13 +180,20 @@ export async function POST(req: NextRequest) {
           productName: order.productName,
           tempPassword: tempPassword ?? undefined,
         }).catch(async (err) => {
-          console.error('[webhook] Email send failed for', order.email, err)
+          const maskedEmail = order.email.replace(/(.{2})[^@]*@/, '$1***@')
+          console.error('[webhook] Email send failed for', maskedEmail, err)
           // Mark so admin sees email wasn't sent
           await prisma.order.update({ where: { id: orderId }, data: { status: 'paid_email_failed' } }).catch(() => {})
           return null
         })
         if (!emailResult) {
-          console.error('[webhook] Welcome email not delivered for', order.email)
+          const maskedEmail = order.email.replace(/(.{2})[^@]*@/, '$1***@')
+          console.error('[webhook] Welcome email not delivered for', maskedEmail)
+        }
+
+        // Send prep email for intro buyers
+        if (order.product === 'intro') {
+          sendIntroPrepEmail({ to: order.email, name: order.name }).catch(() => {})
         }
 
         // Notify curators

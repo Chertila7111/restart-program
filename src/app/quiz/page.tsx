@@ -546,7 +546,7 @@ export default function QuizPage() {
                     <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)', marginTop: '0.2rem' }}>разово · засчитается в тариф</div>
                   </div>
                   <Link
-                    href="/pricing"
+                    href="/checkout?product=intro"
                     style={{ background: 'white', color: 'var(--primary)', fontWeight: 700, fontSize: '0.9rem', padding: '0.75rem 1.25rem', borderRadius: '0.75rem', textDecoration: 'none', whiteSpace: 'nowrap' }}
                   >
                     Записаться →
