@@ -1,9 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { CheckCircle, ArrowLeft, Phone } from 'lucide-react'
+import { CheckCircle, ArrowLeft, Phone, BookOpen } from 'lucide-react'
 import { LogoSvg } from '@/components/LogoSvg'
+import { BLOG_POSTS } from '@/lib/blog'
+
+const articlesByCategory: Record<string, string[]> = {
+  thoughts: ['kak-ne-napisat-byvshemu', 'kak-ne-budit-nadezhdu-na-vozvrat', 'emotsionalnaya-zavisimost-v-otnosheniyakh'],
+  anxiety:  ['trevoga-posle-rasstavaniya', 'pustota-posle-rasstavaniya', 'pochemu-tak-bolno-posle-rasstavaniya'],
+  future:   ['kak-perezhit-rasstavanie', 'samoocenka-posle-rasstavaniya', 'kak-nachat-novuyu-zhizn-posle-rasstavaniya'],
+  work:     ['posle-rasstavaniya-ne-mogu-rabotat', 'kak-nachat-novuyu-zhizn-posle-rasstavaniya', 'kogda-obrashchatsya-k-psikhologu-posle-rasstavaniya'],
+}
 
 // ── Step definitions ──────────────────────────────────────────────────────────
 
@@ -281,6 +289,21 @@ export default function QuizPage() {
   const bullets = hardestBullets[category] ?? hardestBullets.thoughts
   const psychNote = psychNotes[answers['psych'] ?? ''] ?? ''
 
+  // Recommended articles for this category
+  const baseSlugs = articlesByCategory[category] ?? articlesByCategory.anxiety
+  const divorceSlugs = situation === 'divorce' ? ['kak-perezhit-razvod', ...baseSlugs.slice(0, 2)] : baseSlugs
+  const recommendedSlugs = divorceSlugs.slice(0, 3)
+  const recommendedPosts = recommendedSlugs.map(s => BLOG_POSTS.find(p => p.slug === s)).filter(Boolean) as typeof BLOG_POSTS
+
+  // Save quiz result to localStorage when result is shown
+  useEffect(() => {
+    if (isResult) {
+      try {
+        localStorage.setItem('quizResult', JSON.stringify({ category, situation, slugs: recommendedSlugs, savedAt: new Date().toISOString() }))
+      } catch { /* ignore */ }
+    }
+  }, [isResult, category, situation, recommendedSlugs])
+
   // ── Crisis Screen ─────────────────────────────────────────────────────────
   if (isCrisisScreen) {
     return (
@@ -531,6 +554,26 @@ export default function QuizPage() {
             <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center', lineHeight: 1.7, marginBottom: '1.5rem' }}>
               Программа помогает постепенно вернуть опору: через встречи, задания, дневник состояния и поддержку группы. Результат зависит от ситуации и вовлечённости.
             </p>
+
+            {/* Recommended articles */}
+            {recommendedPosts.length > 0 && (
+              <div style={{ marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                  <BookOpen size={16} style={{ color: 'var(--primary)' }} />
+                  <span style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text)' }}>Что можно прочитать сейчас</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+                  {recommendedPosts.map(post => (
+                    <Link key={post.slug} href={`/blog/${post.slug}`} style={{ textDecoration: 'none' }}>
+                      <div style={{ background: 'white', border: '1.5px solid var(--border)', borderRadius: '0.875rem', padding: '0.875rem 1.125rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', transition: 'border-color 0.2s' }}>
+                        <div style={{ fontSize: '0.875rem', color: 'var(--text)', fontWeight: 500, lineHeight: 1.4 }}>{post.title}</div>
+                        <ArrowLeft size={14} style={{ color: 'var(--primary)', flexShrink: 0, transform: 'rotate(180deg)' }} />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center' }}>
               <Link href="/contacts" style={{ fontSize: '0.875rem', color: 'var(--primary)', textDecoration: 'none', fontWeight: 500 }}>
