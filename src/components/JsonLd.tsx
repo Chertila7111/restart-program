@@ -32,10 +32,10 @@ export function ServiceSchema() {
     description:
       '4-недельная онлайн-программа с психологом, группой поддержки, заданиями и карьерным треком для людей, переживающих расставание.',
     offers: [
-      { '@type': 'Offer', name: 'Base', price: '14990', priceCurrency: 'RUB' },
-      { '@type': 'Offer', name: 'Plus', price: '19990', priceCurrency: 'RUB' },
-      { '@type': 'Offer', name: 'Plus Pro', price: '24990', priceCurrency: 'RUB' },
-      { '@type': 'Offer', name: 'Карьерный трек', price: '29990', priceCurrency: 'RUB' },
+      { '@type': 'Offer', name: 'Вводная встреча', price: '1490', priceCurrency: 'RUB' },
+      { '@type': 'Offer', name: 'Базовый', price: '14990', priceCurrency: 'RUB' },
+      { '@type': 'Offer', name: 'Плюс', price: '19990', priceCurrency: 'RUB' },
+      { '@type': 'Offer', name: 'Персональный', price: '24990', priceCurrency: 'RUB' },
     ],
     areaServed: { '@type': 'Country', name: 'Russia' },
     availableLanguage: 'Russian',

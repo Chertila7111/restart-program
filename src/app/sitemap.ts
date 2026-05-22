@@ -17,6 +17,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/support/ne-mogu-otpustit`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
     { url: `${baseUrl}/support/trevoga`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
     { url: `${baseUrl}/support/toksichnye-otnosheniya`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
+    // Topic SEO hubs
+    { url: `${baseUrl}/topics/rasstavanie`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${baseUrl}/topics/razvod`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${baseUrl}/topics/emotsionalnaya-zavisimost`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
     // Partner pages
     { url: `${baseUrl}/for-psychologists`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/partners`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
