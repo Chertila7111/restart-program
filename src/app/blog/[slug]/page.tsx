@@ -141,6 +141,34 @@ export default async function BlogPostPage({ params }: Props) {
             </div>
           </div>
 
+          {/* Support page link */}
+          {post.supportUrl && (
+            <div style={{ marginTop: '2.5rem', maxWidth: '52rem', background: 'var(--bg-sage)', border: '1.5px solid var(--primary)', borderRadius: '1rem', padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+              <div>
+                <div style={{ fontWeight: 700, color: 'var(--primary-dark)', fontSize: '0.925rem', marginBottom: '0.25rem' }}>Хотите разобраться с этим в программе?</div>
+                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Психолог + небольшая группа + 4 недели поддержки. Начните с вводной встречи — можно просто слушать.</div>
+              </div>
+              <Link href={post.supportUrl} style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '0.875rem', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                Узнать подробнее →
+              </Link>
+            </div>
+          )}
+
+          {/* FAQ */}
+          {post.faq && post.faq.length > 0 && (
+            <div style={{ marginTop: '2.5rem', maxWidth: '52rem' }}>
+              <h2 style={{ fontWeight: 800, fontSize: '1.15rem', color: 'var(--text)', marginBottom: '1rem' }}>Частые вопросы</h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {post.faq.map((item, i) => (
+                  <div key={i} style={{ background: 'white', border: '1.5px solid var(--border)', borderRadius: '1rem', padding: '1.25rem 1.5rem' }}>
+                    <div style={{ fontWeight: 700, color: 'var(--text)', fontSize: '0.925rem', marginBottom: '0.5rem' }}>{item.q}</div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: 1.65 }}>{item.a}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* CTA */}
           <div style={{
             marginTop: '3rem',
