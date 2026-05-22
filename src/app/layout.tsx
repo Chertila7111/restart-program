@@ -44,14 +44,9 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.json',
   icons: {
-    icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/favicon.ico', type: 'image/x-icon' },
-      { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
-      { url: '/icon-512.png', type: 'image/png', sizes: '512x512' },
-    ],
-    apple: [{ url: '/icon-192.png', sizes: '192x192', type: 'image/png' }],
-    shortcut: '/favicon.ico',
+    icon: [{ url: '/logo-icon.png', type: 'image/png' }],
+    apple: [{ url: '/logo-icon.png', type: 'image/png' }],
+    shortcut: '/logo-icon.png',
   },
   appleWebApp: { capable: true, statusBarStyle: 'default', title: 'Снова с собой' },
   other: { 'mobile-web-app-capable': 'yes' },
@@ -71,7 +66,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="theme-color" content="#4E7B5E" />
         <script type="text/javascript" dangerouslySetInnerHTML={{ __html: `
 (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=109291907','ym');
-ym(109291907,'init',{ssr:true,webvisor:true,clickmap:true,ecommerce:"dataLayer",referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});
+var _isPrivatePage = /^\/(dashboard|specialist|curator|admin)(\/|$)/.test(location.pathname);
+ym(109291907,'init',{ssr:true,webvisor:!_isPrivatePage,clickmap:!_isPrivatePage,ecommerce:"dataLayer",referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});
         `}} />
         <noscript><div><img src="https://mc.yandex.ru/watch/109291907" style={{position:'absolute',left:'-9999px'}} alt="" /></div></noscript>
       </head>
