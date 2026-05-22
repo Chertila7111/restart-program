@@ -10,6 +10,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/pricing`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
     { url: `${baseUrl}/reviews`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
     { url: `${baseUrl}/blog`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    // Commercial support pages
+    { url: `${baseUrl}/support/posle-rasstavaniya`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${baseUrl}/support/posle-razvoda`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${baseUrl}/support/emotsionalnaya-zavisimost`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${baseUrl}/support/ne-mogu-otpustit`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${baseUrl}/support/trevoga`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${baseUrl}/support/toksichnye-otnosheniya`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
+    // Partner pages
+    { url: `${baseUrl}/for-psychologists`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${baseUrl}/partners`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/faq`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/contacts`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
     { url: `${baseUrl}/legal/privacy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CheckCircle, Clock, Users } from 'lucide-react'
+import IntroCreditClient from './IntroCreditClient'
 
 export const metadata: Metadata = {
   title: 'Тарифы и цены программы «Снова с собой»',
@@ -238,13 +239,16 @@ export default function PricingPage() {
         <div className="container mx-auto px-6" style={{ maxWidth: '64rem' }}>
           <ChapterLabel num="шаг 02" title="Групповой формат" />
 
+          <IntroCreditClient />
+
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
             gap: '1.25rem',
             alignItems: 'stretch',
           }}>
-            {groupPlans.map((plan) => (
+            {groupPlans.map((plan) => {
+              return (
               <div
                 key={plan.id}
                 style={{
@@ -310,7 +314,8 @@ export default function PricingPage() {
                   </Link>
                 </div>
               </div>
-            ))}
+              )
+            })}
           </div>
 
           <p style={{ textAlign: 'center', marginTop: '1.75rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
