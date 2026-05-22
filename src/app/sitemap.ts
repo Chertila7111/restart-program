@@ -21,6 +21,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/topics/rasstavanie`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
     { url: `${baseUrl}/topics/razvod`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
     { url: `${baseUrl}/topics/emotsionalnaya-zavisimost`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
+    // Comparison pages
+    { url: `${baseUrl}/compare/gruppa-ili-psiholog`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/compare/kakaya-podderzhka-podoydet`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/compare/besplatnye-gruppy-ili-programma`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    // Free tools
+    { url: `${baseUrl}/tools/pauza-10-minut`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${baseUrl}/tools/dnevnik-sostoyaniya`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${baseUrl}/tools/test-stadiya-rasstavaniya`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
+    { url: `${baseUrl}/tools/chto-delat-segodnya`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.75 },
     // Partner pages
     { url: `${baseUrl}/for-psychologists`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/partners`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
