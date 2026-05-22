@@ -39,8 +39,8 @@ print(out[-500:])
 
 # DB push (add new columns, non-destructive)
 print('\n--- db push ---')
-out, err = run(ssh, 'cd /var/www/restart-app && npx prisma db push --skip-generate --accept-data-loss 2>&1', timeout=60)
-print(out[-500:])
+out, err = run(ssh, 'cd /var/www/restart-app && npx prisma db push --accept-data-loss 2>&1', timeout=60)
+print(out[-800:])
 
 # Build
 print('\n--- build ---')
