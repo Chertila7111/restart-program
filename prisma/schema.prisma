@@ -16,6 +16,8 @@ model User {
   image         String?
   role          String    @default("user")
   tier          String    @default("none")
+  quizCategory  String?
+  quizSituation String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

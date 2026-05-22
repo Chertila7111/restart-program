@@ -298,6 +298,17 @@ export default async function DashboardPage() {
           </ul>
         </div>
 
+        {/* First week plan link */}
+        <Link href="/dashboard/firstweek" style={{ textDecoration: 'none', display: 'block', marginBottom: '1.25rem' }}>
+          <div style={{ background: 'var(--bg-sage)', border: '1px solid var(--primary-light)', borderRadius: '1rem', padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text)', marginBottom: '0.15rem' }}>Первые 7 дней</div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Простой план — что делать пока ждёте встречи</div>
+            </div>
+            <ArrowRight size={15} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+          </div>
+        </Link>
+
         {/* Upsell */}
         <div style={{ background: 'var(--bg-dark)', borderRadius: '1.25rem', padding: '1.5rem' }}>
           <h3 style={{ color: 'white', fontWeight: 700, fontSize: '1rem', marginBottom: '0.5rem' }}>Хотите сразу купить программу?</h3>
@@ -358,16 +369,37 @@ export default async function DashboardPage() {
         )}
 
         {/* Prep tips */}
-        <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+        <div className="card" style={{ padding: '1.5rem', marginBottom: '1.25rem' }}>
           <h3 style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text)', marginBottom: '1rem' }}>Как подготовиться</h3>
-          <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.25rem' }}>
             {['Найдите тихое место — встреча онлайн', 'Наушники приветствуются, камера — по желанию', 'Ничего готовить не нужно — просто приходите', 'Можно просто слушать, не говорить о себе'].map(tip => (
               <li key={tip} style={{ display: 'flex', gap: '0.625rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
                 <span style={{ color: 'var(--primary)', fontWeight: 700, flexShrink: 0 }}>→</span> {tip}
               </li>
             ))}
           </ul>
+          <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.625rem' }}>
+              Вопросы для размышления перед встречей
+            </div>
+            {[
+              'Что сейчас тяжелее всего?',
+              'Какой поддержки мне не хватает?',
+              'Есть ли вопрос к психологу?',
+              'Готов(а) ли я говорить или просто слушать?',
+            ].map(q => (
+              <div key={q} style={{ display: 'flex', gap: '0.5rem', fontSize: '0.825rem', color: 'var(--text-muted)', marginBottom: '0.375rem' }}>
+                <span style={{ color: 'var(--primary)', flexShrink: 0 }}>·</span> {q}
+              </div>
+            ))}
+          </div>
         </div>
+
+        <Link href="/group-rules" style={{ textDecoration: 'none', display: 'block', marginBottom: '1.5rem' }}>
+          <div style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)', borderRadius: '1rem', padding: '0.875rem 1.125rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '0.825rem', color: 'var(--text-muted)' }}>Правила участия в группе →</span>
+          </div>
+        </Link>
 
         {/* Upsell */}
         <div style={{ background: 'var(--bg-dark)', borderRadius: '1.25rem', padding: '1.5rem' }}>
@@ -494,7 +526,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* What to expect */}
-        <div className="card" style={{ padding: '1.5rem' }}>
+        <div className="card" style={{ padding: '1.5rem', marginBottom: '1.25rem' }}>
           <h3 style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text)', marginBottom: '1rem' }}>Что вас ждёт в программе</h3>
           <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {[
@@ -509,6 +541,22 @@ export default async function DashboardPage() {
               </li>
             ))}
           </ul>
+        </div>
+
+        {/* Useful links while waiting */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
+          <Link href="/dashboard/firstweek" style={{ textDecoration: 'none' }}>
+            <div className="card" style={{ padding: '1rem', height: '100%' }}>
+              <div style={{ fontWeight: 600, fontSize: '0.825rem', color: 'var(--text)', marginBottom: '0.25rem' }}>Первые 7 дней</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>Что делать пока ждёте</div>
+            </div>
+          </Link>
+          <Link href="/group-rules" style={{ textDecoration: 'none' }}>
+            <div className="card" style={{ padding: '1rem', height: '100%' }}>
+              <div style={{ fontWeight: 600, fontSize: '0.825rem', color: 'var(--text)', marginBottom: '0.25rem' }}>Правила группы</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>Как устроены встречи</div>
+            </div>
+          </Link>
         </div>
       </div>
     )

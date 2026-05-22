@@ -295,13 +295,17 @@ export default function QuizPage() {
   const recommendedSlugs = divorceSlugs.slice(0, 3)
   const recommendedPosts = recommendedSlugs.map(s => BLOG_POSTS.find(p => p.slug === s)).filter(Boolean) as typeof BLOG_POSTS
 
-  // Save quiz result to localStorage when result is shown
+  // Save quiz result to localStorage + DB when result is shown
   useEffect(() => {
-    if (isResult) {
-      try {
-        localStorage.setItem('quizResult', JSON.stringify({ category, situation, slugs: recommendedSlugs, savedAt: new Date().toISOString() }))
-      } catch { /* ignore */ }
-    }
+    if (!isResult) return
+    try {
+      localStorage.setItem('quizResult', JSON.stringify({ category, situation, slugs: recommendedSlugs, savedAt: new Date().toISOString() }))
+    } catch { /* ignore */ }
+    fetch('/api/user/quiz-result', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ category, situation }),
+    }).catch(() => { /* ignore — localStorage is the fallback */ })
   }, [isResult, category, situation, recommendedSlugs])
 
   // ── Crisis Screen ─────────────────────────────────────────────────────────
