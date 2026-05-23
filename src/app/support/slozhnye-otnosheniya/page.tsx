@@ -202,7 +202,7 @@ export default function SlozhnyeOtnosheniyaPage() {
           </div>
           <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
             {[
-              { Icon: Users, label: 'До 8 человек в группе' },
+              { Icon: Users, label: '8–12 человек в группе' },
               { Icon: Heart, label: 'Психолог с практикой 8+ лет' },
               { Icon: BookOpen, label: 'Практики между встречами' },
             ].map(({ Icon, label }) => (

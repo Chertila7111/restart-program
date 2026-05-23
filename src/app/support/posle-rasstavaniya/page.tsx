@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { CheckCircle, Heart, Users, BookOpen } from 'lucide-react'
+import { CheckCircle, Heart, Users, BookOpen, ArrowRight } from 'lucide-react'
 import { LogoSvg } from '@/components/LogoSvg'
 
 export const metadata: Metadata = {
@@ -33,7 +33,7 @@ const steps = [
     num: '2',
     title: '4 недели программы',
     desc: 'Встречи, задания, чат с куратором, дневник. Психолог, группа и конкретный план восстановления.',
-    price: 'от 6 490 ₽',
+    price: 'от 14 990 ₽',
   },
   {
     num: '3',
@@ -49,7 +49,7 @@ const included = [
   'Задания и практики после каждой встречи',
   'Дневник состояния и отслеживание прогресса',
   'Личный план восстановления в конце',
-  'Запись встреч — можно пересматривать',
+  'Записи основных материалов встречи — можно пересматривать',
 ]
 
 export default function SupportPosleRasstavaniyaPage() {
@@ -145,7 +145,7 @@ export default function SupportPosleRasstavaniyaPage() {
           </div>
           <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
             {[
-              { Icon: Users, label: 'До 8 человек в группе' },
+              { Icon: Users, label: '8–12 человек в группе' },
               { Icon: Heart, label: 'Психолог с практикой 8+ лет' },
               { Icon: BookOpen, label: 'Практики между встречами' },
             ].map(({ Icon, label }) => (
@@ -181,6 +181,16 @@ export default function SupportPosleRasstavaniyaPage() {
           <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.3)', marginTop: '1.5rem' }}>
             Если что-то идёт не так — пишите на snovassoboi@yandex.com
           </p>
+        </div>
+      </section>
+
+      {/* Topic hub link */}
+      <section style={{ background: 'var(--bg-soft)', padding: '1.5rem 0' }}>
+        <div className="container mx-auto px-6" style={{ maxWidth: '52rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Все материалы по теме «Расставание»</span>
+          <Link href="/topics/rasstavanie" style={{ color: 'var(--primary)', fontWeight: 600, fontSize: '0.875rem', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+            Перейти к теме →
+          </Link>
         </div>
       </section>
 

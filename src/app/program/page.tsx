@@ -465,7 +465,7 @@ export default function ProgramPage() {
 
           <div style={{ textAlign: 'center', marginTop: '2.5rem', padding: '1.5rem', background: 'var(--bg-soft)', borderRadius: '1rem', maxWidth: '44rem', margin: '2.5rem auto 0' }}>
             <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', lineHeight: 1.7 }}>
-              Имена специалистов — публичная информация. Образование, подход и документы подтверждены. Конкретного специалиста для вашей группы мы сообщим при записи.
+              Примеры профилей специалистов нашего формата. Финальный состав ведущих и конкретный психолог для вашей группы будут сообщены при записи.
             </p>
           </div>
         </div>

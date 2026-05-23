@@ -38,7 +38,28 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Полезное */}
+          {/* Поддержка */}
+          <div>
+            <h4 style={{ fontWeight: 600, color: 'white', marginBottom: '1rem', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Направления</h4>
+            <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              {[
+                { href: '/support/posle-rasstavaniya', label: 'После расставания' },
+                { href: '/support/posle-razvoda', label: 'После развода' },
+                { href: '/support/slozhnye-otnosheniya', label: 'Сложные отношения' },
+                { href: '/support/granitsy-i-samoocenka', label: 'Границы и самооценка' },
+                { href: '/support/emotsionalnaya-zavisimost', label: 'Эмоциональная зависимость' },
+                { href: '/support/toksichnye-otnosheniya', label: 'Токсичные отношения' },
+              ].map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} style={{ fontSize: '0.875rem', color: '#8A9E88', textDecoration: 'none' }}>
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Материалы */}
           <div>
             <h4 style={{ fontWeight: 600, color: 'white', marginBottom: '1rem', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Материалы</h4>
             <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>

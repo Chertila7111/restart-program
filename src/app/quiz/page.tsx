@@ -524,7 +524,7 @@ export default function QuizPage() {
             </button>
 
             <p style={{ textAlign: 'center', fontSize: '0.78rem', color: 'var(--text-light)', marginTop: '1rem' }}>
-              Ответы анонимны и не записываются
+              До регистрации ответы используются только для показа результата. Если создадите аккаунт — результат может быть сохранён в профиле.
             </p>
           </div>
         )}

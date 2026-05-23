@@ -112,13 +112,18 @@ export default function ContactsPage() {
               </div>
 
               <div className="card" style={{ padding: '1.5rem', background: 'var(--bg-sage)', border: '1.5px solid var(--primary-light)' }}>
-                <h3 style={{ fontWeight: 700, color: 'var(--text)', marginBottom: '0.5rem', fontSize: '1rem' }}>Хотите записаться сразу?</h3>
+                <h3 style={{ fontWeight: 700, color: 'var(--text)', marginBottom: '0.5rem', fontSize: '1rem' }}>Не знаете, с чего начать?</h3>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '1.25rem', lineHeight: 1.7 }}>
-                  Выберите тариф и оплатите онлайн — мы свяжемся с вами для уточнения деталей.
+                  Пройдите короткий тест — поможет понять, какой формат поддержки сейчас подходит. Или начните с вводной встречи: 90 минут без обязательств.
                 </p>
-                <Link href="/pricing" className="btn-primary" style={{ display: 'inline-flex', fontSize: '0.9rem' }}>
-                  Выбрать тариф →
-                </Link>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+                  <Link href="/quiz" className="btn-primary" style={{ display: 'inline-flex', fontSize: '0.9rem', textAlign: 'center', justifyContent: 'center' }}>
+                    Пройти тест →
+                  </Link>
+                  <Link href="/checkout?product=intro" style={{ display: 'inline-flex', justifyContent: 'center', fontSize: '0.875rem', color: 'var(--primary)', textDecoration: 'none', fontWeight: 500 }}>
+                    Вводная встреча — 1 490 ₽
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
