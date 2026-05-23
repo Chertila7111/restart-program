@@ -301,7 +301,7 @@ export default function Home() {
                 marginBottom: '1rem',
               }}>
                 Не «отпусти и живи дальше».<br />
-                <span style={{ color: 'var(--primary)' }}>Сначала — разберитесь, что с вами происходит.</span>
+                <span style={{ color: 'var(--primary)' }}>Сначала поймите, что с вами происходит.</span>
               </h1>
 
               <p style={{
@@ -311,10 +311,13 @@ export default function Home() {
                 maxWidth: '32rem',
                 marginBottom: '1.25rem',
               }}>
-                Для тех, кому тяжело в отношениях или после расставания. Бережная поддержка с психологом и понятным маршрутом — без давления.
+                Для тех, кому тяжело в отношениях или после расставания: тревожно, пусто, тянет написать или сложно понять, что делать дальше. Бережная поддержка с психологом и понятным маршрутом — без давления.
               </p>
 
               {/* Two-path entry */}
+              <p style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.5rem', letterSpacing: '0.01em' }}>
+                Что ближе к вашей ситуации?
+              </p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.625rem', marginBottom: '0.875rem' }}>
                 <Link href="/support/posle-rasstavaniya" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', padding: '0.625rem 1.125rem', borderRadius: '0.75rem', background: 'var(--bg-sage)', border: '1.5px solid var(--primary)', fontSize: '0.875rem', fontWeight: 600, color: 'var(--primary-dark)', textDecoration: 'none' }}>
                   Мы расстались →
