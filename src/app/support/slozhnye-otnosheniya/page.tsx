@@ -82,7 +82,7 @@ export default function SlozhnyeOtnosheniyaPage() {
             Если вы в сложных отношениях — и не понимаете, что делать дальше — можно начать с вводной встречи. На ней не нужно знать ответ. Важно просто разобраться, что сейчас происходит.
           </p>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <Link href="/checkout?product=intro" className="btn-ghost-dark" style={{ fontSize: '1rem' }}>
+            <Link href="/checkout?product=intro&from=slozhnye" className="btn-ghost-dark" style={{ fontSize: '1rem' }}>
               Записаться на вводную встречу — 1 490 ₽
             </Link>
             <Link href="/quiz" style={{ color: 'rgba(168,184,160,0.8)', textDecoration: 'none', fontSize: '0.95rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
@@ -228,7 +228,7 @@ export default function SlozhnyeOtnosheniyaPage() {
             90 минут. Небольшая группа. Психолог. Никаких обязательств продолжать — и никакого давления принять решение прямо сейчас.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/checkout?product=intro" className="btn-ghost-dark">
+            <Link href="/checkout?product=intro&from=slozhnye" className="btn-ghost-dark">
               Записаться — 1 490 ₽ →
             </Link>
             <Link href="/quiz" style={{ color: 'rgba(168,184,160,0.75)', textDecoration: 'none', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>

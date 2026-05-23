@@ -71,7 +71,7 @@ export default function SupportPosleRasstavaniyaPage() {
             Программа «Снова с собой» помогает пережить разрыв: разобраться с тревогой и пустотой, восстановить режим, вернуть уверенность в себе — с психологом и небольшой группой.
           </p>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <Link href="/checkout?product=intro" className="btn-ghost-dark" style={{ fontSize: '1rem' }}>
+            <Link href="/checkout?product=intro&from=rasstalis" className="btn-ghost-dark" style={{ fontSize: '1rem' }}>
               Записаться на вводную встречу — 1 490 ₽
             </Link>
             <Link href="/quiz" style={{ color: 'rgba(168,184,160,0.8)', textDecoration: 'none', fontSize: '0.95rem', display: 'inline-flex', alignItems: 'center' }}>
@@ -171,10 +171,10 @@ export default function SupportPosleRasstavaniyaPage() {
             90 минут в небольшой группе с психологом. Можно просто слушать, не рассказывая о себе. Без обязательства покупать программу.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/checkout?product=intro" className="btn-ghost-dark">
+            <Link href="/checkout?product=intro&from=rasstalis" className="btn-ghost-dark">
               Записаться — 1 490 ₽ →
             </Link>
-            <Link href="/pricing" style={{ color: 'rgba(168,184,160,0.75)', textDecoration: 'none', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center' }}>
+            <Link href="/pricing?from=rasstalis" style={{ color: 'rgba(168,184,160,0.75)', textDecoration: 'none', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center' }}>
               Смотреть все форматы →
             </Link>
           </div>

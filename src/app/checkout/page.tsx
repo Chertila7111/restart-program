@@ -7,10 +7,30 @@ import Link from 'next/link'
 import { CheckCircle, Shield, Lock, ArrowLeft } from 'lucide-react'
 import { ymGoal, ymEcommerceCheckout } from '@/lib/metrika'
 
+const segmentCopy: Record<string, { badge: string; descOverrides: Record<string, string> }> = {
+  slozhnye: {
+    badge: 'Подходит тем, кто ещё в отношениях — без давления принять решение',
+    descOverrides: {
+      intro: '90 минут в небольшой группе с психологом. Не нужно знать, чего вы хотите. Можно просто разобраться, что происходит.',
+      base: 'Групповая программа: 4 встречи, структура и поддержка. Одинаково помогает тем, кто расстался, и тем, кто ещё в отношениях.',
+      plus: 'Base + личная диагностика и план. Подходит, если хотите разобраться в своей ситуации глубже.',
+      personal: 'Plus + 2 индивидуальные встречи с психологом. Поможет прийти к ясности в своей ситуации.',
+    },
+  },
+  rasstalis: {
+    badge: '',
+    descOverrides: {},
+  },
+}
+
 function CheckoutForm() {
   const searchParams = useSearchParams()
   const productId = searchParams.get('product') || 'base'
+  const from = searchParams.get('from') ?? ''
   const product = getProduct(productId) || PRODUCTS[1]
+
+  const seg = segmentCopy[from]
+  const displayDesc = seg?.descOverrides[productId] ?? product.description
 
   const [form, setForm] = useState({ name: '', email: '', phone: '' })
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
@@ -73,9 +93,16 @@ function CheckoutForm() {
   return (
     <div style={{ minHeight: '80vh', padding: '3rem 1.5rem' }}>
       <div className="container mx-auto" style={{ maxWidth: '52rem' }}>
-        <Link href="/pricing" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', color: 'var(--text-muted)', textDecoration: 'none', marginBottom: '2rem' }}>
+        <Link href={`/pricing${from ? `?from=${from}` : ''}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', color: 'var(--text-muted)', textDecoration: 'none', marginBottom: '2rem' }}>
           <ArrowLeft size={14} /> Изменить тариф
         </Link>
+
+        {seg?.badge && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--bg-sage)', border: '1.5px solid var(--primary-light)', borderRadius: '0.875rem', padding: '0.75rem 1.25rem', marginBottom: '1.5rem', fontSize: '0.875rem', color: 'var(--primary-dark)', fontWeight: 500 }}>
+            <CheckCircle size={15} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+            {seg.badge}
+          </div>
+        )}
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 20rem), 1fr))', gap: '2rem' }}>
           {/* Product summary */}
@@ -83,7 +110,7 @@ function CheckoutForm() {
             <h2 style={{ fontWeight: 700, fontSize: '1.25rem', color: 'var(--text)', marginBottom: '1.5rem' }}>Ваш выбор</h2>
             <div className="card" style={{ padding: '1.75rem', marginBottom: '1.5rem' }}>
               <div style={{ fontWeight: 700, fontSize: '1.25rem', color: 'var(--text)', marginBottom: '0.25rem' }}>{product.name}</div>
-              <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>{product.description}</div>
+              <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>{displayDesc}</div>
               <div style={{ fontSize: '2.25rem', fontWeight: 900, color: 'var(--primary)', marginBottom: '1.5rem' }}>
                 {product.price.toLocaleString('ru-RU')} ₽
               </div>

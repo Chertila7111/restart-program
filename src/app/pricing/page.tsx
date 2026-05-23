@@ -147,17 +147,32 @@ function ChapterLabel({ num, title }: { num: string; title: string }) {
   )
 }
 
-export default function PricingPage() {
+export default function PricingPage({ searchParams }: { searchParams: { from?: string } }) {
+  const from = searchParams?.from ?? ''
+  const isSlozhnye = from === 'slozhnye'
+
   return (
     <>
+      {/* Segment banner */}
+      {isSlozhnye && (
+        <div style={{ background: 'var(--bg-sage)', borderBottom: '1.5px solid var(--primary-light)', padding: '0.75rem 1.5rem' }}>
+          <div className="container mx-auto" style={{ maxWidth: '64rem', display: 'flex', alignItems: 'center', gap: '0.625rem', fontSize: '0.875rem', color: 'var(--primary-dark)', fontWeight: 500 }}>
+            <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--primary)', flexShrink: 0, display: 'inline-block' }} />
+            Программа подходит тем, кто ещё в отношениях — никакого давления принять решение
+          </div>
+        </div>
+      )}
+
       {/* Hero */}
       <section style={{ background: 'var(--bg-soft)', padding: '5rem 0 4rem' }}>
         <div className="container mx-auto px-6" style={{ textAlign: 'center', maxWidth: '44rem' }}>
           <h1 style={{ fontSize: 'clamp(2rem, 5vw, 2.75rem)', fontWeight: 800, color: 'var(--text)', marginBottom: '1rem' }}>
-            Выберите свой формат
+            {isSlozhnye ? 'Поддержка в вашем темпе' : 'Выберите свой формат'}
           </h1>
           <p style={{ fontSize: '1.05rem', color: 'var(--text-muted)', lineHeight: 1.7 }}>
-            Можно начать с короткой вводной встречи — без обязательств. Или сразу выбрать программу.
+            {isSlozhnye
+              ? 'Не нужно знать, чего вы хотите. Начните с вводной встречи — разберётесь вместе с психологом, без ответов на готовые вопросы.'
+              : 'Можно начать с короткой вводной встречи — без обязательств. Или сразу выбрать программу.'}
           </p>
         </div>
       </section>
@@ -187,7 +202,7 @@ export default function PricingPage() {
                 <span style={{ fontSize: '1.1rem', fontWeight: 400, color: 'var(--text-muted)' }}>₽</span>
               </div>
               <Link
-                href="/checkout?product=intro"
+                href={`/checkout?product=intro${from ? `&from=${from}` : ''}`}
                 className="btn-primary"
                 style={{ display: 'block', textAlign: 'center' }}
               >
@@ -306,7 +321,7 @@ export default function PricingPage() {
 
                 <div style={{ marginTop: 'auto', paddingTop: '1.75rem' }}>
                   <Link
-                    href={`/checkout?product=${plan.id}`}
+                    href={`/checkout?product=${plan.id}${from ? `&from=${from}` : ''}`}
                     className={plan.highlight ? 'btn-primary' : 'btn-secondary'}
                     style={{ display: 'block', textAlign: 'center' }}
                   >
@@ -411,7 +426,7 @@ export default function PricingPage() {
 
                 <div style={{ marginTop: 'auto', paddingTop: '1.75rem' }}>
                   <Link
-                    href={`/checkout?product=${plan.id}`}
+                    href={`/checkout?product=${plan.id}${from ? `&from=${from}` : ''}`}
                     className={plan.highlight ? 'btn-primary' : 'btn-secondary'}
                     style={{ display: 'block', textAlign: 'center' }}
                   >
@@ -462,7 +477,7 @@ export default function PricingPage() {
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.7, marginBottom: '1.5rem' }}>
                   Помогаем с резюме, вакансиями, откликами и подготовкой к собеседованиям. Мы не обещаем работу — результат зависит от рынка и вашей активности.
                 </p>
-                <Link href="/checkout?product=career" className="btn-secondary" style={{ display: 'inline-flex' }}>
+                <Link href={`/checkout?product=career${from ? `&from=${from}` : ''}`} className="btn-secondary" style={{ display: 'inline-flex' }}>
                   Узнать подробнее →
                 </Link>
               </div>
