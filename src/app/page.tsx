@@ -296,13 +296,12 @@ export default function Home() {
                 fontSize: 'clamp(1.875rem, 3.75vw, 3rem)',
                 fontWeight: 800,
                 color: 'var(--text)',
-                lineHeight: 1.15,
+                lineHeight: 1.2,
                 letterSpacing: '-0.03em',
                 marginBottom: '1rem',
               }}>
-                Тяжело в отношениях.<br />
-                Или после расставания.<br />
-                <span style={{ color: 'var(--primary)' }}>Можно найти опору.</span>
+                Не «отпусти и живи дальше».<br />
+                <span style={{ color: 'var(--primary)' }}>Сначала — разберитесь, что с вами происходит.</span>
               </h1>
 
               <p style={{
@@ -312,7 +311,7 @@ export default function Home() {
                 maxWidth: '32rem',
                 marginBottom: '1.25rem',
               }}>
-                Бережная 4-недельная программа с психологом и небольшой группой. Помогает разобраться с собой — в сложных отношениях или после расставания. Без давления и готовых ответов.
+                Для тех, кому тяжело в отношениях или после расставания. Бережная поддержка с психологом и понятным маршрутом — без давления.
               </p>
 
               {/* Two-path entry */}
