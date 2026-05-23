@@ -192,7 +192,8 @@ export default function Home() {
       {/* ═══ 1. HERO ════════════════════════════════════════ */}
       <section className="hero-section" style={{
         background: 'var(--bg)',
-        minHeight: '100vh',
+        paddingTop: '7rem',
+        paddingBottom: '4rem',
         display: 'flex',
         position: 'relative',
         overflow: 'hidden',
@@ -284,7 +285,7 @@ export default function Home() {
                 padding: '0.4rem 1rem', borderRadius: '9999px',
                 background: 'var(--primary-light)',
                 fontSize: '0.78rem', fontWeight: 600, color: 'var(--primary-dark)',
-                letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '2.5rem',
+                letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '1.25rem',
                 maxWidth: '100%', flexWrap: 'wrap',
               }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--primary)', display: 'inline-block' }} />
@@ -297,7 +298,7 @@ export default function Home() {
                 color: 'var(--text)',
                 lineHeight: 1.15,
                 letterSpacing: '-0.03em',
-                marginBottom: '1.5rem',
+                marginBottom: '1rem',
               }}>
                 Тяжело в отношениях.<br />
                 Или после расставания.<br />
@@ -307,24 +308,24 @@ export default function Home() {
               <p style={{
                 fontSize: '1.05rem',
                 color: 'var(--text-muted)',
-                lineHeight: 1.8,
+                lineHeight: 1.7,
                 maxWidth: '32rem',
-                marginBottom: '2rem',
+                marginBottom: '1.25rem',
               }}>
                 Бережная 4-недельная программа с психологом и небольшой группой. Помогает разобраться с собой — в сложных отношениях или после расставания. Без давления и готовых ответов.
               </p>
 
               {/* Two-path entry */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.625rem', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.625rem', marginBottom: '0.875rem' }}>
                 <Link href="/support/posle-rasstavaniya" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', padding: '0.625rem 1.125rem', borderRadius: '0.75rem', background: 'var(--bg-sage)', border: '1.5px solid var(--primary)', fontSize: '0.875rem', fontWeight: 600, color: 'var(--primary-dark)', textDecoration: 'none' }}>
                   Мы расстались →
                 </Link>
                 <Link href="/support/slozhnye-otnosheniya" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', padding: '0.625rem 1.125rem', borderRadius: '0.75rem', background: 'var(--bg-soft)', border: '1.5px solid var(--border)', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text)', textDecoration: 'none' }}>
-                  Я ещё в отношениях →
+                  Мы ещё в отношениях →
                 </Link>
               </div>
 
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.875rem', marginBottom: '2.5rem' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.875rem', marginBottom: '1.25rem' }}>
                 <Link href="/quiz" className="btn-primary">Пройти короткий тест</Link>
                 <Link href="/program" className="btn-outline">Как это работает</Link>
               </div>
