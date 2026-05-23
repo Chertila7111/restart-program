@@ -3,6 +3,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { authOptions } from '@/lib/auth'
 import { ensureDb } from '@/lib/db-init'
 import { prisma } from '@/lib/prisma'
+import { logAudit } from '@/lib/audit'
+
+const GROUP_MAX_SIZE = 12
+const GROUP_WARN_SIZE = 8
+const VALID_GROUP_STATUSES = ['recruiting', 'active', 'paused', 'completed'] as const
 
 export async function GET(
   _req: NextRequest,
@@ -56,7 +61,7 @@ export async function PATCH(
   if (!session?.user?.email) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
 
   const role = (session.user as any).role as string
-  const curatorId = (session.user as any).id as string
+  const actorId = (session.user as any).id as string
   const { groupId } = await params
 
   try {
@@ -64,7 +69,7 @@ export async function PATCH(
 
     const groups = await (prisma as any).$queryRawUnsafe(`
       SELECT id FROM "Group" WHERE id = ? AND (? = 'admin' OR curatorId = ?)
-    `, groupId, role, curatorId)
+    `, groupId, role, actorId)
 
     if (!Array.isArray(groups) || groups.length === 0) {
       return NextResponse.json({ error: 'not found' }, { status: 404 })
@@ -75,6 +80,20 @@ export async function PATCH(
 
     if (action === 'addMember') {
       if (!userId) return NextResponse.json({ error: 'userId required' }, { status: 400 })
+
+      // Capacity check
+      const countRows = await (prisma as any).$queryRawUnsafe(
+        `SELECT COUNT(*) as cnt FROM "GroupParticipant" WHERE groupId = ? AND status = 'active'`,
+        groupId
+      ) as { cnt: number }[]
+      const currentCount = Number(countRows[0]?.cnt ?? 0)
+      if (currentCount >= GROUP_MAX_SIZE) {
+        return NextResponse.json(
+          { error: `Группа заполнена (максимум ${GROUP_MAX_SIZE} участников)` },
+          { status: 400 }
+        )
+      }
+
       const gpId = `gp-${groupId.slice(-6)}-${userId.slice(-6)}-${Date.now()}`
       await (prisma as any).$executeRawUnsafe(`
         INSERT OR IGNORE INTO "GroupParticipant" ("id","groupId","userId","status","joinedAt")
@@ -83,6 +102,12 @@ export async function PATCH(
       await (prisma as any).$executeRawUnsafe(`
         UPDATE "GroupParticipant" SET status = 'active' WHERE groupId = ? AND userId = ?
       `, groupId, userId)
+
+      await logAudit({
+        actorId, actorRole: role, action: 'add_to_group',
+        targetUserId: userId, entityType: 'Group', entityId: groupId,
+      })
+
       return NextResponse.json({ ok: true })
     }
 
@@ -91,14 +116,73 @@ export async function PATCH(
       await (prisma as any).$executeRawUnsafe(`
         UPDATE "GroupParticipant" SET status = 'inactive' WHERE groupId = ? AND userId = ?
       `, groupId, userId)
+
+      await logAudit({
+        actorId, actorRole: role, action: 'remove_from_group',
+        targetUserId: userId, entityType: 'Group', entityId: groupId,
+      })
+
       return NextResponse.json({ ok: true })
     }
 
     if (action === 'setStatus') {
       if (!status) return NextResponse.json({ error: 'status required' }, { status: 400 })
+
+      // Allowlist — prevent arbitrary string injection
+      if (!(VALID_GROUP_STATUSES as readonly string[]).includes(status)) {
+        return NextResponse.json(
+          { error: `Invalid status. Allowed: ${VALID_GROUP_STATUSES.join(', ')}` },
+          { status: 400 }
+        )
+      }
+
+      if (status === 'active') {
+        // Require psychologist assigned
+        const groupInfo = await (prisma as any).$queryRawUnsafe(
+          `SELECT psychologistId FROM "Group" WHERE id = ? LIMIT 1`, groupId
+        ) as { psychologistId: string | null }[]
+        if (!groupInfo[0]?.psychologistId) {
+          return NextResponse.json(
+            { error: 'Назначьте психолога перед стартом группы' },
+            { status: 400 }
+          )
+        }
+
+        // Require at least one meeting
+        const meetingRows = await (prisma as any).$queryRawUnsafe(
+          `SELECT COUNT(*) as cnt FROM "Meeting" WHERE groupId = ?`, groupId
+        ) as { cnt: number }[]
+        const meetingCount = Number(meetingRows[0]?.cnt ?? 0)
+        if (meetingCount === 0) {
+          return NextResponse.json(
+            { error: 'Добавьте хотя бы одну встречу перед стартом группы' },
+            { status: 400 }
+          )
+        }
+
+        // Two-step confirmation if below recommended size
+        const countRows = await (prisma as any).$queryRawUnsafe(
+          `SELECT COUNT(*) as cnt FROM "GroupParticipant" WHERE groupId = ? AND status = 'active'`, groupId
+        ) as { cnt: number }[]
+        const participantCount = Number(countRows[0]?.cnt ?? 0)
+        if (participantCount < GROUP_WARN_SIZE && !body.confirmSmallGroup) {
+          return NextResponse.json({
+            requiresConfirmation: true,
+            participantCount,
+            warning: `В группе ${participantCount} участников (рекомендуется не менее ${GROUP_WARN_SIZE}). Активировать группу?`,
+          })
+        }
+      }
+
       await (prisma as any).$executeRawUnsafe(
         `UPDATE "Group" SET status = ? WHERE id = ?`, status, groupId
       )
+
+      await logAudit({
+        actorId, actorRole: role, action: 'set_group_status',
+        entityType: 'Group', entityId: groupId, metadata: { status },
+      })
+
       return NextResponse.json({ ok: true })
     }
 
@@ -121,6 +205,17 @@ export async function PATCH(
 
     if (action === 'setPsychologist') {
       const { psychologistId } = body as { psychologistId: string | null }
+
+      // Validate the target user actually has the psychologist role
+      if (psychologistId) {
+        const psych = await (prisma as any).$queryRawUnsafe(
+          `SELECT id FROM "User" WHERE id = ? AND role = 'psychologist' LIMIT 1`, psychologistId
+        ) as { id: string }[]
+        if (!Array.isArray(psych) || psych.length === 0) {
+          return NextResponse.json({ error: 'User is not a psychologist' }, { status: 400 })
+        }
+      }
+
       await (prisma as any).$executeRawUnsafe(
         `UPDATE "Group" SET psychologistId = ? WHERE id = ?`,
         psychologistId || null, groupId
@@ -142,7 +237,7 @@ export async function DELETE(
   if (!session?.user?.email) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
 
   const role = (session.user as any).role as string
-  const curatorId = (session.user as any).id as string
+  const actorId = (session.user as any).id as string
   const { groupId } = await params
 
   try {
@@ -150,7 +245,7 @@ export async function DELETE(
 
     const groups = await (prisma as any).$queryRawUnsafe(`
       SELECT id FROM "Group" WHERE id = ? AND (? = 'admin' OR curatorId = ?)
-    `, groupId, role, curatorId)
+    `, groupId, role, actorId)
 
     if (!Array.isArray(groups) || groups.length === 0) {
       return NextResponse.json({ error: 'not found' }, { status: 404 })
@@ -159,6 +254,11 @@ export async function DELETE(
     await (prisma as any).$executeRawUnsafe(`DELETE FROM "Meeting" WHERE groupId = ?`, groupId)
     await (prisma as any).$executeRawUnsafe(`DELETE FROM "GroupParticipant" WHERE groupId = ?`, groupId)
     await (prisma as any).$executeRawUnsafe(`DELETE FROM "Group" WHERE id = ?`, groupId)
+
+    await logAudit({
+      actorId, actorRole: role, action: 'delete_group',
+      entityType: 'Group', entityId: groupId,
+    })
 
     return NextResponse.json({ ok: true })
   } catch (err: any) {

@@ -1,36 +1,43 @@
+import { getServerSession } from 'next-auth'
 import { NextRequest, NextResponse } from 'next/server'
+import { authOptions } from '@/lib/auth'
 import { readFile } from 'fs/promises'
-import { join } from 'path'
+import { join, basename } from 'path'
 
-const MIME: Record<string, string> = {
-  jpg: 'image/jpeg', jpeg: 'image/jpeg',
-  png: 'image/png', webp: 'image/webp', gif: 'image/gif',
+const EXT_MIME: Record<string, string> = {
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  webp: 'image/webp',
+  gif: 'image/gif',
 }
 
 export async function GET(
-  _req: NextRequest,
-  { params }: { params: Promise<{ filename: string }> }
+  req: NextRequest,
+  { params }: { params: { filename: string } },
 ) {
-  const { filename } = await params
+  const session = await getServerSession(authOptions)
+  if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  // prevent path traversal
-  if (!filename || /[/\\.]\./.test(filename) || filename.includes('..')) {
-    return new NextResponse(null, { status: 400 })
+  // Sanitize: strip path traversal, allow only safe filenames
+  const safe = basename(params.filename).replace(/[^a-zA-Z0-9._-]/g, '')
+  const ext = safe.split('.').pop()?.toLowerCase() ?? ''
+  const mime = EXT_MIME[ext]
+  if (!mime || !safe) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  const ext = filename.split('.').pop()?.toLowerCase() ?? ''
-  const contentType = MIME[ext] ?? 'application/octet-stream'
-
   try {
-    const filePath = join(process.cwd(), 'public', 'uploads', filename)
-    const buffer = await readFile(filePath)
-    return new NextResponse(buffer, {
+    const filePath = join(process.cwd(), 'uploads', safe)
+    const buf = await readFile(filePath)
+    return new NextResponse(buf, {
       headers: {
-        'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=2592000',
+        'Content-Type': mime,
+        'Cache-Control': 'private, max-age=3600',
+        'Content-Disposition': 'inline',
       },
     })
   } catch {
-    return new NextResponse(null, { status: 404 })
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 }

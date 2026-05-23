@@ -4,6 +4,13 @@ import { authOptions } from '@/lib/auth'
 import { ensureDb } from '@/lib/db-init'
 import { prisma } from '@/lib/prisma'
 
+function maskEmail(email: string): string {
+  const [local, domain] = email.split('@')
+  if (!domain) return '***'
+  const visible = local.slice(0, 2)
+  return `${visible}***@${domain}`
+}
+
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
@@ -21,7 +28,7 @@ export async function GET(req: NextRequest) {
   try {
     await ensureDb()
 
-    let rows: any[]
+    let rows: { id: string; name: string | null; email: string }[]
 
     if (filterRole === 'user') {
       rows = await (prisma as any).$queryRawUnsafe(`
@@ -47,7 +54,16 @@ export async function GET(req: NextRequest) {
       `, filterRole, q, `%${q}%`, `%${q}%`)
     }
 
-    return NextResponse.json(Array.isArray(rows) ? rows : [])
+    if (!Array.isArray(rows)) return NextResponse.json([])
+
+    // Admins see full email; curators see masked email to preserve user privacy
+    const result = rows.map(r => ({
+      id: r.id,
+      name: r.name,
+      email: role === 'admin' ? r.email : maskEmail(r.email),
+    }))
+
+    return NextResponse.json(result)
   } catch (err: any) {
     return NextResponse.json({ error: err?.message ?? 'unknown' }, { status: 500 })
   }

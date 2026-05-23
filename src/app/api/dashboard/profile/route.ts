@@ -58,8 +58,7 @@ export async function POST(req: Request) {
       )
     }
     return NextResponse.json({ ok: true })
-  } catch (err) {
-    console.error('[dashboard/profile POST]', err)
-    return NextResponse.json({ error: String(err) }, { status: 500 })
+  } catch {
+    return NextResponse.json({ error: 'Ошибка сервера' }, { status: 500 })
   }
 }

@@ -3,6 +3,13 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from '@/lib/prisma'
 import { ensureDb } from '@/lib/db-init'
 import bcrypt from 'bcryptjs'
+import { timingSafeEqual, createHash } from 'crypto'
+
+function safeCompare(a: string, b: string): boolean {
+  const ha = createHash('sha256').update(a).digest()
+  const hb = createHash('sha256').update(b).digest()
+  return timingSafeEqual(ha, hb)
+}
 
 export const authOptions: NextAuthOptions = {
   // PrismaAdapter removed — JWT strategy doesn't need it, and it crashes when DB is unavailable
@@ -27,7 +34,7 @@ export const authOptions: NextAuthOptions = {
         const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase().trim()
         const adminPassword = process.env.ADMIN_PASSWORD
         if (adminEmail && adminPassword && emailLower === adminEmail) {
-          if (credentials.password === adminPassword) {
+          if (safeCompare(credentials.password, adminPassword)) {
             return { id: 'admin', email: emailLower, name: process.env.ADMIN_NAME || 'Администратор', role: 'admin' }
           }
           return null

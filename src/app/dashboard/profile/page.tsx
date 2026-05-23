@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Save, Lock, Eye } from 'lucide-react'
+import { Save, Lock, Download, Trash2 } from 'lucide-react'
 
 type Profile = {
   age: string; city: string; timezone: string; phone: string; telegram: string
@@ -33,6 +33,9 @@ export default function ParticipantProfilePage() {
     moodNow: '5', diaryAccess: 'private',
   })
   const [status, setStatus] = useState<'idle' | 'loading' | 'saved' | 'error'>('idle')
+  const [deleteConfirm, setDeleteConfirm] = useState(false)
+  const [deleteStatus, setDeleteStatus] = useState<'idle' | 'loading'>('idle')
+  const [exportStatus, setExportStatus] = useState<'idle' | 'loading'>('idle')
 
   useEffect(() => {
     fetch('/api/dashboard/profile')
@@ -46,6 +49,33 @@ export default function ParticipantProfilePage() {
       ...p,
       goals: p.goals.includes(key) ? p.goals.filter(g => g !== key) : [...p.goals, key],
     }))
+  }
+
+  async function exportData() {
+    setExportStatus('loading')
+    try {
+      const r = await fetch('/api/user/export')
+      if (!r.ok) throw new Error()
+      const blob = await r.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'my-data.json'
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch { /* silent */ }
+    setExportStatus('idle')
+  }
+
+  async function deleteAccount() {
+    setDeleteStatus('loading')
+    try {
+      const r = await fetch('/api/user/me', { method: 'DELETE' })
+      if (r.ok) {
+        window.location.href = '/?deleted=1'
+      }
+    } catch { /* silent */ }
+    setDeleteStatus('idle')
   }
 
   async function save() {
@@ -158,6 +188,56 @@ export default function ParticipantProfilePage() {
         </button>
         {status === 'saved' && <span style={{ fontSize: '0.875rem', color: 'var(--primary)', fontWeight: 600 }}>✓ Сохранено</span>}
         {status === 'error' && <span style={{ fontSize: '0.875rem', color: '#B91C1C' }}>Ошибка</span>}
+      </div>
+
+      {/* Account management */}
+      <div className="card" style={{ padding: '1.5rem', marginTop: '2rem', borderColor: 'var(--border)' }}>
+        <h2 style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text)', marginBottom: '0.5rem' }}>Управление аккаунтом</h2>
+        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.25rem', lineHeight: 1.6 }}>
+          Скачайте копию ваших данных или удалите аккаунт. Удаление необратимо.
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <button
+            onClick={exportData}
+            disabled={exportStatus === 'loading'}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', padding: '0.625rem 1rem', borderRadius: '0.625rem', border: '1.5px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer', width: 'fit-content' }}
+          >
+            <Download size={15} /> {exportStatus === 'loading' ? 'Подготовка...' : 'Скачать мои данные'}
+          </button>
+
+          {!deleteConfirm ? (
+            <button
+              onClick={() => setDeleteConfirm(true)}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', padding: '0.625rem 1rem', borderRadius: '0.625rem', border: '1.5px solid #FECACA', background: '#FEF2F2', color: '#B91C1C', fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer', width: 'fit-content' }}
+            >
+              <Trash2 size={15} /> Удалить аккаунт
+            </button>
+          ) : (
+            <div style={{ padding: '1rem', borderRadius: '0.75rem', border: '1.5px solid #FECACA', background: '#FEF2F2' }}>
+              <p style={{ fontSize: '0.875rem', color: '#991B1B', fontWeight: 600, marginBottom: '0.5rem' }}>
+                Удалить аккаунт навсегда?
+              </p>
+              <p style={{ fontSize: '0.8rem', color: '#B91C1C', marginBottom: '1rem' }}>
+                Все ваши данные, дневник и прогресс будут удалены. Это действие нельзя отменить.
+              </p>
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <button
+                  onClick={deleteAccount}
+                  disabled={deleteStatus === 'loading'}
+                  style={{ padding: '0.5rem 1rem', borderRadius: '0.5rem', border: 'none', background: '#B91C1C', color: '#fff', fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  {deleteStatus === 'loading' ? 'Удаление...' : 'Да, удалить'}
+                </button>
+                <button
+                  onClick={() => setDeleteConfirm(false)}
+                  style={{ padding: '0.5rem 1rem', borderRadius: '0.5rem', border: '1.5px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  Отмена
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

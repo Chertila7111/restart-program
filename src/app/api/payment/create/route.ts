@@ -32,6 +32,30 @@ export async function POST(req: NextRequest) {
 
     const session = await getServerSession(authOptions)
     const userId = (session?.user as any)?.id || null
+    const sessionTier = (session?.user as any)?.tier as string | undefined
+
+    // Intro credit: verify from DB — JWT token can be stale after tier upgrade
+    const INTRO_CREDIT = 1490
+    const FULL_PROGRAM_PRODUCTS = ['base', 'plus', 'plus-pro', 'personal', 'personal-start', 'personal-balance', 'personal-deep']
+    let hasIntroCredit = false
+
+    if (userId && FULL_PROGRAM_PRODUCTS.includes(productId)) {
+      try {
+        const userOrders = await prisma.order.findMany({
+          where: { userId, status: { in: ['paid', 'paid_email_failed'] } },
+          select: { product: true },
+        })
+        const hasPaidIntro        = userOrders.some((o: { product: string }) => o.product === 'intro')
+        const hasPaidFullProgram  = userOrders.some((o: { product: string }) => FULL_PROGRAM_PRODUCTS.includes(o.product))
+        // Credit only if intro is paid AND no full program yet (prevents double-credit on upgrade)
+        hasIntroCredit = hasPaidIntro && !hasPaidFullProgram
+      } catch {
+        // DB unavailable — fall back to JWT tier (less reliable)
+        hasIntroCredit = sessionTier === 'intro'
+      }
+    }
+
+    const finalAmount = hasIntroCredit ? Math.max(0, product.price - INTRO_CREDIT) : product.price
 
     // Deduplication: return existing pending order for same email+product (within 10 min)
     const existing = await prisma.order.findFirst({
@@ -71,7 +95,7 @@ export async function POST(req: NextRequest) {
         phone: phone || null,
         product: productId,
         productName: product.name,
-        amount: product.price,
+        amount: finalAmount,
         status: 'pending',
       },
     })
@@ -90,10 +114,10 @@ export async function POST(req: NextRequest) {
           'Idempotence-Key': order.id,
         },
         body: JSON.stringify({
-          amount: { value: (product.price / 100).toFixed(2), currency: 'RUB' },
+          amount: { value: (finalAmount / 100).toFixed(2), currency: 'RUB' },
           confirmation: {
             type: 'redirect',
-            return_url: `${siteUrl}/checkout/success?order=${order.id}&product=${product.id}&name=${encodeURIComponent(product.name)}&amount=${product.price}`,
+            return_url: `${siteUrl}/checkout/success?order=${order.id}&product=${product.id}&name=${encodeURIComponent(product.name)}&amount=${finalAmount}`,
           },
           capture: true,
           description: `${product.name} — Restart`,

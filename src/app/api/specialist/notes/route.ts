@@ -16,6 +16,20 @@ export async function POST(req: Request) {
 
   try {
     await ensureDb()
+
+    // BOLA guard: psychologist can only write notes about users in their groups
+    if (role !== 'admin') {
+      const membership = await (prisma as any).$queryRawUnsafe(`
+        SELECT gp.id FROM "GroupParticipant" gp
+        JOIN "Group" g ON g.id = gp.groupId
+        WHERE gp.userId = ? AND g.psychologistId = ? AND gp.status = 'active'
+        LIMIT 1
+      `, userId, specialistId) as { id: string }[]
+      if (!Array.isArray(membership) || membership.length === 0) {
+        return NextResponse.json({ error: 'Forbidden: client not in your groups' }, { status: 403 })
+      }
+    }
+
     const id = `note-${Date.now()}-${Math.random().toString(36).slice(2)}`
     await (prisma as any).$executeRawUnsafe(
       `INSERT INTO "SpecialistNote" (id, specialistId, userId, note, tags, isImportant, createdAt) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,

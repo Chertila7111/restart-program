@@ -25,12 +25,13 @@ export function ymEcommercePurchase({
 }) {
   if (typeof window === 'undefined') return
   window.dataLayer = window.dataLayer || []
+  const category = productId === 'intro' ? 'Вводная встреча' : 'Курс'
   window.dataLayer.push({
     ecommerce: {
       currencyCode: 'RUB',
       purchase: {
         actionField: { id: orderId, revenue: price },
-        products: [{ id: productId, name: productName, price, quantity: 1, category: 'Программа' }],
+        products: [{ id: productId, name: productName, price, quantity: 1, category }],
       },
     },
   })

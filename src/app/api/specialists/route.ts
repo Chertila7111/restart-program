@@ -11,7 +11,7 @@ export async function GET() {
   try {
     await ensureDb()
     const users = (await (prisma as any).$queryRawUnsafe(`
-      SELECT u.id, u.name, u.email, u.role,
+      SELECT u.id, u.name, u.role,
              pp.speciality, pp.bio, pp.photoUrl
       FROM "User" u
       LEFT JOIN "PsychologistProfile" pp ON pp.userId = u.id

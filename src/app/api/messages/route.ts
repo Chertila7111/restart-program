@@ -4,6 +4,9 @@ import { authOptions } from '@/lib/auth'
 import { ensureDb } from '@/lib/db-init'
 import { prisma } from '@/lib/prisma'
 import webpush from 'web-push'
+import { checkRateLimit } from '@/lib/rate-limit'
+
+const MESSAGE_MAX_LENGTH = 4000
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions)
@@ -87,6 +90,14 @@ export async function POST(req: NextRequest) {
 
   const userId = (session.user as any).id as string
 
+  const rl = checkRateLimit(`msg:${userId}`, 30, 60_000)
+  if (!rl.ok) {
+    return NextResponse.json(
+      { error: 'Слишком много сообщений. Подождите немного.' },
+      { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } },
+    )
+  }
+
   try {
     await ensureDb()
     const body = await req.json()
@@ -94,6 +105,9 @@ export async function POST(req: NextRequest) {
 
     if (!conversationId || !text?.trim()) {
       return NextResponse.json({ error: 'conversationId and text required' }, { status: 400 })
+    }
+    if (text.length > MESSAGE_MAX_LENGTH) {
+      return NextResponse.json({ error: `Сообщение слишком длинное (максимум ${MESSAGE_MAX_LENGTH} символов)` }, { status: 400 })
     }
 
     // Ensure sender exists in DB (admin logs in via env vars and may not have a DB record)
@@ -168,7 +182,7 @@ export async function POST(req: NextRequest) {
           )
         `, conversationId, userId)) as { endpoint: string; p256dh: string; auth: string }[]
 
-        const senderName = session.user.name ?? session.user.email ?? 'Собеседник'
+        const senderName = session.user?.name ?? session.user?.email ?? 'Собеседник'
         const body = text.trim().length > 80 ? text.trim().slice(0, 77) + '…' : text.trim()
         const payload = JSON.stringify({
           title: `Новое сообщение от ${senderName}`,

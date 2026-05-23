@@ -1,8 +1,13 @@
+import type { Metadata } from 'next'
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { DashboardShell, type Tier } from '@/components/dashboard/DashboardShell'
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+}
 
 function getUserTier(role: string, orders: { product: string; status: string }[]): Tier {
   if (role === 'admin' || role === 'psychologist') return 'personal'

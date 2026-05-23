@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { PenLine, Zap, BarChart2, Calendar, Lock } from 'lucide-react'
+import { RevokeAccessButton } from './RevokeAccessButton'
 
 type Entry = {
   id: string
@@ -81,6 +82,7 @@ export default async function JournalPage() {
         <Lock size={15} style={{ color: '#16A34A', flexShrink: 0, marginTop: '0.1rem' }} />
         <div style={{ fontSize: '0.8rem', color: '#166534', lineHeight: 1.65 }}>
           <strong>Ваш дневник видите только вы.</strong> Психолог увидит записи только если вы откроете доступ или отправите конкретную запись. Куратор личный дневник не видит. Вы можете изменить настройки приватности в любой момент.
+          <RevokeAccessButton />
         </div>
       </div>
 

@@ -65,7 +65,11 @@ const PRODUCT_TIER: Record<string, string> = {
 async function verifyPaymentWithYooKassa(paymentId: string): Promise<boolean> {
   const shopId = process.env.YOOKASSA_SHOP_ID
   const secretKey = process.env.YOOKASSA_SECRET_KEY
-  if (!shopId || !secretKey) return true // dev fallback: trust webhook without keys
+  if (!shopId || !secretKey) {
+    if (process.env.NODE_ENV !== 'production') return true // dev only
+    console.error('[webhook] YooKassa keys missing in production')
+    return false
+  }
   try {
     const res = await fetch(`https://api.yookassa.ru/v3/payments/${paymentId}`, {
       headers: {

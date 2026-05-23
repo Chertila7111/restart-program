@@ -1,24 +1,64 @@
 'use client'
 
-import { useEffect, Suspense } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { ymEcommercePurchase } from '@/lib/metrika'
 import { LogoSvg } from '@/components/LogoSvg'
 import Link from 'next/link'
 import { Mail, LayoutDashboard, MessageCircle } from 'lucide-react'
 
+type OrderStatus = 'loading' | 'paid' | 'processing' | 'unknown'
+
 function SuccessContent() {
   const params = useSearchParams()
+  const [orderStatus, setOrderStatus] = useState<OrderStatus>('loading')
 
   useEffect(() => {
     const orderId = params.get('order') || ''
-    const productId = params.get('product') || ''
-    const productName = decodeURIComponent(params.get('name') || '')
-    const price = parseInt(params.get('amount') || '0', 10)
-    if (orderId && productId && price) {
-      ymEcommercePurchase({ orderId, productId, productName, price })
-    }
+    if (!orderId) { setOrderStatus('unknown'); return }
+
+    // Verify order via API — prevents fake Metrika events and shows correct UI state
+    fetch(`/api/user/orders/${encodeURIComponent(orderId)}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(order => {
+        if (!order?.id) { setOrderStatus('unknown'); return }
+        if (order.status === 'paid' || order.status === 'paid_email_failed') {
+          setOrderStatus('paid')
+          ymEcommercePurchase({
+            orderId: order.id,
+            productId: order.product,
+            productName: order.productName,
+            price: order.amount,
+          })
+        } else {
+          // Webhook hasn't arrived yet — pending/processing
+          setOrderStatus('processing')
+        }
+      })
+      .catch(() => setOrderStatus('unknown'))
   }, [params])
+
+  // Webhook delayed — show processing state instead of "activated"
+  if (orderStatus === 'processing') {
+    return (
+      <div style={{ minHeight: '100vh', background: 'var(--bg-soft)', padding: '5rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ maxWidth: '34rem', width: '100%', textAlign: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+            <LogoSvg size={64} />
+          </div>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text)', marginBottom: '0.75rem' }}>
+            Платёж обрабатывается…
+          </h1>
+          <p style={{ color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: '2rem' }}>
+            Обычно это занимает несколько секунд. Обновите страницу через минуту или перейдите в личный кабинет — доступ появится автоматически.
+          </p>
+          <Link href="/dashboard" className="btn-primary" style={{ display: 'inline-block', fontSize: '1rem' }}>
+            Перейти в личный кабинет →
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   const steps = [
     {
@@ -66,7 +106,9 @@ function SuccessContent() {
             Оплата прошла!
           </h1>
           <p style={{ color: 'var(--text-muted)', lineHeight: 1.7 }}>
-            Доступ к программе активирован. Вот что нужно сделать дальше:
+            {orderStatus === 'paid'
+              ? 'Доступ к программе активирован. Вот что нужно сделать дальше:'
+              : 'Спасибо! Письмо с инструкциями придёт в течение нескольких минут.'}
           </p>
         </div>
 

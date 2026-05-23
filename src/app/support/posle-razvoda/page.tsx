@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CheckCircle } from 'lucide-react'
 import { LogoSvg } from '@/components/LogoSvg'
+import { ArrowRight } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Поддержка после развода — психолог и группа онлайн | Снова с собой',
@@ -124,6 +125,16 @@ export default function SupportPosleRazvodaPage() {
               Все форматы →
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* Topic hub link */}
+      <section style={{ background: 'var(--bg-soft)', padding: '1.5rem 0' }}>
+        <div className="container mx-auto px-6" style={{ maxWidth: '52rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Все материалы по теме «Развод»</span>
+          <Link href="/topics/razvod" style={{ color: 'var(--primary)', fontWeight: 600, fontSize: '0.875rem', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+            Перейти к теме <ArrowRight size={13} />
+          </Link>
         </div>
       </section>
 

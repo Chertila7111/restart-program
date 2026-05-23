@@ -4,11 +4,11 @@ import { prisma } from '@/lib/prisma'
 import { ensureDb } from '@/lib/db-init'
 import bcrypt from 'bcryptjs'
 
-const secret = new TextEncoder().encode(
-  process.env.NEXTAUTH_SECRET || 'fallback-secret-change-me'
-)
-
 export async function POST(req: NextRequest) {
+  const jwtSecret = process.env.NEXTAUTH_SECRET
+  if (!jwtSecret) return NextResponse.json({ error: 'Ссылка недействительна' }, { status: 400 })
+  const secret = new TextEncoder().encode(jwtSecret)
+
   const { token, password } = await req.json()
   if (!token || !password || password.length < 8) {
     return NextResponse.json({ error: 'Неверные данные' }, { status: 400 })

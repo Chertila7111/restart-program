@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { authOptions } from '@/lib/auth'
 import { ensureDb } from '@/lib/db-init'
 import { prisma } from '@/lib/prisma'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export async function GET() {
   const session = await getServerSession(authOptions)
@@ -78,6 +79,14 @@ export async function POST(req: NextRequest) {
   const role = (session.user as any).role as string
   const userId = (session.user as any).id as string
 
+  const rl = checkRateLimit(`conv:${userId}`, 5, 10 * 60_000)
+  if (!rl.ok) {
+    return NextResponse.json(
+      { error: 'Слишком много запросов.' },
+      { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } },
+    )
+  }
+
   try {
     await ensureDb()
     const body = await req.json()
@@ -94,6 +103,17 @@ export async function POST(req: NextRequest) {
 
     const doctorId = 'doctor-maria-sokolova'
     const otherUserId = targetUserId ?? doctorId
+
+    // Regular users can only open chats with staff (curator/psychologist/admin)
+    if (role === 'user' && targetUserId) {
+      const target = await (prisma as any).$queryRawUnsafe(
+        `SELECT role FROM "User" WHERE id = ? LIMIT 1`, targetUserId
+      ) as { role: string }[]
+      const targetRole = target[0]?.role
+      if (!targetRole || !['curator', 'psychologist', 'admin'].includes(targetRole)) {
+        return NextResponse.json({ error: 'Forbidden: can only message staff' }, { status: 403 })
+      }
+    }
 
     // Check if a conversation already exists between these two users (raw SQL — ConversationMember is not in Prisma schema)
     const existingRows = await (prisma as any).$queryRawUnsafe(`

@@ -318,6 +318,8 @@ async function _init() {
   try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN "lastSeenAt" DATETIME`) } catch { /* already exists */ }
   // ── tier on User ──
   try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN "tier" TEXT NOT NULL DEFAULT 'none'`) } catch { /* already exists */ }
+  // ── status on User (lead/intro_paid/intro_scheduled/intro_completed/waiting_group/in_group/individual/completed) ──
+  try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN "status" TEXT NOT NULL DEFAULT 'lead'`) } catch { /* already exists */ }
 
   // ── Extend Meeting for group/individual context ──
   try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "Meeting" ADD COLUMN "groupId" TEXT`) } catch {}
@@ -337,6 +339,40 @@ async function _init() {
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Notif_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE
   )`)
+
+  // ── AuditLog — журнал действий кураторов/админов ──
+  await sql(`CREATE TABLE IF NOT EXISTS "AuditLog" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "actorId" TEXT NOT NULL,
+    "actorRole" TEXT NOT NULL,
+    "action" TEXT NOT NULL,
+    "targetUserId" TEXT,
+    "entityType" TEXT,
+    "entityId" TEXT,
+    "metadata" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`)
+
+  // ── ConsentLog — история согласий пользователей ──
+  await sql(`CREATE TABLE IF NOT EXISTS "ConsentLog" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "consentType" TEXT NOT NULL,
+    "consentVersion" INTEGER NOT NULL DEFAULT 1,
+    "accepted" INTEGER NOT NULL DEFAULT 1,
+    "acceptedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "ConsentLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE
+  )`)
+
+  // ── Refund fields on Order ──
+  try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "Order" ADD COLUMN "refundStatus" TEXT NOT NULL DEFAULT 'none'`) } catch { /* already exists */ }
+  try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "Order" ADD COLUMN "refundAmount" INTEGER`) } catch {}
+  try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "Order" ADD COLUMN "refundReason" TEXT`) } catch {}
+  try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "Order" ADD COLUMN "refundRequestedAt" DATETIME`) } catch {}
+  try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "Order" ADD COLUMN "refundCompletedAt" DATETIME`) } catch {}
+
+  // ── Timezone on Meeting ──
+  try { await (prisma as any).$executeRawUnsafe(`ALTER TABLE "Meeting" ADD COLUMN "timezone" TEXT DEFAULT 'Europe/Moscow'`) } catch {}
 
   // ── Seed accounts ──
   await seedDoctor()

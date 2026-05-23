@@ -45,6 +45,29 @@ const categoryBg: Record<string, string> = {
 function getColor(cat: string) { return categoryColor[cat] ?? 'var(--primary)' }
 function getBg(cat: string) { return categoryBg[cat] ?? 'var(--primary-light)' }
 
+const TOPIC_LINKS: Record<string, { label: string; href: string }> = {
+  'kak-perezhit-rasstavanie':                        { label: 'Расставание',               href: '/topics/rasstavanie' },
+  'kak-ne-napisat-byvshemu':                         { label: 'Расставание',               href: '/topics/rasstavanie' },
+  'pustota-posle-rasstavaniya':                      { label: 'Расставание',               href: '/topics/rasstavanie' },
+  'trevoga-posle-rasstavaniya':                      { label: 'Расставание',               href: '/topics/rasstavanie' },
+  'pochemu-tak-bolno-posle-rasstavaniya':             { label: 'Расставание',               href: '/topics/rasstavanie' },
+  'samoocenka-posle-rasstavaniya':                   { label: 'Расставание',               href: '/topics/rasstavanie' },
+  'kak-nachat-novuyu-zhizn-posle-rasstavaniya':      { label: 'Расставание',               href: '/topics/rasstavanie' },
+  'posle-rasstavaniya-ne-mogu-rabotat':              { label: 'Расставание',               href: '/topics/rasstavanie' },
+  'rasstavanie-posle-dolgikh-otnosheniy':             { label: 'Расставание',               href: '/topics/rasstavanie' },
+  'kak-uluchshit-samoocenku-posle-rasstavaniya':     { label: 'Расставание',               href: '/topics/rasstavanie' },
+  'kogda-obrashchatsya-k-psikhologu-posle-rasstavaniya': { label: 'Расставание',           href: '/topics/rasstavanie' },
+  'kak-pomoch-drugu-posle-rasstavaniya':             { label: 'Расставание',               href: '/topics/rasstavanie' },
+  'styd-i-vina-posle-rasstavaniya':                  { label: 'Расставание',               href: '/topics/rasstavanie' },
+  'kak-perestat-skuchat-po-byvshemu':                { label: 'Расставание',               href: '/topics/rasstavanie' },
+  'kak-zabyt-byvshego':                              { label: 'Расставание',               href: '/topics/rasstavanie' },
+  'kak-perezhit-razvod':                             { label: 'Развод',                    href: '/topics/razvod' },
+  'pervye-shagi-posle-razvoda':                      { label: 'Развод',                    href: '/topics/razvod' },
+  'emotsionalnaya-zavisimost-v-otnosheniyakh':        { label: 'Эмоциональная зависимость', href: '/topics/emotsionalnaya-zavisimost' },
+  'kak-ne-budit-nadezhdu-na-vozvrat':                { label: 'Эмоциональная зависимость', href: '/topics/emotsionalnaya-zavisimost' },
+  'pochemu-ne-mogu-otpustit-cheloveka':              { label: 'Эмоциональная зависимость', href: '/topics/emotsionalnaya-zavisimost' },
+}
+
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params
   const post = getPost(slug)
@@ -53,6 +76,8 @@ export default async function BlogPostPage({ params }: Props) {
   const others = post.relatedSlugs
     ? post.relatedSlugs.map(s => BLOG_POSTS.find(p => p.slug === s)).filter((p): p is typeof BLOG_POSTS[0] => !!p)
     : BLOG_POSTS.filter((p) => p.slug !== slug).slice(0, 3)
+
+  const topicLink = TOPIC_LINKS[slug] ?? null
 
   return (
     <>
@@ -65,12 +90,22 @@ export default async function BlogPostPage({ params }: Props) {
         <div style={{ position: 'absolute', bottom: '-3rem', left: '10%', width: '12rem', height: '12rem', borderRadius: '50%', background: 'rgba(78,123,94,0.07)' }} />
 
         <div className="container mx-auto px-6" style={{ maxWidth: '52rem', position: 'relative', zIndex: 1 }}>
-          <Link
-            href="/blog"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontSize: '0.875rem', marginBottom: '1.75rem', transition: 'color 0.2s' }}
-          >
-            <ArrowLeft size={14} /> Все статьи
-          </Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '1.75rem', flexWrap: 'wrap' }}>
+            <Link
+              href="/blog"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontSize: '0.875rem', transition: 'color 0.2s' }}
+            >
+              <ArrowLeft size={14} /> Все статьи
+            </Link>
+            {topicLink && (
+              <Link
+                href={topicLink.href}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: 'rgba(168,184,160,0.75)', textDecoration: 'none', fontSize: '0.8rem' }}
+              >
+                {topicLink.label} <ArrowRight size={11} />
+              </Link>
+            )}
+          </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
             <span style={{
@@ -234,6 +269,13 @@ export default async function BlogPostPage({ params }: Props) {
                 </Link>
               ))}
             </div>
+            {topicLink && (
+              <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+                <Link href={topicLink.href} style={{ color: 'var(--primary)', fontWeight: 600, fontSize: '0.875rem', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.375rem' }}>
+                  Все статьи по теме «{topicLink.label}» <ArrowRight size={13} />
+                </Link>
+              </div>
+            )}
           </div>
         </section>
       )}

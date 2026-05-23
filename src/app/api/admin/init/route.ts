@@ -1,10 +1,24 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit'
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  // Rate limit: 5 attempts per hour per IP
+  const ip = getClientIp(req)
+  const rl = checkRateLimit(`admin-init:${ip}`, 5, 60 * 60_000)
+  if (!rl.ok) {
+    return NextResponse.json(
+      { error: 'Too many requests' },
+      { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } },
+    )
+  }
+
   try {
-    const setupKey = process.env.ADMIN_SETUP_KEY || 'restart-setup-2026'
+    const setupKey = process.env.ADMIN_SETUP_KEY
+    if (!setupKey || setupKey.length < 32) {
+      return NextResponse.json({ error: 'Endpoint disabled' }, { status: 403 })
+    }
 
     let body: { setupKey?: string; email?: string; name?: string; password?: string }
     try {
@@ -41,9 +55,7 @@ export async function POST(req: Request) {
     })
 
     return NextResponse.json({ message: 'Admin-аккаунт создан: ' + emailLower })
-  } catch (err) {
-    console.error('Admin init error:', err)
-    const msg = err instanceof Error ? err.message : String(err)
-    return NextResponse.json({ error: 'Ошибка сервера: ' + msg }, { status: 500 })
+  } catch {
+    return NextResponse.json({ error: 'Ошибка сервера' }, { status: 500 })
   }
 }

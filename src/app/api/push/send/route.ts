@@ -10,17 +10,15 @@ webpush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY!
 )
 
-// Called by Vercel Cron (hourly) or admin with Bearer token.
+// Called by Vercel Cron (hourly) or admin with CRON_SECRET Bearer token.
 export async function GET(req: Request) {
   const authHeader = req.headers.get('authorization')
-  const secret = process.env.NEXTAUTH_SECRET
   const cronSecret = process.env.CRON_SECRET
   const isVercelCron = req.headers.get('x-vercel-cron') === '1'
 
   const authorized =
     isVercelCron ||
-    (cronSecret && authHeader === `Bearer ${cronSecret}`) ||
-    (secret && authHeader === `Bearer ${secret}`)
+    (cronSecret && authHeader === `Bearer ${cronSecret}`)
 
   if (!authorized) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
