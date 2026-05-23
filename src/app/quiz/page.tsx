@@ -7,10 +7,11 @@ import { LogoSvg } from '@/components/LogoSvg'
 import { BLOG_POSTS } from '@/lib/blog'
 
 const articlesByCategory: Record<string, string[]> = {
-  thoughts: ['kak-ne-napisat-byvshemu', 'kak-ne-budit-nadezhdu-na-vozvrat', 'emotsionalnaya-zavisimost-v-otnosheniyakh'],
-  anxiety:  ['trevoga-posle-rasstavaniya', 'pustota-posle-rasstavaniya', 'pochemu-tak-bolno-posle-rasstavaniya'],
-  future:   ['kak-perezhit-rasstavanie', 'samoocenka-posle-rasstavaniya', 'kak-nachat-novuyu-zhizn-posle-rasstavaniya'],
-  work:     ['posle-rasstavaniya-ne-mogu-rabotat', 'kak-nachat-novuyu-zhizn-posle-rasstavaniya', 'kogda-obrashchatsya-k-psikhologu-posle-rasstavaniya'],
+  thoughts:    ['kak-ne-napisat-byvshemu', 'kak-ne-budit-nadezhdu-na-vozvrat', 'emotsionalnaya-zavisimost-v-otnosheniyakh'],
+  anxiety:     ['trevoga-posle-rasstavaniya', 'pustota-posle-rasstavaniya', 'pochemu-tak-bolno-posle-rasstavaniya'],
+  future:      ['kak-perezhit-rasstavanie', 'samoocenka-posle-rasstavaniya', 'kak-nachat-novuyu-zhizn-posle-rasstavaniya'],
+  work:        ['posle-rasstavaniya-ne-mogu-rabotat', 'kak-nachat-novuyu-zhizn-posle-rasstavaniya', 'kogda-obrashchatsya-k-psikhologu-posle-rasstavaniya'],
+  inrel:       ['ustal-ot-otnosheniy', 'kak-ponyat-chto-otnosheniya-zakonchilis', 'postoyannye-ssory-v-otnosheniyah', 'hochu-rasstatsya-no-boyus', 'kak-postavit-granitsy-v-otnosheniyah'],
 }
 
 // ── Step definitions ──────────────────────────────────────────────────────────
@@ -21,6 +22,7 @@ type StepId =
   | 'months_when' | 'months_block'
   | 'divorce_kids' | 'divorce_hard'
   | 'other_when' | 'other_hard'
+  | 'inrel_how' | 'inrel_hard'
   | 'psych'
   | 'crisis'
 
@@ -37,10 +39,11 @@ const allSteps: Record<StepId, QuizStep> = {
     question: 'Что сейчас происходит?',
     hint: 'Выберите то, что ближе всего к вашей ситуации',
     options: [
-      { id: 'fresh',   text: 'Мы только расстались — ещё свежо и очень больно' },
-      { id: 'months',  text: 'Прошло несколько месяцев, но легче не стало' },
-      { id: 'divorce', text: 'Я переживаю развод' },
-      { id: 'other',   text: 'Сложно описать словами, но мне плохо' },
+      { id: 'fresh',        text: 'Мы только расстались — ещё свежо и очень больно' },
+      { id: 'months',       text: 'Прошло несколько месяцев, но легче не стало' },
+      { id: 'divorce',      text: 'Я переживаю развод' },
+      { id: 'inrelationship', text: 'Я ещё в отношениях, но думаю, что делать дальше' },
+      { id: 'other',        text: 'Сложно описать словами, но мне плохо' },
     ],
   },
 
@@ -113,6 +116,29 @@ const allSteps: Record<StepId, QuizStep> = {
     ],
   },
 
+  // ── IN-RELATIONSHIP branch ───────────────────────────────────────────────
+  inrel_how: {
+    id: 'inrel_how',
+    question: 'Как долго вы в этом состоянии?',
+    hint: 'Примерно — точность не важна',
+    options: [
+      { id: 'weeks',  text: 'Несколько недель' },
+      { id: 'months', text: 'Несколько месяцев' },
+      { id: 'long',   text: 'Давно — уже не помню, когда было иначе' },
+    ],
+  },
+  inrel_hard: {
+    id: 'inrel_hard',
+    question: 'Что сейчас сложнее всего?',
+    hint: 'Выберите то, что резонирует сильнее',
+    options: [
+      { id: 'tired',   text: 'Устал(а) от конфликтов и постоянного напряжения' },
+      { id: 'doubts',  text: 'Сомневаюсь в своих чувствах — не понимаю, что чувствую' },
+      { id: 'fear',    text: 'Боюсь принять неправильное решение' },
+      { id: 'self',    text: 'Чувствую, что теряю себя рядом с партнёром' },
+    ],
+  },
+
   // ── OTHER branch ─────────────────────────────────────────────────────────
   other_when: {
     id: 'other_when',
@@ -164,16 +190,18 @@ const allSteps: Record<StepId, QuizStep> = {
 
 function getNextStep(stepId: StepId, answerId: string): StepId | 'result' | 'crisis_screen' {
   if (stepId === 'situation') {
-    if (answerId === 'fresh')   return 'fresh_when'
-    if (answerId === 'months')  return 'months_when'
-    if (answerId === 'divorce') return 'divorce_kids'
+    if (answerId === 'fresh')          return 'fresh_when'
+    if (answerId === 'months')         return 'months_when'
+    if (answerId === 'divorce')        return 'divorce_kids'
+    if (answerId === 'inrelationship') return 'inrel_how'
     return 'other_when'
   }
   if (stepId === 'fresh_when')   return 'fresh_hard'
   if (stepId === 'months_when')  return 'months_block'
   if (stepId === 'divorce_kids') return 'divorce_hard'
+  if (stepId === 'inrel_how')    return 'inrel_hard'
   if (stepId === 'other_when')   return 'other_hard'
-  if (stepId === 'fresh_hard' || stepId === 'months_block' || stepId === 'divorce_hard' || stepId === 'other_hard') return 'psych'
+  if (stepId === 'fresh_hard' || stepId === 'months_block' || stepId === 'divorce_hard' || stepId === 'inrel_hard' || stepId === 'other_hard') return 'psych'
   if (stepId === 'psych') return 'crisis'
   if (stepId === 'crisis') {
     if (answerId === 'yes' || answerId === 'unsure') return 'crisis_screen'
@@ -182,13 +210,14 @@ function getNextStep(stepId: StepId, answerId: string): StepId | 'result' | 'cri
   return 'result'
 }
 
-// Maps Q3 answer → result category (thoughts/work/anxiety/future)
+// Maps Q3 answer → result category (thoughts/work/anxiety/future/inrel)
 function getResultCategory(situation: string, q3Answer: string): string {
   const map: Record<string, Record<string, string>> = {
-    fresh:   { thoughts: 'thoughts', body: 'anxiety', understand: 'anxiety', alone: 'future' },
-    months:  { social: 'thoughts', compare: 'thoughts', fear: 'future', empty: 'anxiety' },
-    divorce: { practical: 'work', loneliness: 'future', guilt: 'anxiety', worryKids: 'anxiety' },
-    other:   { anxiety: 'anxiety', loneliness: 'future', anger: 'anxiety', apathy: 'work' },
+    fresh:          { thoughts: 'thoughts', body: 'anxiety', understand: 'anxiety', alone: 'future' },
+    months:         { social: 'thoughts', compare: 'thoughts', fear: 'future', empty: 'anxiety' },
+    divorce:        { practical: 'work', loneliness: 'future', guilt: 'anxiety', worryKids: 'anxiety' },
+    inrelationship: { tired: 'inrel', doubts: 'inrel', fear: 'inrel', self: 'inrel' },
+    other:          { anxiety: 'anxiety', loneliness: 'future', anger: 'anxiety', apathy: 'work' },
   }
   return map[situation]?.[q3Answer] ?? 'anxiety'
 }
@@ -196,6 +225,9 @@ function getResultCategory(situation: string, q3Answer: string): string {
 // ── Result content ────────────────────────────────────────────────────────────
 
 const situationTexts: Record<string, Record<string, string>> = {
+  inrelationship: {
+    inrel: 'Похоже, вы сейчас в сложной точке — в отношениях, но с большой неопределённостью внутри. Это не значит, что нужно принимать решение прямо сейчас. Сначала полезно разобраться, что именно происходит — и что вы на самом деле хотите.',
+  },
   fresh: {
     thoughts: 'Похоже, сейчас самое трудное — остановить навязчивые мысли и справиться с желанием написать. Расставание ещё совсем свежее — это один из самых острых периодов, когда сильно тянет вернуть контакт.',
     anxiety:  'Похоже, расставание ударило сразу по нескольким уровням: и эмоционально, и физически. Тревога, пустота, непонимание — всё это нормальная реакция на острую потерю.',
@@ -227,6 +259,7 @@ const hardestBullets: Record<string, string[]> = {
   work:     ['Разберём, почему после разрыва проседают силы и режим', 'Поможем наметить первые маленькие шаги к обычной жизни', 'Покажем, как в программе возвращается структура недели'],
   anxiety:  ['Поможем разложить состояние на понятные части', 'Дадим первые способы стабилизации', 'Объясним, какой формат поддержки сейчас подойдёт'],
   future:   ['Разберём, почему сейчас так сложно думать о будущем', 'Поможем найти первые точки опоры', 'Покажем, как программа постепенно возвращает движение вперёд'],
+  inrel:    ['Поможем спокойнее посмотреть на то, что происходит', 'Разберём, что именно держит и что пугает', 'Никакого давления принять решение — только пространство разобраться'],
 }
 
 const psychNotes: Record<string, string> = {
@@ -282,7 +315,11 @@ export default function QuizPage() {
 
   // Result values
   const situation = answers['situation'] ?? ''
-  const q3Id = situation === 'fresh' ? 'fresh_hard' : situation === 'months' ? 'months_block' : situation === 'divorce' ? 'divorce_hard' : 'other_hard'
+  const q3Id = situation === 'fresh' ? 'fresh_hard'
+    : situation === 'months' ? 'months_block'
+    : situation === 'divorce' ? 'divorce_hard'
+    : situation === 'inrelationship' ? 'inrel_hard'
+    : 'other_hard'
   const q3Answer = answers[q3Id] ?? ''
   const category = getResultCategory(situation, q3Answer)
   const mainText = situationTexts[situation]?.[category] ?? 'То, через что вы сейчас проходите — это серьёзно. На вводной встрече можно разобраться, какая поддержка подойдёт именно вам.'
@@ -520,7 +557,10 @@ export default function QuizPage() {
                   Вводной встречи
                 </h2>
                 <p style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: '1.5rem', fontSize: '0.875rem' }}>
-                  90 минут в небольшой группе с психологом. Можно просто слушать, не рассказывая о себе. Без обязательства покупать программу.
+                  {situation === 'inrelationship'
+                    ? '90 минут с психологом. Не нужно знать, что вы хотите сделать. Можно просто разобраться, что происходит — без давления и без готовых ответов.'
+                    : '90 минут в небольшой группе с психологом. Можно просто слушать, не рассказывая о себе. Без обязательства покупать программу.'
+                  }
                 </p>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.75rem' }}>
