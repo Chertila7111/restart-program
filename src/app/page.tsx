@@ -556,20 +556,20 @@ export default function Home() {
             {/* Desktop: horizontal path */}
             <div className="grid-roadmap" style={{ display: 'grid', position: 'relative', marginBottom: '1.5rem' }}>
               {/* Connecting line behind circles */}
-              <div className="roadmap-connector" style={{ position: 'absolute', top: '1.375rem', left: '12.5%', right: '12.5%', height: '2px', background: 'linear-gradient(to right, var(--primary), var(--primary-light) 40%, var(--border) 70%)', zIndex: 0 }} />
+              <div className="roadmap-connector" style={{ position: 'absolute', top: '1.375rem', left: '12.5%', right: '12.5%', height: '2px', background: 'linear-gradient(to right, #4E7B5E 0%, #7A9E8C 33%, #AACABB 66%, #D6EAE1 100%)', zIndex: 0 }} />
 
               {weeks.map((w, i) => (
                 <div key={w.num} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 1, padding: '0 0.5rem' }}>
-                  {/* Step node */}
+                  {/* Step node — colour fades gradually week 1→4 */}
                   <div style={{
                     width: '2.75rem', height: '2.75rem', borderRadius: '50%',
-                    background: i === 0 ? 'var(--primary)' : i === 1 ? 'var(--primary-light)' : 'white',
-                    border: `2px solid ${i < 2 ? 'var(--primary)' : 'var(--border)'}`,
+                    background: ['var(--primary)', '#7A9E8C', '#AACABB', '#D6EAE1'][i],
+                    border: `2px solid ${['var(--primary)', '#7A9E8C', '#AACABB', '#C5DDD4'][i]}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontWeight: 800, fontSize: '0.9rem',
-                    color: i === 0 ? 'white' : 'var(--primary)',
+                    color: i < 2 ? 'white' : '#2D5040',
                     marginBottom: '1.25rem',
-                    boxShadow: i === 0 ? '0 4px 12px rgba(78,123,94,0.3)' : 'none',
+                    boxShadow: i === 0 ? '0 4px 12px rgba(78,123,94,0.35)' : i === 1 ? '0 2px 8px rgba(78,123,94,0.18)' : 'none',
                     flexShrink: 0,
                   }}>
                     {i + 1}
@@ -579,9 +579,8 @@ export default function Home() {
                   <div style={{
                     background: 'white', borderRadius: '1.25rem', padding: '1.25rem',
                     width: '100%',
-                    borderTop: `3px solid ${i === 0 ? 'var(--primary)' : i === 1 ? 'var(--secondary)' : 'var(--border)'}`,
+                    borderTop: `3px solid ${['var(--primary)', '#7A9E8C', '#AACABB', '#D6EAE1'][i]}`,
                     boxShadow: i === 0 ? '0 4px 20px rgba(78,123,94,0.12)' : '0 2px 8px rgba(28,28,26,0.04)',
-                    opacity: i >= 2 ? 0.75 : 1,
                   }}>
                     <div style={{ fontSize: '0.63rem', fontWeight: 700, color: i === 0 ? 'var(--primary)' : 'var(--text-light)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.25rem' }}>{w.num}</div>
                     <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.875rem', lineHeight: 1.3 }}>{w.title}</h3>
@@ -603,12 +602,17 @@ export default function Home() {
             </div>
 
             {/* Bottom result strip */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1.25rem 2rem', background: 'var(--primary)', borderRadius: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.75)' }}>В итоге:</span>
-              {['Больше ясности и опоры', 'Вернулся режим', 'Личный план восстановления'].map((item, i) => (
-                <div key={item} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  {i > 0 && <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.75rem' }}>·</span>}
-                  <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'white' }}>✓ {item}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', padding: '1.25rem 2rem', background: 'var(--primary)', borderRadius: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.65)' }}>В итоге:</span>
+              {[
+                { label: 'Больше ясности и опоры', emoji: '🧭' },
+                { label: 'Вернулся режим', emoji: '🌱' },
+                { label: 'Личный план восстановления', emoji: '📋' },
+              ].map(({ label, emoji }, i) => (
+                <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  {i > 0 && <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.75rem', marginRight: '-0.5rem' }}>·</span>}
+                  <span style={{ fontSize: '1rem', lineHeight: 1 }}>{emoji}</span>
+                  <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'white' }}>{label}</span>
                 </div>
               ))}
             </div>
