@@ -192,8 +192,8 @@ export default function Home() {
       {/* ═══ 1. HERO ════════════════════════════════════════ */}
       <section className="hero-section" style={{
         background: 'var(--bg)',
-        paddingTop: '7rem',
-        paddingBottom: '4rem',
+        paddingTop: '5.5rem',
+        paddingBottom: '2rem',
         display: 'flex',
         position: 'relative',
         overflow: 'hidden',
@@ -293,7 +293,7 @@ export default function Home() {
               </div>
 
               <h1 style={{
-                fontSize: 'clamp(2.25rem, 4.5vw, 3.75rem)',
+                fontSize: 'clamp(1.875rem, 3.75vw, 3rem)',
                 fontWeight: 800,
                 color: 'var(--text)',
                 lineHeight: 1.15,
@@ -423,7 +423,7 @@ export default function Home() {
           </div>
 
           {/* Trust phrase */}
-          <div style={{ maxWidth: '72rem', margin: '1.75rem auto 0', padding: '1rem 1.5rem', background: 'var(--bg-sage)', borderRadius: '0.875rem', border: '1px solid var(--primary-light)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ maxWidth: '72rem', margin: '1rem auto 0', padding: '0.875rem 1.5rem', background: 'var(--bg-sage)', borderRadius: '0.875rem', border: '1px solid var(--primary-light)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <CheckCircle size={17} style={{ color: 'var(--primary)', flexShrink: 0 }} />
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6, margin: 0 }}>
               Перед участием мы помогаем понять, подойдёт ли вам групповой формат. Если нет — честно предложим другой вариант поддержки.
