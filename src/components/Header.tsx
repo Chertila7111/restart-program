@@ -10,7 +10,7 @@ import { LogoSvg } from './LogoSvg'
 const nav = [
   { href: '/program', label: 'Программа' },
   { href: '/pricing', label: 'Тарифы' },
-  { href: '/reviews', label: 'Отзывы' },
+  { href: '/support', label: 'Поддержка' },
   { href: '/blog', label: 'Блог' },
   { href: '/faq', label: 'Вопросы' },
   { href: '/contacts', label: 'Контакты' },
