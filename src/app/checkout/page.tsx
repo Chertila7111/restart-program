@@ -100,7 +100,7 @@ function CheckoutForm() {
               {[
                 { icon: Shield, text: 'Безопасная оплата через ЮKassa' },
                 { icon: Lock, text: 'SSL-шифрование данных' },
-                { icon: CheckCircle, text: 'Возврат в течение 7 дней' },
+                { icon: CheckCircle, text: 'Возврат за неоказанные услуги' },
               ].map((t) => {
                 const Icon = t.icon
                 return (
