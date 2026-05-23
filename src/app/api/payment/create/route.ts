@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     const sessionTier = (session?.user as any)?.tier as string | undefined
 
     // Intro credit: verify from DB — JWT token can be stale after tier upgrade
-    const INTRO_CREDIT = 1490
+    const INTRO_CREDIT = 1
     const FULL_PROGRAM_PRODUCTS = ['base', 'plus', 'plus-pro', 'personal', 'personal-start', 'personal-balance', 'personal-deep']
     let hasIntroCredit = false
 
