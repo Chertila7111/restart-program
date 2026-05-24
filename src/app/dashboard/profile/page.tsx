@@ -7,6 +7,7 @@ type Profile = {
   age: string; city: string; timezone: string; phone: string; telegram: string
   about: string; situation: string; mainPain: string; goals: string[]
   moodNow: string; diaryAccess: string
+  partnerName: string
 }
 
 const GOAL_OPTIONS = [
@@ -17,6 +18,9 @@ const GOAL_OPTIONS = [
   { key: 'selfesteem', label: 'Восстановить самооценку' },
   { key: 'direction', label: 'Понять, что делать дальше' },
   { key: 'loneliness', label: 'Не оставаться одному/одной' },
+  { key: 'clarity', label: 'Разобраться в своих чувствах' },
+  { key: 'decision', label: 'Принять решение (уйти или остаться)' },
+  { key: 'conflict', label: 'Выйти из круга конфликтов' },
   { key: 'other', label: 'Другое' },
 ]
 
@@ -31,6 +35,7 @@ export default function ParticipantProfilePage() {
     age: '', city: '', timezone: 'Europe/Moscow', phone: '', telegram: '',
     about: '', situation: '', mainPain: '', goals: [],
     moodNow: '5', diaryAccess: 'private',
+    partnerName: '',
   })
   const [status, setStatus] = useState<'idle' | 'loading' | 'saved' | 'error'>('idle')
   const [deleteConfirm, setDeleteConfirm] = useState(false)
@@ -119,6 +124,11 @@ export default function ParticipantProfilePage() {
           <div>
             <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.375rem' }}>Расскажите коротко о себе</label>
             <textarea rows={3} placeholder="Чем занимаетесь, что сейчас важно, как вам комфортнее общаться..." value={profile.about} onChange={e => setProfile(p => ({ ...p, about: e.target.value }))} style={{ width: '100%', padding: '0.625rem 0.875rem', borderRadius: '0.625rem', border: '1.5px solid var(--border)', fontSize: '0.875rem', fontFamily: 'inherit', resize: 'vertical', background: 'var(--bg)', color: 'var(--text)', lineHeight: 1.6, boxSizing: 'border-box' }} />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.25rem' }}>Имя партнёра <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>(если ситуация связана с отношениями)</span></label>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.375rem' }}>Помогает психологу понять контекст — видит только специалист</p>
+            <input type="text" placeholder="Имя или псевдоним" value={profile.partnerName} onChange={e => setProfile(p => ({ ...p, partnerName: e.target.value }))} />
           </div>
         </div>
       </div>

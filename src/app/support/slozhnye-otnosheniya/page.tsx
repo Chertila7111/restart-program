@@ -255,11 +255,11 @@ export default function SlozhnyeOtnosheniyaPage() {
           <h2 style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--text)', marginBottom: '1rem' }}>Читайте также</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
             {[
-              { href: '/blog/kak-ponyat-chto-otnosheniya-zakonchilis', title: 'Как понять, что отношения закончились' },
-              { href: '/blog/hochu-rasstatsya-no-boyus', title: 'Хочу расстаться, но боюсь: что делать с этим страхом' },
-              { href: '/blog/kak-skazat-o-rasstavanii', title: 'Как сказать о расставании спокойно' },
+              { href: '/blog/kak-ponyat-svoi-chuvstva-v-otnosheniyah', title: 'Как понять свои чувства, когда всё запуталось' },
+              { href: '/blog/emotsionalnoe-vygoranie-v-otnosheniyah', title: 'Эмоциональное выгорание в отношениях: почему пропадают чувства' },
+              { href: '/blog/kak-ne-prinimat-resheniya-na-emotsiyah', title: 'Почему нельзя принимать решения в момент эмоций' },
               { href: '/blog/ustal-ot-otnosheniy', title: 'Усталость от отношений: как понять, что происходит' },
-              { href: '/blog/postoyannye-ssory-v-otnosheniyah', title: 'Постоянные ссоры в отношениях: как не потерять себя' },
+              { href: '/blog/hochu-rasstatsya-no-boyus', title: 'Хочу расстаться, но боюсь: что делать с этим страхом' },
             ].map(a => (
               <Link key={a.href} href={a.href} style={{ color: 'var(--primary)', textDecoration: 'none', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
                 → {a.title}

@@ -11,7 +11,7 @@ const articlesByCategory: Record<string, string[]> = {
   anxiety:     ['trevoga-posle-rasstavaniya', 'pustota-posle-rasstavaniya', 'pochemu-tak-bolno-posle-rasstavaniya'],
   future:      ['kak-perezhit-rasstavanie', 'samoocenka-posle-rasstavaniya', 'kak-nachat-novuyu-zhizn-posle-rasstavaniya'],
   work:        ['posle-rasstavaniya-ne-mogu-rabotat', 'kak-nachat-novuyu-zhizn-posle-rasstavaniya', 'kogda-obrashchatsya-k-psikhologu-posle-rasstavaniya'],
-  inrel:       ['ustal-ot-otnosheniy', 'kak-ponyat-chto-otnosheniya-zakonchilis', 'postoyannye-ssory-v-otnosheniyah', 'hochu-rasstatsya-no-boyus', 'kak-postavit-granitsy-v-otnosheniyah'],
+  inrel:       ['kak-ponyat-svoi-chuvstva-v-otnosheniyah', 'emotsionalnoe-vygoranie-v-otnosheniyah', 'kak-ne-prinimat-resheniya-na-emotsiyah', 'ustal-ot-otnosheniy', 'kak-ponyat-chto-otnosheniya-zakonchilis'],
 }
 
 // ── Step definitions ──────────────────────────────────────────────────────────
