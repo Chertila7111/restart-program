@@ -118,6 +118,44 @@ const individualPlans = [
   },
 ]
 
+const clarityPlans = [
+  {
+    id: 'clarity-start',
+    name: 'Ясность',
+    price: 8990,
+    sessions: 3,
+    badge: null as string | null,
+    highlight: false,
+    desc: 'Разобраться в ситуации: что происходит, чего вы хотите, что делать дальше.',
+    features: [
+      '3 встречи по 45 минут один на один',
+      'Диагностика состояния и ситуации',
+      'Работа с неопределённостью и страхом решения',
+      'Личный план — что делать дальше',
+      'Дневник состояния',
+    ],
+    cta: 'Выбрать Ясность',
+  },
+  {
+    id: 'clarity-deep',
+    name: 'Ясность. Глубже',
+    price: 14990,
+    sessions: 5,
+    badge: 'Чаще всего выбирают' as string | null,
+    highlight: true,
+    desc: 'Глубже: паттерны в отношениях, самооценка, границы — и ясность о том, чего вы хотите.',
+    features: [
+      '5 встреч по 45 минут один на один',
+      'Всё из тарифа «Ясность»',
+      'Работа с паттернами в отношениях',
+      'Работа с самооценкой и границами',
+      'Разбор ключевых ситуаций',
+      'Итоговые рекомендации',
+    ],
+    cta: 'Выбрать Ясность. Глубже',
+  },
+]
+
 const careerFeatures = [
   'Диагностика профессиональных компетенций',
   'Помощь с выбором направления / специальности',
@@ -245,6 +283,92 @@ export default function PricingPage({ searchParams }: { searchParams: { from?: s
                 ))}
               </ul>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Индивидуально: разобраться в ситуации (для тех, кто ещё в отношениях) ── */}
+      <section className="section" style={{ background: isSlozhnye ? 'var(--bg-sage)' : 'var(--bg-soft)', borderTop: isSlozhnye ? '2px solid var(--primary-light)' : undefined }}>
+        <div className="container mx-auto px-6" style={{ maxWidth: '64rem' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', marginBottom: '2.5rem', flexWrap: 'wrap' }}>
+            <div>
+              {isSlozhnye && (
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', background: 'var(--primary)', color: 'white', fontSize: '0.7rem', fontWeight: 700, padding: '0.3rem 0.875rem', borderRadius: '9999px', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
+                  Рекомендуем
+                </div>
+              )}
+              <h2 style={{ fontSize: 'clamp(1.1rem, 2.5vw, 1.35rem)', fontWeight: 800, color: 'var(--text)', margin: 0 }}>
+                Индивидуально — разобраться в своей ситуации
+              </h2>
+            </div>
+            <div style={{ flex: 1, height: '1px', background: 'var(--border)', minWidth: '2rem', marginTop: '0.75rem' }} />
+          </div>
+
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: '2rem', maxWidth: '52rem' }}>
+            Для тех, кто ещё в отношениях и хочет разобраться — или для тех, кто предпочитает работать только один на один. Без группы, без давления принимать решения.
+          </p>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
+            gap: '1.25rem',
+            alignItems: 'stretch',
+            marginBottom: '1rem',
+          }}>
+            {clarityPlans.map((plan) => (
+              <div
+                key={plan.id}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  background: plan.highlight ? 'var(--bg-sage)' : 'white',
+                  border: plan.highlight ? '2px solid var(--primary)' : '1.5px solid var(--border)',
+                  borderRadius: '1.5rem',
+                  padding: '2rem',
+                  position: 'relative',
+                  boxShadow: plan.highlight ? '0 8px 32px rgba(78,123,94,0.12)' : undefined,
+                }}
+              >
+                {plan.badge && (
+                  <div style={{
+                    position: 'absolute', top: '-0.875rem', left: '50%', transform: 'translateX(-50%)',
+                    padding: '0.375rem 1.25rem', borderRadius: '9999px',
+                    fontSize: '0.75rem', fontWeight: 700, color: 'white',
+                    background: 'var(--primary)', whiteSpace: 'nowrap',
+                  }}>
+                    {plan.badge}
+                  </div>
+                )}
+                <div style={{ marginBottom: '1.25rem' }}>
+                  <h3 style={{ fontWeight: 800, fontSize: '1.15rem', color: '#1C2B23', marginBottom: '0.2rem' }}>{plan.name}</h3>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-light)' }}>{plan.sessions} встречи · один на один</p>
+                </div>
+                <div style={{ marginBottom: '1rem' }}>
+                  <span style={{ fontSize: '2.4rem', fontWeight: 900, lineHeight: 1, color: plan.highlight ? 'var(--primary)' : '#1C2B23' }}>
+                    {plan.price.toLocaleString('ru-RU')}
+                  </span>{' '}
+                  <span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 400 }}>₽</span>
+                </div>
+                <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', lineHeight: 1.65, marginBottom: '1.5rem' }}>{plan.desc}</p>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+                  {plan.features.map((f) => (
+                    <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', fontSize: '0.875rem', color: '#1C2B23' }}>
+                      <CheckCircle size={16} style={{ color: 'var(--primary)', flexShrink: 0, marginTop: '0.15rem' }} />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <div style={{ marginTop: 'auto', paddingTop: '1.75rem' }}>
+                  <Link
+                    href={`/checkout?product=${plan.id}${from ? `&from=${from}` : ''}`}
+                    className={plan.highlight ? 'btn-primary' : 'btn-secondary'}
+                    style={{ display: 'block', textAlign: 'center' }}
+                  >
+                    {plan.cta}
+                  </Link>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
