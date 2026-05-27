@@ -14,7 +14,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'intro',
     name: 'Вводная встреча',
-    price: 1,
+    price: 1490,
     description: '90 минут в небольшой группе с психологом — без обязательств',
     features: [
       '90 минут в небольшой группе с психологом',
@@ -29,7 +29,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'base',
     name: 'Базовый',
-    price: 1,
+    price: 14990,
     description: 'Групповая программа: 4 встречи, структура, поддержка психолога.',
     features: [
       '4 групповые встречи по 90 минут',
@@ -45,7 +45,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'plus',
     name: 'Плюс',
-    price: 1,
+    price: 19990,
     description: 'Всё из Базового — плюс личная диагностика и индивидуальный план.',
     features: [
       'Всё из Базового',
@@ -61,7 +61,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'personal',
     name: 'Персональный',
-    price: 1,
+    price: 24990,
     description: 'Всё из Плюс — плюс две индивидуальные встречи с психологом.',
     features: [
       'Всё из Плюс',
@@ -73,7 +73,7 @@ export const PRODUCTS: Product[] = [
   {
     id: 'clarity-start',
     name: 'Ясность',
-    price: 1,
+    price: 8990,
     description: 'Для тех, кто хочет разобраться в ситуации — без давления принять решение прямо сейчас.',
     features: [
       '3 встречи по 45 минут один на один',

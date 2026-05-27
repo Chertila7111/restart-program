@@ -6,6 +6,8 @@ datasource db {
   provider = "sqlite"
 }
 
+// ── Core models (used via Prisma client) ──────────────────────────────────────
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -16,6 +18,7 @@ model User {
   image         String?
   role          String    @default("user")
   tier          String    @default("none")
+  status        String    @default("lead")
   quizCategory  String?
   quizSituation String?
   createdAt     DateTime  @default(now())
@@ -27,6 +30,7 @@ model User {
   journalEntries      JournalEntry[]
   taskCompletions     TaskCompletion[]
   PsychologistProfile PsychologistProfile?
+  availableSlots      AvailableSlot[]
 }
 
 model Account {
@@ -97,34 +101,26 @@ model JournalEntry {
   userId      String
   date        String
   type        String   @default("daily")
-
-  // Daily entry fields
   mood        Int      @default(5)
   anxiety     Int      @default(5)
   urgeToWrite Int      @default(1)
   energy      Int      @default(5)
   sleep       String   @default("ok")
-  triggers    String?  // JSON array
-  helpers     String?  // JSON array
+  triggers    String?
+  helpers     String?
   note        String?
   nextStep    String?
-
-  // Quick crisis entry fields
   situation   String?
   intensity   Int?
   wantToDo    String?
   saferAction String?
-
-  // Weekly summary fields
   weekSum1    String?
   weekSum2    String?
   weekSum3    String?
   weekSum4    String?
   weekSum5    String?
-
   sharedWithSpecialist Boolean @default(false)
   isDraft              Boolean @default(false)
-
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -160,3 +156,145 @@ model TaskCompletion {
   @@unique([userId, taskId])
 }
 
+// ── Scheduling (AvailableSlot used via Prisma client in slots route) ───────────
+
+model AvailableSlot {
+  id          String   @id @default(cuid())
+  doctorId    String
+  startAt     DateTime
+  durationMin Int      @default(45)
+  isBooked    Boolean  @default(false)
+  note        String?
+  createdAt   DateTime @default(now())
+
+  doctor User @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+}
+
+// ── Raw-SQL tables (tables exist in DB; code uses $queryRawUnsafe) ────────────
+// These are defined in schema so `prisma db push` creates the tables.
+// Prisma client is NOT used for CRUD — only raw SQL. No relations declared.
+
+model Group {
+  id             String   @id @default(cuid())
+  title          String
+  psychologistId String?
+  curatorId      String?
+  status         String   @default("recruiting")
+  currentWeek    Int      @default(1)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model GroupParticipant {
+  id       String   @id @default(cuid())
+  groupId  String
+  userId   String
+  status   String   @default("active")
+  joinedAt DateTime @default(now())
+
+  @@unique([groupId, userId])
+}
+
+model GroupMeeting {
+  id          String    @id @default(cuid())
+  groupId     String
+  week        Int       @default(1)
+  title       String?
+  scheduledAt DateTime?
+  meetingLink String?
+  notes       String?
+  createdAt   DateTime  @default(now())
+}
+
+model Booking {
+  id        String   @id @default(cuid())
+  userId    String
+  slotId    String?
+  status    String   @default("pending")
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  body      String
+  relatedId String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, endpoint])
+}
+
+model SpecialistNote {
+  id           String   @id @default(cuid())
+  userId       String
+  specialistId String
+  content      String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Recommendation {
+  id           String   @id @default(cuid())
+  userId       String
+  specialistId String
+  content      String
+  createdAt    DateTime @default(now())
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ConversationMember {
+  id             String   @id @default(cuid())
+  conversationId String
+  userId         String
+  joinedAt       DateTime @default(now())
+
+  @@unique([conversationId, userId])
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  senderId       String
+  content        String
+  createdAt      DateTime @default(now())
+}
+
+model ConsentLog {
+  id          String   @id @default(cuid())
+  userId      String
+  consentType String
+  version     String?
+  ip          String?
+  givenAt     DateTime @default(now())
+}
+
+model UserProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  goals     String?
+  about     String?
+  situation String?
+  partner   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -7,115 +7,151 @@ import { AdminPanel } from './AdminPanel'
 export default async function AdminPage() {
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) redirect('/auth/login')
-
   const sessionRole = (session.user as any).role as string | undefined
   if (sessionRole !== 'admin') redirect('/dashboard')
 
-  let users: { id: string; name: string | null; email: string; role: string; createdAt: Date; orders: { status: string; product: string }[] }[] = []
-  let leads: { id: string; name: string; email: string; phone: string | null; message: string | null; createdAt: Date }[] = []
-  let totalUsers = 0
-  let totalPaid = 0
+  const now = new Date()
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+
+  let stats = {
+    totalUsers: 0,
+    clients: 0,
+    psychologists: 0,
+    curators: 0,
+    newUsersWeek: 0,
+    newUsersMonth: 0,
+    activeUsersMonth: 0,
+    journalEntriesTotal: 0,
+    ordersPaid: 0,
+    ordersPending: 0,
+    ordersRefunded: 0,
+    revenueTotal: 0,
+    tierNone: 0,
+    tierIntro: 0,
+    tierBase: 0,
+    tierPlus: 0,
+    tierPersonal: 0,
+    tierClarity: 0,
+    tierOther: 0,
+    revenueByProduct: [] as { product: string; productName: string; count: number; amount: number }[],
+    recentOrders: [] as { id: string; name: string; email: string; productName: string; amount: number; createdAt: string }[],
+    leads: 0,
+  }
+
+  let users: {
+    id: string; name: string | null; email: string; role: string; tier: string
+    createdAt: string; hasPaid: boolean; paidProducts: string[]
+  }[] = []
+  let leads: { id: string; name: string; email: string; phone: string | null; message: string | null; createdAt: string }[] = []
 
   try {
-    users = await prisma.user.findMany({
-      include: { orders: true },
-      orderBy: { createdAt: 'desc' },
-      take: 50,
+    const [totalUsers, psychologists, curators, newWeek, newMonth, journalTotal, leadsCount] = await Promise.all([
+      prisma.user.count(),
+      prisma.user.count({ where: { role: 'psychologist' } }),
+      prisma.user.count({ where: { role: 'curator' } }),
+      prisma.user.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
+      prisma.user.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+      prisma.journalEntry.count(),
+      prisma.lead.count(),
+    ])
+
+    stats.totalUsers = totalUsers
+    stats.psychologists = psychologists
+    stats.curators = curators
+    stats.clients = totalUsers - psychologists - curators
+    stats.newUsersWeek = newWeek
+    stats.newUsersMonth = newMonth
+    stats.journalEntriesTotal = journalTotal
+    stats.leads = leadsCount
+
+    const [paidOrders, pendingOrders, refundedOrders, revenueResult, activeJournalUsers] = await Promise.all([
+      prisma.order.count({ where: { status: 'paid' } }),
+      prisma.order.count({ where: { status: 'pending' } }),
+      prisma.order.count({ where: { status: 'refunded' } }),
+      prisma.order.aggregate({ where: { status: 'paid' }, _sum: { amount: true } }),
+      prisma.journalEntry.findMany({
+        where: { createdAt: { gte: thirtyDaysAgo } },
+        select: { userId: true },
+        distinct: ['userId'],
+      }),
+    ])
+
+    stats.ordersPaid = paidOrders
+    stats.ordersPending = pendingOrders
+    stats.ordersRefunded = refundedOrders
+    stats.revenueTotal = revenueResult._sum.amount ?? 0
+    stats.activeUsersMonth = activeJournalUsers.length
+
+    const [revenueByProduct, allPaidOrders] = await Promise.all([
+      prisma.order.groupBy({
+        by: ['product'],
+        where: { status: 'paid' },
+        _count: { id: true },
+        _sum: { amount: true },
+      }),
+      prisma.order.findMany({
+        where: { status: 'paid' },
+        select: { userId: true, product: true, productName: true },
+      }),
+    ])
+
+    const productNames: Record<string, string> = {}
+    allPaidOrders.forEach((o: { product: string; productName: string; userId: string | null }) => { productNames[o.product] = o.productName })
+    stats.revenueByProduct = revenueByProduct.map((r: { product: string; _count: { id: number }; _sum: { amount: number | null } }) => ({
+      product: r.product,
+      productName: productNames[r.product] || r.product,
+      count: r._count.id,
+      amount: r._sum.amount ?? 0,
+    })).sort((a: { amount: number }, b: { amount: number }) => b.amount - a.amount)
+
+    const TIER_PRIORITY = ['personal', 'plus', 'base', 'clarity-deep', 'clarity-start', 'session', 'career', 'intro']
+    const userTiers: Record<string, string> = {}
+    allPaidOrders.forEach((o: { userId: string | null; product: string; productName: string }) => {
+      if (!o.userId) return
+      const cur = userTiers[o.userId]
+      if (!cur || TIER_PRIORITY.indexOf(o.product) < TIER_PRIORITY.indexOf(cur)) {
+        userTiers[o.userId] = o.product
+      }
     })
-    totalUsers = await prisma.user.count()
-    totalPaid = await prisma.order.count({ where: { status: 'paid' } })
-    leads = await prisma.lead.findMany({ orderBy: { createdAt: 'desc' }, take: 50 })
+    const tc: Record<string, number> = {}
+    Object.values(userTiers).forEach(t => { tc[t] = (tc[t] || 0) + 1 })
+    stats.tierIntro = tc['intro'] ?? 0
+    stats.tierBase = tc['base'] ?? 0
+    stats.tierPlus = tc['plus'] ?? 0
+    stats.tierPersonal = tc['personal'] ?? 0
+    stats.tierClarity = (tc['clarity-start'] ?? 0) + (tc['clarity-deep'] ?? 0)
+    stats.tierOther = (tc['session'] ?? 0) + (tc['career'] ?? 0)
+    stats.tierNone = stats.clients - Object.keys(userTiers).length
+
+    const recentOrders = await prisma.order.findMany({
+      where: { status: 'paid' },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+      select: { id: true, name: true, email: true, productName: true, amount: true, createdAt: true },
+    })
+    stats.recentOrders = recentOrders.map((o: { id: string; name: string; email: string; productName: string; amount: number; createdAt: Date }) => ({ ...o, createdAt: o.createdAt.toISOString() }))
+
+    const rawUsers = await prisma.user.findMany({
+      include: { orders: { where: { status: 'paid' }, select: { product: true } } },
+      orderBy: { createdAt: 'desc' },
+      take: 200,
+    })
+    users = rawUsers.map((u: { id: string; name: string | null; email: string; role: string; tier: string; createdAt: Date; orders: { product: string }[] }) => ({
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      role: u.role,
+      tier: u.tier,
+      createdAt: u.createdAt.toISOString(),
+      hasPaid: u.orders.length > 0,
+      paidProducts: u.orders.map((o: { product: string }) => o.product),
+    }))
+
+    const rawLeads = await prisma.lead.findMany({ orderBy: { createdAt: 'desc' }, take: 50 })
+    leads = rawLeads.map((l: { id: string; name: string; email: string; phone: string | null; message: string | null; createdAt: Date }) => ({ ...l, createdAt: l.createdAt.toISOString() }))
+
   } catch { /* DB unavailable */ }
 
-  const serialized = users.map(u => ({
-    id: u.id,
-    name: u.name,
-    email: u.email,
-    role: u.role,
-    createdAt: u.createdAt.toISOString(),
-    orders: u.orders,
-    hasPaid: u.orders.some(o => o.status === 'paid'),
-    tier: (() => {
-      const paid = u.orders.filter(o => o.status === 'paid').map(o => o.product)
-      if (paid.includes('personal')) return 'personal'
-      if (paid.includes('plus')) return 'plus'
-      if (paid.includes('base')) return 'base'
-      if (paid.includes('intro')) return 'intro'
-      return 'none'
-    })(),
-  }))
-
-  return (
-    <div style={{ maxWidth: '56rem' }}>
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text)', marginBottom: '0.375rem' }}>Панель администратора</h1>
-      <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Управление пользователями и статистика</p>
-
-      {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
-        {[
-          { label: 'Пользователей', value: totalUsers || users.length, icon: '👥' },
-          { label: 'Платных', value: users.filter(u => u.orders.some(o => o.status === 'paid')).length, icon: '💳' },
-          { label: 'Психологов', value: users.filter(u => u.role === 'psychologist').length, icon: '🧠' },
-        ].map(stat => (
-          <div key={stat.label} className="card" style={{ padding: '1.25rem', textAlign: 'center' }}>
-            <div style={{ fontSize: '1.75rem', marginBottom: '0.25rem' }}>{stat.icon}</div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text)' }}>{stat.value}</div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>{stat.label}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Quick actions */}
-      <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
-        <a href="/dashboard/admin/meetings" style={{
-          display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-          padding: '0.625rem 1.125rem', borderRadius: '0.75rem',
-          background: 'var(--primary)', color: 'white', textDecoration: 'none',
-          fontWeight: 600, fontSize: '0.875rem',
-        }}>
-          📅 Управление встречами
-        </a>
-      </div>
-
-      <AdminPanel users={serialized} />
-
-      {/* Leads */}
-      <div style={{ marginTop: '2.5rem' }}>
-        <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text)', marginBottom: '1rem' }}>
-          Заявки с сайта ({leads.length})
-        </h2>
-        {leads.length === 0 ? (
-          <div className="card" style={{ padding: '1.5rem', color: 'var(--text-muted)', fontSize: '0.875rem' }}>Заявок пока нет</div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {leads.map(lead => (
-              <div key={lead.id} className="card" style={{ padding: '1.25rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', marginBottom: '0.5rem' }}>
-                  <div>
-                    <span style={{ fontWeight: 700, color: 'var(--text)', fontSize: '0.9rem' }}>{lead.name}</span>
-                    {' · '}
-                    <a href={`mailto:${lead.email}`} style={{ color: 'var(--primary)', fontSize: '0.875rem' }}>{lead.email}</a>
-                    {lead.phone && <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginLeft: '0.5rem' }}>{lead.phone}</span>}
-                  </div>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-light)', whiteSpace: 'nowrap' }}>
-                    {new Date(lead.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                </div>
-                {lead.message && (
-                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.6, background: 'var(--bg-soft)', padding: '0.625rem 0.875rem', borderRadius: '0.5rem' }}>
-                    {lead.message}
-                  </p>
-                )}
-                <div style={{ marginTop: '0.625rem' }}>
-                  <a href={`mailto:${lead.email}?subject=Ответ на вашу заявку`} style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>
-                    Ответить →
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  )
+  return <AdminPanel stats={stats} users={users} leads={leads} />
 }

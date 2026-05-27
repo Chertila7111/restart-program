@@ -1,8 +1,10 @@
 import type { NextConfig } from 'next'
 
+const isDev = process.env.NODE_ENV === 'development'
+
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' mc.yandex.ru",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''} mc.yandex.ru`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https:",
   "font-src 'self' data:",
