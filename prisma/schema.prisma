@@ -21,6 +21,7 @@ model User {
   status        String    @default("lead")
   quizCategory  String?
   quizSituation String?
+  lastSeenAt    DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -70,18 +71,23 @@ model VerificationToken {
 }
 
 model Order {
-  id          String   @id @default(cuid())
-  userId      String?
-  email       String
-  name        String
-  phone       String?
-  product     String
-  productName String
-  amount      Int
-  status      String   @default("pending")
-  paymentId   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                  String    @id @default(cuid())
+  userId              String?
+  email               String
+  name                String
+  phone               String?
+  product             String
+  productName         String
+  amount              Int
+  status              String    @default("pending")
+  paymentId           String?
+  refundStatus        String?
+  refundAmount        Int?
+  refundReason        String?
+  refundRequestedAt   DateTime?
+  refundCompletedAt   DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
   user User? @relation(fields: [userId], references: [id])
 }
@@ -97,32 +103,32 @@ model Lead {
 }
 
 model JournalEntry {
-  id          String   @id @default(cuid())
-  userId      String
-  date        String
-  type        String   @default("daily")
-  mood        Int      @default(5)
-  anxiety     Int      @default(5)
-  urgeToWrite Int      @default(1)
-  energy      Int      @default(5)
-  sleep       String   @default("ok")
-  triggers    String?
-  helpers     String?
-  note        String?
-  nextStep    String?
-  situation   String?
-  intensity   Int?
-  wantToDo    String?
-  saferAction String?
-  weekSum1    String?
-  weekSum2    String?
-  weekSum3    String?
-  weekSum4    String?
-  weekSum5    String?
-  sharedWithSpecialist Boolean @default(false)
-  isDraft              Boolean @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                   String   @id @default(cuid())
+  userId               String
+  date                 String
+  type                 String   @default("daily")
+  mood                 Int      @default(5)
+  anxiety              Int      @default(5)
+  urgeToWrite          Int      @default(1)
+  energy               Int      @default(5)
+  sleep                String   @default("ok")
+  triggers             String?
+  helpers              String?
+  note                 String?
+  nextStep             String?
+  situation            String?
+  intensity            Int?
+  wantToDo             String?
+  saferAction          String?
+  weekSum1             String?
+  weekSum2             String?
+  weekSum3             String?
+  weekSum4             String?
+  weekSum5             String?
+  sharedWithSpecialist Boolean  @default(false)
+  isDraft              Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -137,7 +143,10 @@ model PsychologistProfile {
   education   String?
   experience  String?
   bio         String?
+  workStyle   String?
+  quote       String?
   photoUrl    String?
+  meetingLink String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -156,7 +165,7 @@ model TaskCompletion {
   @@unique([userId, taskId])
 }
 
-// ── Scheduling (AvailableSlot used via Prisma client in slots route) ───────────
+// ── Scheduling ────────────────────────────────────────────────────────────────
 
 model AvailableSlot {
   id          String   @id @default(cuid())
@@ -170,28 +179,73 @@ model AvailableSlot {
   doctor User @relation(fields: [doctorId], references: [id], onDelete: Cascade)
 }
 
-// ── Raw-SQL tables (tables exist in DB; code uses $queryRawUnsafe) ────────────
-// These are defined in schema so `prisma db push` creates the tables.
-// Prisma client is NOT used for CRUD — only raw SQL. No relations declared.
+model Booking {
+  id        String   @id @default(cuid())
+  userId    String
+  slotId    String
+  type      String   @default("individual")
+  status    String   @default("confirmed")
+  notes     String?
+  createdAt DateTime @default(now())
+
+  @@unique([slotId])
+}
+
+model SpecialistAvailability {
+  id           String   @id @default(cuid())
+  specialistId String
+  weekday      Int
+  startTime    String
+  endTime      String
+  duration     Int      @default(60)
+  type         String   @default("individual")
+  createdAt    DateTime @default(now())
+}
+
+// ── Groups & meetings ─────────────────────────────────────────────────────────
 
 model Group {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   title          String
+  startDate      DateTime?
   psychologistId String?
   curatorId      String?
-  status         String   @default("recruiting")
-  currentWeek    Int      @default(1)
-  createdAt      DateTime @default(now())
+  status         String    @default("recruiting")
+  currentWeek    Int       @default(1)
+  createdAt      DateTime  @default(now())
 }
 
 model GroupParticipant {
-  id       String   @id @default(cuid())
-  groupId  String
-  userId   String
-  status   String   @default("active")
-  joinedAt DateTime @default(now())
+  id                 String   @id @default(cuid())
+  groupId            String
+  userId             String
+  status             String   @default("active")
+  diaryAccessGranted Boolean  @default(false)
+  joinedAt           DateTime @default(now())
 
   @@unique([groupId, userId])
+}
+
+model Meeting {
+  id            String   @id @default(cuid())
+  type          String   @default("custom")
+  title         String
+  description   String?
+  date          String
+  time          String
+  duration      String   @default("90 мин")
+  meetingLink   String?
+  doctorId      String?
+  targetTiers   String   @default("[\"intro\",\"base\",\"plus\",\"personal\"]")
+  status        String   @default("scheduled")
+  createdBy     String?
+  groupId       String?
+  participantId String?
+  curatorId     String?
+  recordingUrl  String?
+  timezone      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model GroupMeeting {
@@ -205,58 +259,11 @@ model GroupMeeting {
   createdAt   DateTime  @default(now())
 }
 
-model Booking {
-  id        String   @id @default(cuid())
-  userId    String
-  slotId    String?
-  status    String   @default("pending")
-  notes     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Notification {
-  id        String   @id @default(cuid())
-  userId    String
-  type      String
-  title     String
-  body      String
-  relatedId String?
-  read      Boolean  @default(false)
-  createdAt DateTime @default(now())
-}
-
-model PushSubscription {
-  id        String   @id @default(cuid())
-  userId    String
-  endpoint  String
-  p256dh    String
-  auth      String
-  createdAt DateTime @default(now())
-
-  @@unique([userId, endpoint])
-}
-
-model SpecialistNote {
-  id           String   @id @default(cuid())
-  userId       String
-  specialistId String
-  content      String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-}
-
-model Recommendation {
-  id           String   @id @default(cuid())
-  userId       String
-  specialistId String
-  content      String
-  createdAt    DateTime @default(now())
-}
+// ── Messaging ─────────────────────────────────────────────────────────────────
 
 model Conversation {
   id        String   @id @default(cuid())
-  title     String?
+  subject   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -278,22 +285,94 @@ model Message {
   createdAt      DateTime @default(now())
 }
 
-model ConsentLog {
-  id          String   @id @default(cuid())
-  userId      String
-  consentType String
-  version     String?
-  ip          String?
-  givenAt     DateTime @default(now())
+// ── Specialist tools ──────────────────────────────────────────────────────────
+
+model SpecialistNote {
+  id           String   @id @default(cuid())
+  specialistId String
+  userId       String
+  note         String
+  tags         String?
+  isImportant  Boolean  @default(false)
+  createdAt    DateTime @default(now())
 }
 
+model Recommendation {
+  id            String   @id @default(cuid())
+  specialistId  String
+  userId        String
+  type          String   @default("session")
+  summary       String
+  focus         String?
+  exercises     String?
+  nextStep      String?
+  visibleToUser Boolean  @default(true)
+  createdAt     DateTime @default(now())
+}
+
+// ── User profile & notifications ──────────────────────────────────────────────
+
 model UserProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  photoUrl    String?
+  age         String?
+  city        String?
+  timezone    String?
+  phone       String?
+  telegram    String?
+  about       String?
+  situation   String?
+  mainPain    String?
+  goals       String?
+  moodNow     Int?
+  diaryAccess String   @default("private")
+  partner     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Notification {
   id        String   @id @default(cuid())
-  userId    String   @unique
-  goals     String?
-  about     String?
-  situation String?
-  partner   String?
+  userId    String
+  type      String
+  title     String
+  body      String?
+  relatedId String?
+  read      Boolean  @default(false)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, endpoint])
+}
+
+// ── Audit & consent ───────────────────────────────────────────────────────────
+
+model ConsentLog {
+  id              String   @id @default(cuid())
+  userId          String
+  consentType     String
+  consentVersion  Int      @default(1)
+  accepted        Boolean  @default(true)
+  acceptedAt      DateTime @default(now())
+}
+
+model AuditLog {
+  id           String   @id @default(cuid())
+  actorId      String
+  actorRole    String
+  action       String
+  targetUserId String?
+  entityType   String?
+  entityId     String?
+  metadata     String?
+  createdAt    DateTime @default(now())
 }
