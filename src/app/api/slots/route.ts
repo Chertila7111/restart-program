@@ -11,7 +11,7 @@ export async function GET() {
   try {
     await ensureDb()
     const slots = await (prisma as any).availableSlot.findMany({
-      where: { isBooked: 0, startAt: { gt: new Date() } },
+      where: { isBooked: false, startAt: { gt: new Date() } },
       orderBy: { startAt: 'asc' },
       include: { doctor: { select: { id: true, name: true } } },
     })

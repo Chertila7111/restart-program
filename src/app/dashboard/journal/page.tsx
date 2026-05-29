@@ -3,8 +3,8 @@ import { redirect } from 'next/navigation'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import { PenLine, Zap, BarChart2, Calendar, Lock } from 'lucide-react'
-import { RevokeAccessButton } from './RevokeAccessButton'
+import { PenLine, Zap, BarChart2, Calendar } from 'lucide-react'
+import { PrivacySettings } from './PrivacySettings'
 
 type Entry = {
   id: string
@@ -42,10 +42,16 @@ export default async function JournalPage() {
   let todayDaily: Entry | null = null
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let todayQuick: Entry | null = null
+  let diaryAccess = 'private'
 
   try {
     const user = await prisma.user.findUnique({ where: { email: session.user.email! } })
     if (user) {
+      // Load diary privacy setting
+      const profile = await (prisma as any).$queryRawUnsafe(
+        `SELECT diaryAccess FROM "UserProfile" WHERE userId = ? LIMIT 1`, user.id
+      ) as { diaryAccess: string }[]
+      if (profile?.[0]?.diaryAccess) diaryAccess = profile[0].diaryAccess
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const raw: any[] = await (prisma as any).journalEntry.findMany({
         where: { userId: user.id },
@@ -77,13 +83,9 @@ export default async function JournalPage() {
 
   return (
     <div style={{ maxWidth: '48rem' }}>
-      {/* Privacy notice */}
-      <div style={{ display: 'flex', gap: '0.625rem', alignItems: 'flex-start', background: '#F0FDF4', border: '1.5px solid #86EFAC', borderRadius: '0.875rem', padding: '0.875rem 1.125rem', marginBottom: '1.25rem' }}>
-        <Lock size={15} style={{ color: '#16A34A', flexShrink: 0, marginTop: '0.1rem' }} />
-        <div style={{ fontSize: '0.8rem', color: '#166534', lineHeight: 1.65 }}>
-          <strong>Ваш дневник видите только вы.</strong> Психолог увидит записи только если вы откроете доступ или отправите конкретную запись. Куратор личный дневник не видит. Вы можете изменить настройки приватности в любой момент.
-          <RevokeAccessButton />
-        </div>
+      {/* Privacy settings */}
+      <div style={{ background: '#F0FDF4', border: '1.5px solid #86EFAC', borderRadius: '0.875rem', padding: '1rem 1.125rem', marginBottom: '1.25rem' }}>
+        <PrivacySettings initial={diaryAccess} />
       </div>
 
       {/* Header */}

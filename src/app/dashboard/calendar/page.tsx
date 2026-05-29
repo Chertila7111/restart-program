@@ -21,7 +21,7 @@ export default async function CalendarPage() {
     await ensureDb()
 
     const rawSlots = await (prisma as any).availableSlot.findMany({
-      where: { isBooked: 0, startAt: { gt: new Date() } },
+      where: { isBooked: false, startAt: { gt: new Date() } },
       orderBy: { startAt: 'asc' },
       include: { doctor: { select: { name: true } } },
     })
