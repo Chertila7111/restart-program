@@ -3,17 +3,13 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { ensureDb } from '@/lib/db-init'
 import Link from 'next/link'
-import { Calendar, CheckCircle, Clock, User } from 'lucide-react'
+import { Calendar, Clock, User } from 'lucide-react'
+import { MarkCompleteButton } from './MarkCompleteButton'
 
 const STATUS_LABEL: Record<string, string> = {
   confirmed: 'Подтверждена',
   cancelled: 'Отменена',
   completed: 'Проведена',
-}
-const STATUS_COLOR: Record<string, string> = {
-  confirmed: '#2563EB',
-  cancelled: '#B91C1C',
-  completed: '#059669',
 }
 
 function fmtDateTime(iso: string) {
@@ -34,7 +30,10 @@ export default async function SessionsPage() {
     const rows = await (prisma as any).$queryRawUnsafe(`
       SELECT b.id, b.status, b.notes, b.createdAt,
              s.startAt, s.durationMin,
-             u.id as userId, u.name as userName, u.email as userEmail
+             u.id as userId, u.name as userName, u.email as userEmail,
+             (SELECT COUNT(*) FROM "Booking" b2
+              JOIN "AvailableSlot" s2 ON s2.id = b2.slotId
+              WHERE b2.userId = u.id AND b2.status = 'completed') as sessionsUsed
       FROM "Booking" b
       JOIN "AvailableSlot" s ON s.id = b.slotId
       JOIN "User" u ON u.id = b.userId
@@ -43,15 +42,15 @@ export default async function SessionsPage() {
     `, specialistId)
     const all = Array.isArray(rows) ? rows : []
     const now = new Date().toISOString()
-    upcoming = all.filter((b: any) => b.startAt >= now).reverse()
-    past = all.filter((b: any) => b.startAt < now)
+    upcoming = all.filter((b: any) => String(b.startAt) >= now).reverse()
+    past = all.filter((b: any) => String(b.startAt) < now)
   } catch { /* DB not ready */ }
 
   return (
     <div style={{ maxWidth: '52rem' }}>
       <div style={{ marginBottom: '2rem' }}>
         <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text)', marginBottom: '0.25rem' }}>Индивидуальные встречи</h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>Записи участников на ваши слоты</p>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>После встречи отметьте статус — кредит спишется у участника</p>
       </div>
 
       {upcoming.length === 0 && past.length === 0 ? (
@@ -90,9 +89,7 @@ export default async function SessionsPage() {
                         </div>
                       )}
                     </div>
-                    <span style={{ fontSize: '0.72rem', fontWeight: 700, color: STATUS_COLOR[b.status] || '#6B7280', border: `1px solid ${STATUS_COLOR[b.status] || '#6B7280'}`, borderRadius: '9999px', padding: '0.15rem 0.625rem', flexShrink: 0 }}>
-                      {STATUS_LABEL[b.status] || b.status}
-                    </span>
+                    <MarkCompleteButton bookingId={b.id} currentStatus={b.status} />
                   </div>
                 ))}
               </div>
@@ -102,13 +99,13 @@ export default async function SessionsPage() {
           {past.length > 0 && (
             <div>
               <h2 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <CheckCircle size={15} style={{ color: '#6B7280' }} /> Прошедшие ({past.length})
+                <Calendar size={15} style={{ color: '#6B7280' }} /> Прошедшие ({past.length})
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
                 {past.map((b: any) => (
-                  <div key={b.id} className="card" style={{ padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', opacity: 0.8 }}>
-                    <div style={{ width: '2.25rem', height: '2.25rem', borderRadius: '50%', background: 'var(--bg-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <User size={14} style={{ color: 'var(--text-muted)' }} />
+                  <div key={b.id} className="card" style={{ padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', opacity: b.status === 'completed' ? 1 : 0.8 }}>
+                    <div style={{ width: '2.25rem', height: '2.25rem', borderRadius: '50%', background: b.status === 'completed' ? '#ECFDF5' : 'var(--bg-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <User size={14} style={{ color: b.status === 'completed' ? '#059669' : 'var(--text-muted)' }} />
                     </div>
                     <div style={{ flex: 1, minWidth: '10rem' }}>
                       <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text)' }}>
@@ -116,11 +113,14 @@ export default async function SessionsPage() {
                       </div>
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>
                         {fmtDateTime(b.startAt)} · {b.durationMin} мин
+                        {b.sessionsUsed > 0 && (
+                          <span style={{ marginLeft: '0.5rem', color: '#059669', fontWeight: 600 }}>
+                            · {b.sessionsUsed} встр. использовано
+                          </span>
+                        )}
                       </div>
                     </div>
-                    <span style={{ fontSize: '0.72rem', color: '#6B7280', flexShrink: 0 }}>
-                      {STATUS_LABEL[b.status] || b.status}
-                    </span>
+                    <MarkCompleteButton bookingId={b.id} currentStatus={b.status} />
                   </div>
                 ))}
               </div>
