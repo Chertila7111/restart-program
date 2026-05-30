@@ -5,6 +5,9 @@ import { useEffect, useRef, Suspense } from 'react'
 
 const YM_ID = 109291907
 
+// Pages with personal/confidential data — no hit tracking, no webvisor recording
+const PRIVATE_RE = /^\/(dashboard|specialist|curator|admin)(\/|$)/
+
 function HitTracker() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -24,6 +27,9 @@ function HitTracker() {
 
     if (prevUrl.current === url) return
     prevUrl.current = url
+
+    // Don't track private/confidential pages at all
+    if (PRIVATE_RE.test(pathname)) return
 
     if (typeof window !== 'undefined' && typeof (window as any).ym === 'function') {
       ;(window as any).ym(YM_ID, 'hit', window.location.href, {

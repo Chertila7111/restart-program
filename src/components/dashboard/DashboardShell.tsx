@@ -239,7 +239,8 @@ export function DashboardShell({ user, tier, role = 'user', children }: Props) {
       </div>
 
       {/* ── Content ── */}
-      <main className="dashboard-content">
+      {/* ya-wm-ignore: Yandex Metrika won't record personal/confidential content */}
+      <main className="dashboard-content ya-wm-ignore">
         {children}
       </main>
     </div>

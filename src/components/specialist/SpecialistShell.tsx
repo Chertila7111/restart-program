@@ -118,7 +118,7 @@ export function SpecialistShell({ user, children }: Props) {
         })}
       </div>
 
-      <main className="dashboard-content">
+      <main className="dashboard-content ya-wm-ignore">
         {children}
       </main>
     </div>
