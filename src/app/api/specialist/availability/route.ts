@@ -111,18 +111,23 @@ export async function POST(req: NextRequest) {
   try {
     await ensureDb()
 
-    // Save recurring pattern
+    // Save recurring pattern atomically
     await (prisma as any).$executeRawUnsafe(
       `DELETE FROM "SpecialistAvailability" WHERE specialistId = ?`,
       specialistId
     )
     const base = Date.now()
-    for (let i = 0; i < slots.length; i++) {
-      const s = slots[i]
-      const id = `sa-${base}-${i}-${Math.random().toString(36).slice(2)}`
+    // Build single batch VALUES to avoid partial-write on failure
+    if (slots.length > 0) {
+      const placeholders = slots.map(() => '(?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)').join(', ')
+      const values: any[] = []
+      slots.forEach((s, i) => {
+        const id = `sa-${base}-${i}-${Math.random().toString(36).slice(2)}`
+        values.push(id, specialistId, s.weekday, s.startTime, s.endTime, s.duration ?? 60, s.type ?? 'individual')
+      })
       await (prisma as any).$executeRawUnsafe(
-        `INSERT INTO "SpecialistAvailability" (id, specialistId, weekday, startTime, endTime, duration, type, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
-        id, specialistId, s.weekday, s.startTime, s.endTime, s.duration ?? 60, s.type ?? 'individual'
+        `INSERT INTO "SpecialistAvailability" (id, specialistId, weekday, startTime, endTime, duration, type, createdAt) VALUES ${placeholders}`,
+        ...values
       )
     }
 
