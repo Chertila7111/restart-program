@@ -9,7 +9,7 @@ const CSP = [
   "img-src 'self' data: https:",
   "font-src 'self' data:",
   "connect-src 'self' mc.yandex.ru api.yookassa.ru",
-  "frame-src 'none'",
+  "frame-src mc.yandex.ru",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
