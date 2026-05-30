@@ -122,7 +122,7 @@ export default function AvailabilityPage() {
       const r = await fetch('/api/specialist/availability', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slots, weeksAhead }),
+        body: JSON.stringify({ slots, weeksAhead, timezoneOffset: new Date().getTimezoneOffset() }),
       })
       if (r.ok) {
         const data = await r.json()
@@ -322,80 +322,129 @@ export default function AvailabilityPage() {
       )}
 
       {/* Weekly grid */}
-      <div className="card" style={{ padding: '1.25rem', marginBottom: '1.25rem', overflowX: 'auto' }}>
+      <div className="card" style={{ padding: '1rem', marginBottom: '1.25rem', overflowX: 'auto' }}>
         {!loaded ? (
           <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
             <Loader2 size={24} style={{ animation: 'spin 1s linear infinite' }} />
             Загрузка…
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: '3.5rem repeat(7, 1fr)', gap: 0, minWidth: '36rem' }}>
+          <div style={{ minWidth: '38rem' }}>
             {/* Header */}
-            <div />
-            {DAYS.map((day, di) => (
-              <div key={di} style={{ textAlign: 'center', padding: '0.5rem 0.25rem', borderBottom: '2px solid var(--border)' }}>
-                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text)', marginBottom: '0.1rem' }}>{day}</div>
-                {slots.some(s => s.weekday === di) && (
-                  <button onClick={() => setSlots(prev => prev.filter(s => s.weekday !== di))} style={{ fontSize: '0.6rem', color: '#B91C1C', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                    очистить
-                  </button>
-                )}
-              </div>
-            ))}
-
-            {/* Hour rows */}
-            {HOURS.map(hour => (
-              <>
-                <div key={`t${hour}`} style={{ padding: '0 0.5rem 0 0', textAlign: 'right', fontSize: '0.7rem', color: 'var(--text-light)', paddingTop: '0.3rem', borderRight: '1px solid var(--border)' }}>
-                  {`${hour}:00`}
-                </div>
-                {DAYS.map((_, di) => {
-                  const slot = getSlotAt(di, hour)
-                  const t = slot ? typeByKey(slot.type) : null
-                  const isFirst = slot && timeToMinutes(slot.startTime) === hour * 60
-                  const color = t?.color ?? '#4E7B5E'
-
-                  return (
-                    <div
-                      key={`${di}-${hour}`}
-                      onClick={() => toggleHour(di, hour)}
-                      style={{
-                        height: '2.25rem',
-                        background: slot ? hexToRgba(color, 0.15) : 'transparent',
-                        borderLeft: slot ? `3px solid ${color}` : '1px solid transparent',
-                        borderBottom: '1px solid var(--border)',
-                        borderRight: di === 6 ? '1px solid var(--border)' : 'none',
-                        cursor: 'pointer',
-                        position: 'relative',
-                        transition: 'background 0.1s',
-                      }}
-                      onMouseEnter={e => { if (!slot) (e.currentTarget as HTMLDivElement).style.background = hexToRgba(activeSel.color, 0.08) }}
-                      onMouseLeave={e => { if (!slot) (e.currentTarget as HTMLDivElement).style.background = 'transparent' }}
+            <div style={{ display: 'grid', gridTemplateColumns: '3rem repeat(7, 1fr)', gap: 0, borderBottom: '2px solid var(--border)', paddingBottom: '0.5rem', marginBottom: '2px' }}>
+              <div />
+              {DAYS.map((day, di) => (
+                <div key={di} style={{ textAlign: 'center', padding: '0 0.25rem' }}>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--text)' }}>{day}</div>
+                  {slots.some(s => s.weekday === di) && (
+                    <button
+                      onClick={() => setSlots(prev => prev.filter(s => s.weekday !== di))}
+                      style={{ fontSize: '0.6rem', color: '#B91C1C', background: 'none', border: 'none', cursor: 'pointer', padding: 0, lineHeight: 1.2 }}
                     >
-                      {slot && isFirst && (
-                        <div style={{ position: 'absolute', top: '50%', left: '5px', transform: 'translateY(-50%)', fontSize: '0.6rem', fontWeight: 700, color: color, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '90%' }}>
-                          {slot.startTime}–{slot.endTime}
-                        </div>
-                      )}
-                    </div>
-                  )
-                })}
-              </>
-            ))}
+                      очистить
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Grid body */}
+            <div style={{ display: 'grid', gridTemplateColumns: '3rem repeat(7, 1fr)', gap: 0 }}>
+              {HOURS.map(hour => (
+                <>
+                  {/* Time label — positioned at grid line (top of cell) */}
+                  <div
+                    key={`t${hour}`}
+                    style={{
+                      fontSize: '0.65rem', color: 'var(--text-light)', fontWeight: 500,
+                      textAlign: 'right', paddingRight: '0.5rem',
+                      height: '3rem', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-end',
+                      paddingTop: '2px', boxSizing: 'border-box',
+                      borderRight: '1px solid var(--border)',
+                    }}
+                  >
+                    {`${hour}:00`}
+                  </div>
+
+                  {DAYS.map((_, di) => {
+                    const slot = getSlotAt(di, hour)
+                    const t = slot ? typeByKey(slot.type) : null
+                    const color = t?.color ?? '#4E7B5E'
+                    const isFirst = slot ? timeToMinutes(slot.startTime) === hour * 60 : false
+                    const isLast  = slot ? timeToMinutes(slot.endTime)   === (hour + 1) * 60 : false
+
+                    const borderTop    = isFirst ? `2px solid ${color}` : slot ? `1px dashed ${hexToRgba(color, 0.25)}` : '1px solid #F1F5F9'
+                    const borderBottom = isLast  ? `2px solid ${color}` : '1px solid #F1F5F9'
+                    const borderRight  = di === 6 ? '1px solid var(--border)' : '1px solid #F1F5F9'
+
+                    return (
+                      <div
+                        key={`${di}-${hour}`}
+                        onClick={() => toggleHour(di, hour)}
+                        style={{
+                          height: '3rem',
+                          background: slot ? hexToRgba(color, 0.1) : 'transparent',
+                          borderLeft: slot ? `3px solid ${color}` : '1px solid #F1F5F9',
+                          borderTop, borderBottom, borderRight,
+                          cursor: 'pointer',
+                          position: 'relative',
+                          transition: 'background 0.1s',
+                        }}
+                        onMouseEnter={e => {
+                          const el = e.currentTarget as HTMLDivElement
+                          if (!slot) el.style.background = hexToRgba(activeSel.color, 0.07)
+                          else el.style.background = hexToRgba(color, 0.2)
+                        }}
+                        onMouseLeave={e => {
+                          const el = e.currentTarget as HTMLDivElement
+                          el.style.background = slot ? hexToRgba(color, 0.1) : 'transparent'
+                        }}
+                      >
+                        {/* Slot header: shown on FIRST cell */}
+                        {isFirst && (
+                          <div style={{
+                            position: 'absolute', top: '4px', left: '5px', right: '5px',
+                            display: 'flex', alignItems: 'center', gap: '4px',
+                          }}>
+                            <span style={{
+                              fontSize: '0.62rem', fontWeight: 800, color,
+                              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                              flex: 1,
+                            }}>
+                              {t?.label}
+                            </span>
+                          </div>
+                        )}
+                        {/* Time range: shown on first cell, below type label */}
+                        {isFirst && (
+                          <div style={{
+                            position: 'absolute', bottom: '3px', left: '5px',
+                            fontSize: '0.58rem', fontWeight: 600, color: hexToRgba(color, 0.8),
+                            whiteSpace: 'nowrap',
+                          }}>
+                            {slot?.startTime}–{slot?.endTime}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </>
+              ))}
+            </div>
           </div>
         )}
 
         {/* Legend */}
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '1rem', paddingTop: '0.875rem', borderTop: '1px solid var(--border)' }}>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border)', alignItems: 'center' }}>
           {types.map(t => (
             <div key={t.key} style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              <div style={{ width: '12px', height: '12px', borderRadius: '3px', background: hexToRgba(t.color, 0.2), border: `2px solid ${t.color}` }} />
+              <div style={{ width: '3px', height: '14px', borderRadius: '9999px', background: t.color }} />
+              <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: hexToRgba(t.color, 0.15), border: `1px solid ${hexToRgba(t.color, 0.4)}` }} />
               {t.label}
             </div>
           ))}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            <div style={{ width: '12px', height: '12px', borderRadius: '3px', background: 'var(--bg-soft)', border: '1px dashed var(--border)' }} />
-            Нажмите чтобы добавить
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', color: 'var(--text-light)' }}>
+            Клик — добавить/убрать час · Двойной клик по заголовку — убрать весь блок
           </div>
         </div>
       </div>

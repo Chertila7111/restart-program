@@ -30,9 +30,10 @@ async function generateSlots(
   specialistId: string,
   patterns: { weekday: number; startTime: string; endTime: string; duration: number }[],
   weeksAhead: number,
+  tzOffsetMin: number,  // from client: new Date().getTimezoneOffset() (negative for east, e.g. MSK=-180)
 ): Promise<number> {
   const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  today.setUTCHours(0, 0, 0, 0)
 
   let created = 0
 
@@ -42,27 +43,31 @@ async function generateSlots(
     const startMin = startParts[0] * 60 + (startParts[1] || 0)
     const endMin = endParts[0] * 60 + (endParts[1] || 0)
 
-    // Find the next occurrence of this weekday (Mon=1..Sun=0 in JS, Mon=0..Sun=6 in our system)
     // JS: 0=Sun,1=Mon..6=Sat  →  our weekday 0=Mon..6=Sun
-    const jsDow = (pat.weekday + 1) % 7 // 0(Mon)→1, 6(Sun)→0
+    const jsDow = (pat.weekday + 1) % 7
 
     for (let week = 0; week < weeksAhead; week++) {
-      // Find the date for this weekday in the given week offset
       const base = new Date(today)
-      base.setDate(base.getDate() + week * 7)
-      // Find next occurrence of jsDow starting from base
-      const dayOffset = (jsDow - base.getDay() + 7) % 7
+      base.setUTCDate(base.getUTCDate() + week * 7)
+      const dayOffset = (jsDow - base.getUTCDay() + 7) % 7
       const slotDate = new Date(base)
-      slotDate.setDate(slotDate.getDate() + dayOffset)
+      slotDate.setUTCDate(slotDate.getUTCDate() + dayOffset)
 
-      // Skip if in the past
-      if (slotDate < today && week === 0 && dayOffset === 0) continue
-
-      // Generate individual slot records within the time window
       let cursor = startMin
       while (cursor + pat.duration <= endMin) {
-        const slotStart = new Date(slotDate)
-        slotStart.setHours(Math.floor(cursor / 60), cursor % 60, 0, 0)
+        // Convert specialist's local time to UTC using their browser timezone offset
+        // getTimezoneOffset() returns negative for east-of-UTC, so: UTC = local + offset
+        const utcCursorMin = cursor + tzOffsetMin
+        const utcH = Math.floor(utcCursorMin / 60)
+        const utcM = utcCursorMin % 60
+
+        const slotStart = new Date(Date.UTC(
+          slotDate.getUTCFullYear(),
+          slotDate.getUTCMonth(),
+          slotDate.getUTCDate() + Math.floor(utcCursorMin / (24 * 60)),  // handle day rollover
+          ((utcH % 24) + 24) % 24,
+          ((utcM % 60) + 60) % 60,
+        ))
 
         // Skip past slots
         if (slotStart <= new Date()) { cursor += pat.duration; continue }
@@ -98,7 +103,7 @@ export async function POST(req: NextRequest) {
   }
   const specialistId = (session.user as any).id as string
   const body = await req.json()
-  const { slots, weeksAhead = 4 } = body as { slots: any[]; weeksAhead?: number }
+  const { slots, weeksAhead = 4, timezoneOffset = -180 } = body as { slots: any[]; weeksAhead?: number; timezoneOffset?: number }
   if (!Array.isArray(slots)) return NextResponse.json({ error: 'Invalid' }, { status: 400 })
 
   const weeks = Math.min(Math.max(Number(weeksAhead) || 4, 1), 12)
@@ -122,7 +127,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Auto-generate concrete AvailableSlot records for the next N weeks
-    const generated = await generateSlots(specialistId, slots, weeks)
+    const generated = await generateSlots(specialistId, slots, weeks, timezoneOffset)
 
     return NextResponse.json({ ok: true, generated, weeks })
   } catch (err: any) {
