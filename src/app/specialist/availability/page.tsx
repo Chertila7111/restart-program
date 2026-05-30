@@ -45,6 +45,8 @@ export default function AvailabilityPage() {
   const [slots, setSlots] = useState<Slot[]>([])
   const [types, setTypes] = useState<MeetingType[]>(DEFAULT_TYPES)
   const [status, setStatus] = useState<'idle' | 'loading' | 'saved' | 'error'>('idle')
+  const [weeksAhead, setWeeksAhead] = useState(4)
+  const [generated, setGenerated] = useState<number | null>(null)
   const [loaded, setLoaded] = useState(false)
   const [selectedType, setSelectedType] = useState<string>('individual')
   const [selectedDuration, setSelectedDuration] = useState<number>(60)
@@ -115,14 +117,21 @@ export default function AvailabilityPage() {
 
   async function save() {
     setStatus('loading')
+    setGenerated(null)
     try {
       const r = await fetch('/api/specialist/availability', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slots }),
+        body: JSON.stringify({ slots, weeksAhead }),
       })
-      setStatus(r.ok ? 'saved' : 'error')
-      if (r.ok) setTimeout(() => setStatus('idle'), 3000)
+      if (r.ok) {
+        const data = await r.json()
+        setStatus('saved')
+        setGenerated(data.generated ?? 0)
+        setTimeout(() => { setStatus('idle'); setGenerated(null) }, 6000)
+      } else {
+        setStatus('error')
+      }
     } catch { setStatus('error') }
   }
 
@@ -415,28 +424,47 @@ export default function AvailabilityPage() {
         </div>
       )}
 
+      {/* Sync info */}
+      <div className="card" style={{ padding: '1rem 1.25rem', marginBottom: '1.25rem', background: 'var(--bg-sage)', border: '1px solid var(--primary-light)' }}>
+        <div style={{ fontSize: '0.82rem', color: 'var(--primary-dark)', lineHeight: 1.7, marginBottom: '0.75rem' }}>
+          <strong>Синхронизация с Календарём:</strong> при сохранении автоматически создаются конкретные слоты в Календаре на выбранное количество недель вперёд — участники сразу смогут записаться.
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+          <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--primary-dark)' }}>Создать слоты на:</span>
+          {[2, 4, 6, 8].map(w => (
+            <button
+              key={w}
+              onClick={() => setWeeksAhead(w)}
+              style={{
+                padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer',
+                border: `1.5px solid ${weeksAhead === w ? '#4E7B5E' : 'var(--primary-light)'}`,
+                background: weeksAhead === w ? '#4E7B5E' : 'white',
+                color: weeksAhead === w ? 'white' : 'var(--primary-dark)',
+              }}
+            >
+              {w} нед
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Save */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
         <button
           onClick={save}
           disabled={status === 'loading'}
           style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.5rem', borderRadius: '0.875rem', background: '#4E7B5E', color: 'white', fontWeight: 700, fontSize: '0.9rem', border: 'none', cursor: status === 'loading' ? 'wait' : 'pointer', opacity: status === 'loading' ? 0.8 : 1 }}
         >
           {status === 'loading' ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={16} />}
-          {status === 'loading' ? 'Сохранение…' : 'Сохранить расписание'}
+          {status === 'loading' ? `Создаём слоты на ${weeksAhead} нед…` : `Сохранить и создать слоты`}
         </button>
         {status === 'saved' && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', color: '#059669', fontWeight: 600 }}>
-            <CheckCircle size={15} /> Сохранено
+            <CheckCircle size={15} />
+            Сохранено · {generated !== null ? `создано ${generated} слотов в Календаре` : 'слоты обновлены'}
           </div>
         )}
         {status === 'error' && <span style={{ fontSize: '0.875rem', color: '#B91C1C' }}>Ошибка сохранения</span>}
-      </div>
-
-      <div style={{ marginTop: '1.25rem', padding: '0.875rem 1.125rem', background: 'var(--bg-soft)', borderRadius: '0.875rem' }}>
-        <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.6 }}>
-          После сохранения участники увидят свободные слоты и смогут записаться на встречу.
-        </p>
       </div>
     </div>
   )
